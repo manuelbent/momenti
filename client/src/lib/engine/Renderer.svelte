@@ -1,12 +1,24 @@
 <script lang="ts">
-    import { map } from './components'
-    import { moment } from '../stores/moment'
+    import type { MomentNode } from '../stores/moment'
+    import BaseBox from '../components/primitives/BaseBox.svelte'
+    import BaseText from '../components/primitives/BaseText.svelte'
+    import BaseImage from '../components/primitives/BaseImage.svelte'
+    import FormElement from '../components/primitives/FormElement.svelte'
+
+    export let node: MomentNode
 </script>
 
-<div class="min-h-screen" style="background: {$moment.theme.background}; color: {$moment.theme.text}">
-    {#each $moment.blocks as block}
-        {#if map[block.type]}
-            <svelte:component this={map[block.type]} {...block.props}/>
-        {/if}
-    {/each}
-</div>
+{#if node.type === 'box'}
+    <BaseBox css={node.css ?? ''}>
+        {#each node.children ?? [] as child (child.id)}
+            <svelte:self node={child}/>
+        {/each}
+    </BaseBox>
+{:else if node.type === 'text'}
+    <BaseText tag={node.tag ?? 'p'} html={node.html ?? ''} css={node.css ?? ''}/>
+{:else if node.type === 'image'}
+    <BaseImage src={node.src ?? ''} alt={node.alt ?? ''} css={node.css ?? ''}/>
+{:else if node.type === 'form'}
+    <FormElement css={node.css ?? ''} placeholder={node.placeholder ?? 'Your name'}
+                 buttonLabel={node.buttonLabel ?? 'RSVP'}/>
+{/if}
