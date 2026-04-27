@@ -1,21 +1,21 @@
 <script lang="ts">
     export let css: string = ''
+    export let inputCss: string = ''
+    export let buttonCss: string = ''
     export let placeholder: string = 'Your name'
     export let buttonLabel: string = 'RSVP'
 
     let name = ''
     let submitted = false
-
-    function handleSubmit() {
-        if (name.trim()) submitted = true
-    }
 </script>
 
 {#if submitted}
-    <p style={css}>Thanks, {name}! See you there.</p>
+    <div style={css}>
+        <p style="font-style: italic;">Thank you, {name}. We've saved your spot!</p>
+    </div>
 {:else}
-    <form style={css} on:submit|preventDefault={handleSubmit}>
-        <input bind:value={name} placeholder={placeholder}/>
-        <button type="submit">{buttonLabel}</button>
+    <form style={css} on:submit|preventDefault={() => (submitted = true)}>
+        <input style={inputCss} bind:value={name} {placeholder} required />
+        <button type="submit" style={buttonCss}>{buttonLabel}</button>
     </form>
 {/if}

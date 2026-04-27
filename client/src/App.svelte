@@ -1,6 +1,6 @@
 <script lang="ts">
     import Renderer from './lib/engine/Renderer.svelte'
-    import { moment } from './lib/stores/moment'
+    import { moment2 } from './lib/stores/moment'
 </script>
 
-<Renderer node={$moment.root}/>
+<Renderer node={$moment2.root}/>

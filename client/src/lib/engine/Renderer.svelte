@@ -19,6 +19,11 @@
 {:else if node.type === 'image'}
     <BaseImage src={node.src ?? ''} alt={node.alt ?? ''} css={node.css ?? ''}/>
 {:else if node.type === 'form'}
-    <FormElement css={node.css ?? ''} placeholder={node.placeholder ?? 'Your name'}
-                 buttonLabel={node.buttonLabel ?? 'RSVP'}/>
+    <FormElement
+            css={node.css ?? ''}
+            inputCss={node.inputCss ?? ''}
+            buttonCss={node.buttonCss ?? ''}
+            placeholder={node.placeholder ?? 'Your name'}
+            buttonLabel={node.buttonLabel ?? 'RSVP'}
+    />
 {/if}
