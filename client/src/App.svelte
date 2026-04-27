@@ -1,9 +1,5 @@
 <script lang="ts">
-    import Router from 'svelte-spa-router'
+    import Renderer from './lib/engine/Renderer.svelte'
 </script>
 
-<!--<Router routes={{
-    '/': Landing,
-}} />-->
-
-Momenti
+<Renderer/>
