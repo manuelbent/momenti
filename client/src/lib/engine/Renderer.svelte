@@ -15,7 +15,12 @@
         {/each}
     </BaseBox>
 {:else if node.type === 'text'}
-    <BaseText tag={node.tag ?? 'p'} html={node.html ?? ''} css={node.css ?? ''}/>
+    <BaseText
+            id={node.id}
+            tag={node.tag ?? 'p'}
+            html={node.html ?? ''}
+            css={node.css ?? ''}
+    />
 {:else if node.type === 'image'}
     <BaseImage src={node.src ?? ''} alt={node.alt ?? ''} css={node.css ?? ''}/>
 {:else if node.type === 'form'}

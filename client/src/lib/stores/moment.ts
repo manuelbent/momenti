@@ -471,3 +471,18 @@ export const moment2 = writable<Moment>({
         }
     }
 )
+
+export const updateNode = (id: string, newData: Partial<MomentNode>) => {
+    moment.update(m => {
+        const updateRecursive = (node: MomentNode): MomentNode => {
+            if (node.id === id) {
+                return { ...node, ...newData }
+            }
+            if (node.children) {
+                return { ...node, children: node.children.map(updateRecursive) }
+            }
+            return node
+        }
+        return { ...m, root: updateRecursive(m.root) }
+    })
+}
