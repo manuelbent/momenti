@@ -20,7 +20,7 @@ export default class MomentController {
      * @param {Request} req
      * @param {Response} res
      */
-    public async generate(req: Request, res: Response): Promise<void> {
+    public async capture(req: Request, res: Response): Promise<void> {
         const { prompt } = req.body
 
         try {

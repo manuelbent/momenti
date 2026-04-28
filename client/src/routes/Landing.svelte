@@ -1,6 +1,7 @@
 <script lang="ts">
+    import axios from 'axios'
     import { push } from 'svelte-spa-router'
-    import { generatedMoment, moment2 } from '../lib/stores/moment'
+    import { moment } from '../lib/stores/moment'
     import TypeWriter from '../lib/components/landing/TypeWriter.svelte'
     import Loader from '../lib/components/landing/Loader.svelte'
 
@@ -13,17 +14,17 @@
         isGenerating = true
         error = ''
 
-        const payload = JSON.stringify({
-            user: `<PROMPT>${JSON.stringify(prompt.trim())}</PROMPT>`,
-        })
-
-        console.log('Sending payload', payload)
+        const payload = { prompt: JSON.stringify(prompt.trim()) }
 
         try {
-            await new Promise(r => setTimeout(r, 10 * 1000))
-            generatedMoment.set($moment2)
+            const { data } = await axios.post(
+                'http://localhost:3000/api/capture',
+                payload,
+            )
+            moment.set(data)
             push('/preview')
         } catch (e) {
+            console.error(e)
             error = 'Something went wrong. Please try again.'
         } finally {
             isGenerating = false
@@ -43,7 +44,7 @@
     <main class="flex-1 flex items-center justify-center px-6 py-15">
 
         {#if isGenerating}
-            <Loader />
+            <Loader/>
         {:else}
             <!-- prompt UI -->
             <div class="w-full max-w-180 flex flex-col">
