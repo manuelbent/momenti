@@ -4,7 +4,7 @@ import MomentService from '../services/MomentService'
 /**
  * @class MomentController
  */
-export default class MomentController {
+class MomentController {
     private momentService: MomentService
 
     /**
@@ -30,3 +30,5 @@ export default class MomentController {
         }
     }
 }
+
+export default new MomentController()

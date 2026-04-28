@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 /**
  * @class PromptValidator
  */
-export default class PromptValidator {
+class PromptValidator {
     /**
      * @param {Request} req
      * @param {Response} res
@@ -25,3 +25,5 @@ export default class PromptValidator {
         next()
     }
 }
+
+export default new PromptValidator()
