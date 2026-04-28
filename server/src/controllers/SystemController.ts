@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 /**
  * @class SystemController
  */
-class SystemController {
+export default class SystemController {
     /**
      * @param {Request} _
      * @param {Response} res
@@ -27,5 +27,3 @@ class SystemController {
         })
     }
 }
-
-export default new SystemController()

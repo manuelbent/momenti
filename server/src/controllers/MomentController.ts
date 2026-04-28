@@ -4,15 +4,12 @@ import MomentService from '../services/MomentService'
 /**
  * @class MomentController
  */
-class MomentController {
-    private momentService: MomentService
-
+export default class MomentController {
     /**
      * @constructor
+     * @param {MomentService} momentService
      */
-    constructor() {
-        this.momentService = new MomentService()
-    }
+    constructor(private momentService: MomentService) {}
 
     /**
      * @param {Request} req
@@ -30,5 +27,3 @@ class MomentController {
         }
     }
 }
-
-export default new MomentController()
