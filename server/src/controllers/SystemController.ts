@@ -10,7 +10,7 @@ class SystemController {
      */
     public async healthcheck(_: Request, res: Response) {
         res.status(200).json({
-            name: 'Momenti',
+            name: 'momenti',
             version: '0.0.1-alfa',
             description: 'AI-powered landing page builder.',
         })

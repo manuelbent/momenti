@@ -1,3 +1,3 @@
-# Momenti (MVP)
+# momenti (MVP)
 
-Monorepo for Momenti.
+Monorepo for momenti.

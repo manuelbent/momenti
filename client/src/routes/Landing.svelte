@@ -36,7 +36,7 @@
 
     <!-- header -->
     <header class="flex items-center px-10 py-7 border-b border-white/6">
-        <span class="text-[18px] font-normal tracking-[0.12em]">Momenti</span>
+        <span class="text-[18px] font-normal tracking-[0.12em]">momenti</span>
     </header>
 
     <!-- main -->
@@ -90,7 +90,7 @@
                 </div>
 
                 <p class="font-sans text-[11px] text-[#2e2e2e] mt-4 tracking-[0.02em] text-center">
-                    © 2026 Momenti. All rights reserved.
+                    © 2026 momenti. All rights reserved.
                 </p>
             </div>
         {/if}

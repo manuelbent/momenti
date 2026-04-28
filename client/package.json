@@ -1,6 +1,6 @@
 {
   "name": "momenti",
-  "description": "Client for Momenti.",
+  "description": "Client for momenti.",
   "version": "0.0.1",
   "type": "module",
   "scripts": {
