@@ -1,41 +1,17 @@
 <script lang="ts">
     import { push } from 'svelte-spa-router'
-    import { fade } from 'svelte/transition'
     import { generatedMoment, moment2 } from '../lib/stores/moment'
-    import TypeWriter from '../lib/components/primitives/TypeWriter.svelte'
+    import TypeWriter from '../lib/components/landing/TypeWriter.svelte'
+    import Loader from '../lib/components/landing/Loader.svelte'
 
     let prompt = $state('')
     let isGenerating = $state(false)
     let error = $state('')
 
-    const cycleWords = ['moment', 'event', 'story', 'identity', 'chapter']
-
-    const phrases = [
-        'Crafting your moment…',
-        'Weaving the palette…',
-        'Composing the layout…',
-        'Bringing it to life…',
-    ]
-    let phraseIndex = $state(0)
-    let phraseTimer: ReturnType<typeof setInterval>|undefined
-
-    function startPhrases() {
-        phraseIndex = 0
-        phraseTimer = setInterval(() => {
-            phraseIndex = (phraseIndex + 1) % phrases.length
-        }, 2600)
-    }
-
-    function stopPhrases() {
-        clearInterval(phraseTimer)
-        phraseTimer = undefined
-    }
-
     async function generateEvent() {
         if (!prompt.trim()) return
         isGenerating = true
         error = ''
-        startPhrases()
 
         const payload = JSON.stringify({
             user: `<PROMPT>${JSON.stringify(prompt.trim())}</PROMPT>`,
@@ -50,7 +26,6 @@
         } catch (e) {
             error = 'Something went wrong. Please try again.'
         } finally {
-            stopPhrases()
             isGenerating = false
         }
     }
@@ -68,54 +43,19 @@
     <main class="flex-1 flex items-center justify-center px-6 py-15">
 
         {#if isGenerating}
-            <!-- loading state -->
-            <div
-                    class="flex flex-col items-center gap-12"
-                    aria-live="polite"
-                    aria-label="AI is generating your page"
-            >
-                <!-- orbital ring -->
-                <div class="relative w-28 h-28">
-                    <!-- static background ring -->
-                    <svg class="absolute inset-0 w-full h-full" viewBox="0 0 112 112" fill="none" aria-hidden="true">
-                        <circle cx="56" cy="56" r="52" stroke="#f0ede8" stroke-width="0.75" opacity="0.08"/>
-                    </svg>
-                    <!-- rotating comet arc -->
-                    <svg class="absolute inset-0 w-full h-full animate-orbit" viewBox="0 0 112 112" fill="none"
-                         aria-hidden="true">
-                        <circle cx="56" cy="56" r="52" stroke="#f0ede8" stroke-width="1"
-                                stroke-dasharray="52 275" stroke-linecap="round" opacity="0.7"/>
-                    </svg>
-                    <!-- centre breathing dot -->
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="w-1.25 h-1.25 rounded-full bg-[#f0ede8] animate-breathe"></div>
-                    </div>
-                </div>
-
-                <!-- cycling phrase -->
-                <div class="h-4 overflow-hidden">
-                    {#key phraseIndex}
-                        <p
-                                class="font-sans text-[11px] tracking-[0.26em] uppercase text-[#555]"
-                                in:fade={{ duration: 500 }}
-                                out:fade={{ duration: 300 }}
-                        >{phrases[phraseIndex]}</p>
-                    {/key}
-                </div>
-            </div>
-
+            <Loader />
         {:else}
             <!-- prompt UI -->
             <div class="w-full max-w-180 flex flex-col">
-                <p class="font-sans text-[11px] font-semibold tracking-[0.28em] uppercase text-[#6b6b6b] mb-6">
-                    AI-Powered Event Pages
-                </p>
                 <h1 class="text-6xl font-normal leading-[1.05] tracking-[-0.03em] mb-5">
-                    Your <TypeWriter words={cycleWords} />,
-                    <br>assisted by AI.
+                    Your
+                    <TypeWriter words={['moment', 'event', 'story', 'identity', 'chapter']}/>
+                    ,<br>
+                    assisted by AI.
                 </h1>
                 <p class="font-sans text-[15px] leading-[1.75] text-[#888] mb-10">
-                    Describe what you have in mind in plain language and the engine will build a bespoke, styled page.<br>
+                    Describe what you have in mind in plain language and the engine will build a bespoke, styled
+                    page.<br>
                     No templates, no limits.
                 </p>
 
@@ -148,10 +88,6 @@
                         </button>
                     </div>
                 </div>
-
-                <!--<p class="font-sans text-[11px] text-[#2e2e2e] mt-4 tracking-[0.02em] text-center">
-                    Momenti Shield active: your prompt is XML-enclosed and JSON-sanitised before transmission.
-                </p>-->
 
                 <p class="font-sans text-[11px] text-[#2e2e2e] mt-4 tracking-[0.02em] text-center">
                     © 2026 Momenti. All rights reserved.
