@@ -472,6 +472,86 @@ export const moment2 = writable<Moment>({
     }
 )
 
+export const moment3 = writable<Moment>({
+        "slug": "migliore-matrimonio-tema-ciliegio",
+        "root": {
+            "id": "root",
+            "type": "box",
+            "css": "padding: 100px 24px;",
+            "children": [
+                {
+                    "id": "header",
+                    "type": "text",
+                    "css": "font-family: 'Playfair Display', serif; font-size: 3rem; color: #D88AC2; margin-bottom: -80px;",
+                    "tag": "h1",
+                    "html": "Matrimonio di Sogno sotto i Ciliegi"
+                },
+                {
+                    "id": "image-banner",
+                    "type": "image",
+                    "css": "width: 100%; object-fit: cover;",
+                    "src": "path/to/cherry_blossom_wedding.jpg",
+                    "alt": "Cherry Blossom Wedding"
+                },
+                {
+                    "id": "details",
+                    "type": "box",
+                    "css": "padding: 100px 24px;",
+                    "children": [
+                        {
+                            "id": "date-location",
+                            "type": "text",
+                            "css": "font-family: 'Playfair Display', serif; font-size: 2rem; color: #7A2048;",
+                            "tag": "h2",
+                            "html": "Data: 15 Agosto 2026 alle 17:00<br/>Location: Villa Camilla, Lago di Como"
+                        },
+                        {
+                            "id": "dress-code",
+                            "type": "text",
+                            "css": "font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #4D8B8D; margin-top: -80px;",
+                            "tag": "p",
+                            "html": "Dress Code: Sii creativo, gioca con le sfumature di rosa, verde salvia e azzurro."
+                        }
+                    ]
+                },
+                {
+                    "id": "rsvp-form",
+                    "type": "form",
+                    "css": "margin-top: 100px;",
+                    "children": [
+                        {
+                            "id": "name-field",
+                            "type": "box",
+                            "children": [
+                                {
+                                    "id": "name-input",
+                                    "type": "text",
+                                    "tag": "input",
+                                    "placeholder": "Il tuo nome",
+                                    "inputCss": "background-color: #ffffff; border: 1px solid #DDDDDD; padding: 8px; width: 100%;"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "submit-button",
+                            "type": "box",
+                            "children": [
+                                {
+                                    "id": "submit",
+                                    "type": "text",
+                                    "tag": "button",
+                                    "html": "RSVP",
+                                    "buttonCss": "background-color: #D88AC2; color: #ffffff; font-family: 'Sans-Serif'; padding: 12px 24px; border: none; cursor: pointer;"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+)
+
 export const updateNode = (id: string, newData: Partial<MomentNode>) => {
     moment.update(m => {
         const updateRecursive = (node: MomentNode): MomentNode => {
