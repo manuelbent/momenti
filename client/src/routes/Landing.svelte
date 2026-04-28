@@ -8,7 +8,7 @@
     let isGenerating = $state(false)
     let error = $state('')
 
-    const cycleWords = ['event', 'moment', 'story', 'identity', 'chapter']
+    const cycleWords = ['moment', 'event', 'story', 'identity', 'chapter']
 
     const phrases = [
         'Crafting your moment…',
@@ -115,7 +115,7 @@
                     <br>assisted by AI.
                 </h1>
                 <p class="font-sans text-[15px] leading-[1.75] text-[#888] mb-10">
-                    Describe your event in plain language and the engine will build a bespoke, styled page.<br>
+                    Describe what you have in mind in plain language and the engine will build a bespoke, styled page.<br>
                     No templates, no limits.
                 </p>
 

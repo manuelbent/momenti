@@ -8,7 +8,7 @@
         typespeedMs?: number
     }
 
-    let { words, pauseMs = 2000, backspeedMs = 75, typespeedMs = 95 }: Props = $props()
+    let { words, pauseMs = 1000, backspeedMs = 65, typespeedMs = 95 }: Props = $props()
 
     let cycleIndex = 0
     const initial = words[0] ?? ''
@@ -45,7 +45,7 @@
     onDestroy(() => { clearTimeout(typeTimeout) })
 </script>
 
-<span>{displayed}</span><span class="cursor">|</span>
+<span class="text-[#9d174d]">{displayed}</span><span class="cursor">|</span>
 
 <style>
     .cursor {
