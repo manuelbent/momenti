@@ -1,6 +1,10 @@
 <script lang="ts">
-    import Renderer from './lib/engine/Renderer.svelte'
-    import { moment2 } from './lib/stores/moment'
+    import Router from 'svelte-spa-router'
+    import Landing from './routes/Landing.svelte'
+    import Preview from './routes/Preview.svelte'
 </script>
 
-<Renderer node={$moment2.root}/>
+<Router routes={{
+    '/': Landing,
+    '/preview': Preview
+}}/>

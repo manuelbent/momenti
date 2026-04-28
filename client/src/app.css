@@ -1,2 +1,17 @@
 @import "tailwindcss";
 
+@keyframes orbit {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+@keyframes breathe {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50%       { opacity: 1;   transform: scale(2); }
+}
+
+@theme {
+    --animate-orbit:   orbit   3.2s linear infinite;
+    --animate-breathe: breathe 2.8s ease-in-out infinite;
+}
+

@@ -486,3 +486,6 @@ export const updateNode = (id: string, newData: Partial<MomentNode>) => {
         return { ...m, root: updateRecursive(m.root) }
     })
 }
+
+// Holds the AI-generated moment that the Preview route renders
+export const generatedMoment = writable<Moment | null>(null)
