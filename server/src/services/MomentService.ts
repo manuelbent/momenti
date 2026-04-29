@@ -21,29 +21,16 @@ export default class MomentService {
     }
 
     /**
-     * Persists a moment to a txt file inside the moments/ directory.
-     * @param {string} prompt
-     * @param {unknown} moment
-     */
-    private async store(prompt: string, moment: Moment): Promise<void> {
-        try {
-            await this.momentRepository.create({
-                // user_id ?
-                slug: moment.slug,
-                prompt,
-                content: moment
-            })
-        } catch (err) {
-            console.error('[MomentService] Failed to store moment', err)
-        }
-    }
-
-    /**
      * Stream moment generation, yielding raw text chunks as they arrive from OpenAI.
      * Resolves and stores the full Moment once streaming is complete.
      * @param {string} prompt
      */
-    public async *generateStream(prompt: string): AsyncGenerator<{ chunk?: string; done?: boolean; moment?: Moment; error?: string }> {
+    public async* generateStream(prompt: string): AsyncGenerator<{
+        chunk?: string;
+        done?: boolean;
+        moment?: Moment;
+        error?: string
+    }> {
         const stream = await this.openai.chat.completions.create({
             model: 'gpt-5.4',
             messages: [
@@ -74,14 +61,27 @@ export default class MomentService {
             return
         }
 
-        // store the output
-        await this.store(prompt, moment)
-
         if (!moment.slug || !moment.root) {
             yield { error: 'Invalid Moment structure.' }
             return
         }
 
-        yield { done: true, moment }
+        // persist to database
+        // move to dedicated function todo
+        try {
+            await this.momentRepository.create({
+                // user_id ?
+                slug: moment.slug,
+                prompt,
+                content: moment
+            })
+        } catch (err) {
+            console.error('[MomentService] Failed to store moment', err)
+        }
+
+        yield {
+            done: true,
+            moment
+        }
     }
 }

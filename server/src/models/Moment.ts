@@ -16,6 +16,7 @@ export default class Moment extends Model {
 Moment.init({
     id: {
         type: DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true,
         allowNull: false
     },
@@ -60,7 +61,12 @@ Moment.init({
     sequelize,
     modelName: 'Moment',
     tableName: 'moments',
-    timestamps: false
+    timestamps: false,
+    indexes: [
+        {
+            fields: ['slug'],
+        }
+    ]
 })
 
 Moment.belongsTo(User, {
