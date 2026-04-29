@@ -1,83 +1,47 @@
+import { promises as fs } from 'fs'
+import path from 'path'
 import OpenAI from 'openai'
 import type { Moment } from '../types/Moment'
+import { SYSTEM_PROMPT } from '../config/constants'
 
-const SYSTEM_PROMPT = `
-You are a Senior Creative Director and UI Designer crafting high-end editorial landing pages ("momenti").
-
-Focus on:
-- visual storytelling
-- rhythm and composition
-- premium, minimal design
-
-----------------------------------------
-OUTPUT FORMAT (STRICT)
-----------------------------------------
-Return ONLY a valid JSON object:
-
-interface MomentNode {
-  id: string;
-  type: 'box'|'text'|'image'|'form';
-  variant?: 'hero'|'section'|'grid'|'card'|'overlay';
-  layout?: 'row'|'column'|'grid';
-  columns?: number;
-  css?: string;
-  tag?: string;
-  html?: string;
-  src?: string;
-  alt?: string;
-  placeholder?: string;
-  buttonLabel?: string;
-  inputCss?: string;
-  buttonCss?: string;
-  children?: MomentNode[];
-}
-
-interface Moment {
-  slug: string;
-  root: MomentNode;
-}
-
-----------------------------------------
-GUIDELINES
-----------------------------------------
-- Prefer 3–5 sections
-- Keep structure clean and not overly deep
-- Avoid unnecessary nodes
-
-----------------------------------------
-DESIGN
-----------------------------------------
-- Use hierarchy, spacing, and contrast
-- Mix text and imagery with intention
-- Use grids or overlaps only when meaningful
-
-----------------------------------------
-CONTENT
-----------------------------------------
-- Write concise, refined editorial text (1–2 sentences per block)
-- Avoid filler or repetition
-
-----------------------------------------
-IMAGES
-----------------------------------------
-- Use high-quality Unsplash images only when they add value
-
-----------------------------------------
-CONSTRAINTS (CRITICAL)
-----------------------------------------
-- MAX DEPTH: 3 levels deep. 
-- ECONOMY: Use fewer nodes. One 'box' should contain multiple 'text' nodes rather than nesting boxes for every line.
-- Limit verbosity of texts.
-- NO MARKDOWN: Never use \`\`\`json blocks.
-`.trim()
-
+/**
+ * @class MomentService
+ */
 export default class MomentService {
+    /**
+     * The OpenAI client instance.
+     * @private
+     */
     private openai: OpenAI
 
+    /**
+     * @constructor
+     */
     constructor() {
         this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     }
 
+    /**
+     * Persists a moment to a txt file inside the moments/ directory.
+     * @param {string} prompt
+     * @param {unknown} moment
+     */
+    private async store(prompt: string, moment: Moment): Promise<void> {
+        try {
+            const MOMENTS_DIR = path.resolve(process.cwd(), 'moments')
+            await fs.mkdir(MOMENTS_DIR, { recursive: true })
+            const filename = `${Date.now()}-${moment['slug'] ?? 'moment'}.txt`
+            const content = `PROMPT\n${prompt}\n\nMOMENT\n${JSON.stringify(moment, null, 2)}\n`
+            await fs.writeFile(path.join(MOMENTS_DIR, filename), content, 'utf-8')
+        } catch (err) {
+            console.error('[MomentService] Failed to save moment to file:', err)
+        }
+    }
+
+    /**
+     * Generate moment making the request to OpenAI APIs.
+     * @param {string} prompt
+     */
     public async generate(prompt: string): Promise<Moment> {
         const response = await this.openai.chat.completions.create({
             model: 'gpt-5.4',
@@ -98,12 +62,14 @@ export default class MomentService {
         try {
             result = JSON.parse(content)
         } catch (e) {
-            console.error('AI returned malformed JSON or was truncated:', content)
+            console.error('[MomentService] AI returned malformed JSON or was truncated:', content)
             throw new Error('Failed to generate a valid Moment structure.')
         }
 
+        // store even if the structure is invalid
+        await this.store(prompt, result)
+
         if (!result.slug || !result.root) {
-            console.log(result)
             throw new Error('Invalid Moment structure.')
         }
 
