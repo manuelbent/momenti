@@ -6,6 +6,10 @@ import MomentController from '../controllers/MomentController'
 import MomentService from '../services/MomentService'
 import PromptValidator from '../validators/PromptValidator'
 import GenerateMomentRequestValidator from '../validators/GenerateMomentRequestValidator'
+import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
+import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
+import UserRepository from '../repositories/UserRepository'
+import MomentRepository from '../repositories/MomentRepository'
 
 /**
  * Dependency injection container.
@@ -16,11 +20,14 @@ class Container {
     private _malformedDataMiddleware?: MalformedDataMiddleware
     private _validationErrorMiddleware?: ValidationErrorMiddleware
     private _sseMiddleware?: SseMiddleware
+    // repositories
+    private _userRepository?: UserRepositoryInterface
+    private _momentRepository?: MomentRepositoryInterface
+    // services
+    private _momentService?: MomentService
     // controllers
     private _systemController?: SystemController
     private _momentController?: MomentController
-    // services
-    private _momentService?: MomentService
     // validators
     private _promptValidator?: PromptValidator
     private _generateMomentRequestValidator?: GenerateMomentRequestValidator
@@ -37,8 +44,16 @@ class Container {
         return this._sseMiddleware ??= new SseMiddleware()
     }
 
+    public get userRepository(): UserRepositoryInterface {
+        return this._userRepository ??= new UserRepository()
+    }
+
+    public get momentRepository(): MomentRepositoryInterface {
+        return this._momentRepository ??= new MomentRepository()
+    }
+
     public get momentService(): MomentService {
-        return this._momentService ??= new MomentService()
+        return this._momentService ??= new MomentService(this.momentRepository)
     }
 
     public get momentController(): MomentController {

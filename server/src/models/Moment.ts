@@ -4,8 +4,9 @@ import User from './User'
 
 export default class Moment extends Model {
     declare id: number
-    declare user_id: number
+    declare user_id: number|null // temp
     declare slug: string
+    declare prompt: string
     declare content: object
     declare is_published: boolean
     declare created_at: Date
@@ -20,7 +21,7 @@ Moment.init({
     },
     user_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true, // temp
         references: {
             model: 'users',
             key: 'id'
@@ -32,6 +33,10 @@ Moment.init({
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
+    },
+    prompt: {
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     content: {
         type: DataTypes.JSON,

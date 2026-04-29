@@ -1,8 +1,7 @@
-import { promises as fs } from 'fs'
-import path from 'path'
 import OpenAI from 'openai'
 import type { Moment } from '../types/Moment'
 import { SYSTEM_PROMPT } from '../config/constants'
+import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 
 /**
  * @class MomentService
@@ -17,7 +16,7 @@ export default class MomentService {
     /**
      * @constructor
      */
-    constructor() {
+    constructor(private momentRepository: MomentRepositoryInterface) {
         this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     }
 
@@ -28,13 +27,14 @@ export default class MomentService {
      */
     private async store(prompt: string, moment: Moment): Promise<void> {
         try {
-            const MOMENTS_DIR = path.resolve(process.cwd(), 'moments')
-            await fs.mkdir(MOMENTS_DIR, { recursive: true })
-            const filename = `${Date.now()}-${moment['slug'] ?? 'moment'}.txt`
-            const content = `PROMPT\n${prompt}\n\nMOMENT\n${JSON.stringify(moment, null, 2)}\n`
-            await fs.writeFile(path.join(MOMENTS_DIR, filename), content, 'utf-8')
+            await this.momentRepository.create({
+                // user_id ?
+                slug: moment.slug,
+                prompt,
+                content: moment
+            })
         } catch (err) {
-            console.error('[MomentService] Failed to save moment to file:', err)
+            console.error('[MomentService] Failed to store moment', err)
         }
     }
 

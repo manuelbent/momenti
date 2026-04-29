@@ -11,7 +11,7 @@ module.exports = {
             },
             user_id: {
                 type: Sequelize.INTEGER,
-                allowNull: false,
+                allowNull: true, // temp
                 references: {
                     model: 'users',
                     key: 'id'
@@ -22,6 +22,10 @@ module.exports = {
             slug: {
                 type: Sequelize.STRING,
                 unique: true,
+                allowNull: false,
+            },
+            prompt: {
+                type: Sequelize.STRING,
                 allowNull: false,
             },
             content: {
