@@ -1,10 +1,22 @@
 <script lang="ts">
+    import { fade } from 'svelte/transition'
+
     const { streamText = '' }: { streamText?: string } = $props()
 
-    const MAX = 180
-    const visibleText = $derived(
-        streamText.length > MAX ? '…' + streamText.slice(-MAX) : streamText
-    )
+    const status = $derived(deriveStatus(streamText))
+
+    function deriveStatus(text: string): string {
+        if (!text)                              return 'Thinking…'
+        const nodes = (text.match(/"type":/g) ?? []).length
+        if (text.includes('"form"'))            return 'Adding interactive elements…'
+        if (text.includes('"image"'))           return 'Placing visuals…'
+        if (nodes > 6)                          return `Composing element ${nodes}…`
+        if (text.includes('"children"'))        return 'Building the layout…'
+        if (text.includes('"css"'))             return 'Styling your moment…'
+        if (text.includes('"root"'))            return 'Structuring the page…'
+        if (text.includes('"slug"'))            return 'Shaping your moment…'
+        return 'Thinking…'
+    }
 </script>
 
 <div
@@ -26,6 +38,14 @@
         </div>
     </div>
 
-    <!-- stream text -->
-    <pre class="w-80 h-16 overflow-hidden font-mono text-[10px] leading-[1.6] text-[#444] whitespace-pre-wrap break-all text-left">{visibleText}<span class="animate-pulse">▌</span></pre>
+    <!-- status -->
+    <div class="h-4 overflow-hidden">
+        {#key status}
+            <p
+                class="font-sans text-[11px] tracking-[0.26em] uppercase text-[#555]"
+                in:fade={{ duration: 400 }}
+                out:fade={{ duration: 200 }}
+            >{status}</p>
+        {/key}
+    </div>
 </div>
