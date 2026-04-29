@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte'
     import { updateNode } from '../../stores/moment'
 
     export let id: string // We need the ID to update the store
@@ -6,6 +7,19 @@
     export let html: string = ''
     export let css: string = ''
     export let isEditable: boolean = true // For now, we'll keep it true for the builder
+
+    let element: HTMLElement
+
+    onMount(() => {
+        element.innerHTML = html
+    })
+
+    // Only update the DOM when html changes from outside (e.g. programmatic update).
+    // When the user is typing, handleInput already keeps the store in sync with the DOM,
+    // so element.innerHTML === html and this no-ops — preventing cursor jumps.
+    $: if (element && element.innerHTML !== html) {
+        element.innerHTML = html
+    }
 
     function handleInput(e: Event) {
         const target = e.target as HTMLElement
@@ -15,13 +29,12 @@
 
 <svelte:element
         this={tag}
+        bind:this={element}
         style={css}
         contenteditable={isEditable}
         on:input={handleInput}
         on:blur={() => {/* Optional: save to backend here */}}
->
-    {@html html}
-</svelte:element>
+/>
 
 <style>
     /* Add a subtle hint that it's editable when hovered */
