@@ -6,7 +6,7 @@
     let toolbarEl: HTMLElement
 
     // Find a node by id anywhere in the tree
-    function findNode(node: MomentNode, id: string): MomentNode | null {
+    function findNode(node: MomentNode, id: string): MomentNode|null {
         if (node.id === id) return node
         for (const child of node.children ?? []) {
             const found = findNode(child, id)
@@ -61,21 +61,22 @@
 
 {#if selectedNode}
     <div
-        bind:this={toolbarEl}
-        class="toolbar"
-        style="top: {toolbarTop}px; left: {toolbarLeft}px"
+            bind:this={toolbarEl}
+            class="toolbar"
+            style="top: {toolbarTop}px; left: {toolbarLeft}px"
     >
         <span class="toolbar-label">{selectedNode.tag?.toUpperCase() ?? 'TEXT'}</span>
         <div class="divider"></div>
         <label class="toolbar-item" title="Font color">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 7h6l3 9H6L9 7z"/><line x1="12" y1="3" x2="12" y2="7"/>
+                <path d="M9 7h6l3 9H6L9 7z"/>
+                <line x1="12" y1="3" x2="12" y2="7"/>
                 <rect x="3" y="18" width="18" height="3" rx="1" fill={currentColor} stroke="none"/>
             </svg>
             <input
-                type="color"
-                value={currentColor}
-                on:input={handleColorInput}
+                    type="color"
+                    value={currentColor}
+                    on:input={handleColorInput}
             />
         </label>
     </div>
@@ -94,7 +95,7 @@
         padding: 5px 10px;
         font-family: Inter, sans-serif;
         font-size: 12px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
         white-space: nowrap;
         /* pointer-events must stay on so color picker works */
     }
@@ -109,7 +110,7 @@
     .divider {
         width: 1px;
         height: 16px;
-        background: rgba(255,255,255,0.15);
+        background: rgba(255, 255, 255, 0.15);
         margin: 0 2px;
     }
 
@@ -124,7 +125,7 @@
     }
 
     .toolbar-item:hover {
-        background: rgba(255,255,255,0.1);
+        background: rgba(255, 255, 255, 0.1);
     }
 
     /* Hide the native color swatch but keep it clickable */
@@ -146,7 +147,7 @@
     }
 
     .toolbar-item input[type="color"]::-webkit-color-swatch {
-        border: 2px solid rgba(255,255,255,0.3);
+        border: 2px solid rgba(255, 255, 255, 0.3);
         border-radius: 50%;
     }
 </style>

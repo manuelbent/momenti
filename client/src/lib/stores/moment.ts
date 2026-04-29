@@ -28,6 +28,10 @@ export interface Moment {
 // Holds the AI-generated moment that the Preview route renders
 export const moment = writable<Moment>()
 
+// Tracks the currently-selected text node in the builder
+export const selectedNodeId = writable<string | null>(null)
+export const selectedNodeRect = writable<DOMRect | null>(null)
+
 export const updateNode = (id: string, newData: Partial<MomentNode>) => {
     moment.update(m => {
         const updateRecursive = (node: MomentNode): MomentNode => {
