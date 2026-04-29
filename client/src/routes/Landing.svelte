@@ -97,7 +97,7 @@
 >
 
     <!-- header -->
-    <header class="flex items-center px-10 py-7 border-b border-white/6">
+    <header class="flex items-center px-6 md:px-10 py-7 border-b border-white/6">
         <span class="text-[18px] font-normal tracking-[0.12em]">momenti</span>
     </header>
 
@@ -105,7 +105,7 @@
     <main class="flex-1 flex items-center justify-center px-6 py-15">
         <div class="w-full max-w-180 flex flex-col">
             <h1 class="text-5xl md:text-6xl font-normal leading-[1.05] tracking-[-0.03em] mb-5">
-                Your <TypeWriter words={['moment', 'event', 'story', 'identity', 'chapter']}/><span class="-ml-1.5">,</span><br>
+                Your <TypeWriter words={['moment', 'event', 'story', 'identity', 'chapter']}/><span class="-ml-1">,</span><br>
                 one message away.
             </h1>
             <p class="font-sans text-[15px] leading-[1.75] text-[#888] mb-10">
