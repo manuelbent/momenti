@@ -104,10 +104,8 @@
     <!-- main -->
     <main class="flex-1 flex items-center justify-center px-6 py-15">
         <div class="w-full max-w-180 flex flex-col">
-            <h1 class="text-6xl font-normal leading-[1.05] tracking-[-0.03em] mb-5">
-                Your
-                <TypeWriter words={['moment', 'event', 'story', 'identity', 'chapter']}/>
-                ,<br>
+            <h1 class="text-5xl md:text-6xl font-normal leading-[1.05] tracking-[-0.03em] mb-5">
+                Your <TypeWriter words={['moment', 'event', 'story', 'identity', 'chapter']}/><span class="-ml-1.5">,</span><br>
                 one message away.
             </h1>
             <p class="font-sans text-[15px] leading-[1.75] text-[#888] mb-10">
