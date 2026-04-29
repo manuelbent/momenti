@@ -108,12 +108,13 @@
                 Your
                 <TypeWriter words={['moment', 'event', 'story', 'identity', 'chapter']}/>
                 ,<br>
-                assisted by AI.
+                one message away.
             </h1>
             <p class="font-sans text-[15px] leading-[1.75] text-[#888] mb-10">
-                Describe what you have in mind in plain language and the engine will build a bespoke, styled
-                page.<br>
-                No templates, no limits.
+                What do you have in mind?<br>
+                What would you like your moment to look like?<br>
+                Feel free to be creative: colors, mood, vibes, anything you can think of.<br>
+                Let momenti create it for you.
             </p>
 
             <div class="grid min-h-57.5">
