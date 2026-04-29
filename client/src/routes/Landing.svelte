@@ -108,7 +108,6 @@
 
     <!-- main -->
     <main class="flex-1 flex items-center justify-center px-6 py-15">
-
         {#if isGenerating}
             <Loader {streamText}/>
         {:else}

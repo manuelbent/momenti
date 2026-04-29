@@ -3,49 +3,119 @@
 
     const { streamText = '' }: { streamText?: string } = $props()
 
-    const status = $derived(deriveStatus(streamText))
+    // --- Progress ring -------------------------------------------------------
+    // r=50 → circumference ≈ 314. We cap visible fill at 90% so it never looks "done"
+    // before the route transition fires.
+    const CIRCUMFERENCE = 2 * Math.PI * 50
+    const ESTIMATED_CHARS = 3000
+    const progress = $derived(Math.min(0.9, streamText.length / ESTIMATED_CHARS))
+    const dashOffset = $derived(CIRCUMFERENCE * (1 - progress))
+
+    // --- Status messages -----------------------------------------------------
+    // Each milestone is checked in order; the last one that passes wins,
+    // so the label always reflects the most advanced state reached so far.
+    const milestones: Array<{ test: (t: string) => boolean; label: string }> = [
+        { test: () => true, label: 'Imagining your moment…' },
+        { test: t => t.includes('"css"'), label: 'Crafting the palette…' },
+        { test: t => t.includes('"children"'), label: 'Composing the layout…' },
+        { test: t => (t.match(/"type":/g) ?? []).length > 3, label: 'Placing the elements…' },
+        { test: t => (t.match(/"html":/g) ?? []).length > 1, label: 'Writing the content…' },
+        { test: t => t.includes('"image"'), label: 'Adding visuals…' },
+        { test: t => t.length > 2200, label: 'Polishing the details…' },
+    ]
 
     function deriveStatus(text: string): string {
-        if (!text)                              return 'Thinking…'
-        const nodes = (text.match(/"type":/g) ?? []).length
-        if (text.includes('"form"'))            return 'Adding interactive elements…'
-        if (text.includes('"image"'))           return 'Placing visuals…'
-        if (nodes > 6)                          return `Composing element ${nodes}…`
-        if (text.includes('"children"'))        return 'Building the layout…'
-        if (text.includes('"css"'))             return 'Styling your moment…'
-        if (text.includes('"root"'))            return 'Structuring the page…'
-        if (text.includes('"slug"'))            return 'Shaping your moment…'
-        return 'Thinking…'
+        let label = milestones[0].label
+        for (const m of milestones) {
+            if (m.test(text)) label = m.label
+        }
+        return label
     }
+
+    // Throttle: each label must be visible for at least MIN_DURATION ms.
+    const MIN_DURATION = 1100
+    let displayedStatus = $state('Imagining your moment…')
+    let lastUpdate = 0
+    let pendingTimer: ReturnType<typeof setTimeout>|undefined
+
+    $effect(() => {
+        const next = deriveStatus(streamText)
+        if (next === displayedStatus) return
+
+        const elapsed = Date.now() - lastUpdate
+        clearTimeout(pendingTimer)
+
+        if (elapsed >= MIN_DURATION) {
+            displayedStatus = next
+            lastUpdate = Date.now()
+        } else {
+            pendingTimer = setTimeout(() => {
+                displayedStatus = next
+                lastUpdate = Date.now()
+            }, MIN_DURATION - elapsed)
+        }
+    })
 </script>
 
-<div
-    class="flex flex-col items-center gap-12"
-    aria-live="polite"
-    aria-label="AI is generating your page"
->
-    <!-- orbital ring -->
+<div class="flex flex-col items-center gap-10" aria-live="polite" aria-label="AI is generating your page">
+    <!-- ring stack -->
     <div class="relative w-28 h-28">
-        <svg class="absolute inset-0 w-full h-full" viewBox="0 0 112 112" fill="none" aria-hidden="true">
-            <circle cx="56" cy="56" r="52" stroke="#f0ede8" stroke-width="0.75" opacity="0.08"/>
+
+        <!-- 1. dim base ring -->
+        <svg class="absolute inset-0 w-full h-full" viewBox="0 0 112 112" fill="none">
+            <circle cx="56" cy="56" r="50" stroke="#f0ede8" stroke-width="0.75" opacity="0.07"/>
         </svg>
-        <svg class="absolute inset-0 w-full h-full animate-orbit" viewBox="0 0 112 112" fill="none" aria-hidden="true">
-            <circle cx="56" cy="56" r="52" stroke="#f0ede8" stroke-width="1"
-                    stroke-dasharray="52 275" stroke-linecap="round" opacity="0.7"/>
+
+        <!-- 2. progress fill ring (rotated so it starts at the top) -->
+        <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 112 112" fill="none">
+            <circle
+                    cx="56" cy="56" r="50"
+                    stroke="#f0ede8"
+                    stroke-width="1"
+                    stroke-linecap="round"
+                    opacity="0.35"
+                    stroke-dasharray={CIRCUMFERENCE}
+                    stroke-dashoffset={dashOffset}
+                    style="transition: stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1)"
+            />
         </svg>
+
+        <!-- 3. breathing centre dot -->
         <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-1.25 h-1.25 rounded-full bg-[#f0ede8] animate-breathe"></div>
+            <div class="dot"></div>
         </div>
     </div>
 
-    <!-- status -->
+    <!-- status label -->
     <div class="h-4 overflow-hidden">
-        {#key status}
+        {#key displayedStatus}
             <p
-                class="font-sans text-[11px] tracking-[0.26em] uppercase text-[#555]"
-                in:fade={{ duration: 400 }}
-                out:fade={{ duration: 200 }}
-            >{status}</p>
+                    class="font-sans text-[11px] tracking-[0.24em] uppercase text-[#555]"
+                    in:fade={{ duration: 500, delay: 80 }}
+                    out:fade={{ duration: 250 }}
+            >{displayedStatus}</p>
         {/key}
     </div>
+
 </div>
+
+<style>
+    .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 999px;
+        background: #f0ede8;
+        animation: breathe 2.6s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+        0%, 100% {
+            transform: scale(0.75);
+            opacity: 0.5;
+        }
+        50% {
+            transform: scale(1.5);
+            opacity: 1;
+        }
+    }
+</style>
