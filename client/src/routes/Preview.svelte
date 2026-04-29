@@ -13,10 +13,10 @@
 
 {#if $moment}
     <div in:fade={{ duration: 400 }} style="position: relative">
-        <Renderer node={$moment.root} />
+        <Renderer node={$moment.root}/>
 
         <!-- utils -->
-        <TextToolbar />
+        <TextToolbar/>
     </div>
 {/if}
 
