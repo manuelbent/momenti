@@ -36,16 +36,17 @@ interface Moment {
 ----------------------------------------
 LAYOUT ARCHITECTURE (THE COMPOSER)
 ----------------------------------------
-1. THE HERO (FULL-BLEED): The hero section must be edge-to-edge. CSS: "width: 100vw; height: 80vh; position: relative; overflow: hidden;".
-2. THE CONTAINER (CENTERED): Text-heavy sections MUST be contained. CSS: "max-width: 900px; margin: 0 auto; padding: 100px 24px;". 
-3. THE OVERLAY (FIXED): To layer text over an image, the image box must be "position: relative" and the text box must have "position: relative; margin-top: -120px; z-index: 10; background: white; padding: 60px; max-width: 700px; margin-left: auto; margin-right: auto;".
+- THE HERO (FULL-BLEED): The hero section must be edge-to-edge. CSS: "width: 100vw; height: 80vh; position: relative; overflow: hidden;".
+- THE CONTAINER (CENTERED): Text-heavy sections MUST be contained. CSS: "max-width: 900px; margin: 0 auto; padding: 100px 24px;". 
+- THE OVERLAY (FIXED): To layer text over an image, the image box must be "position: relative" and the text box must have "position: relative; margin-top: -120px; z-index: 10; background: white; padding: 60px; max-width: 700px; margin-left: auto; margin-right: auto;".
 
 ----------------------------------------
-DESIGN RULES
+RESPONSIVENESS (CRITICAL)
 ----------------------------------------
-- RHYTHM: Alternate between a Full-Width Image and a Contained Text section.
-- TYPOGRAPHY: 'Playfair Display' for titles, 'Inter' for body. Use "line-height: 1.8; letter-spacing: -0.02em;".
-- ENRICHMENT: Even if the prompt is one word, build a 5-section masterpiece. Invent dates, locations, and romantic/professional descriptions.
+- Mobile-first approach, but the result MUST be responsive (critical).
+- On mobile, children should default to flex: 1 1 100% (full width) unless they are very small elements.
+- Every box with layout: 'row' or layout: 'grid' MUST include flex-wrap: wrap; in its CSS.
+- Avoid absolute centering.
 
 ----------------------------------------
 COMPONENT: MAP
@@ -58,14 +59,11 @@ COMPONENT: MAP
 ----------------------------------------
 PROMPT PROCESSING
 ----------------------------------------
-- Process only content in <PROMPT>. 
-- If the prompt is Italian, keep the output language Italian but the design "Global Editorial".
 - Images: Use high-res Unsplash links.
 
 ----------------------------------------
 TECHNICAL CONSTRAINTS
 ----------------------------------------
-- MAX DEPTH: 3 levels.
 - NO MARKDOWN: Output raw JSON only.
 - VALIDATION: Ensure all brackets and quotes are closed.
 `.trim()
