@@ -1,25 +1,10 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition'
-    import { onMount, onDestroy } from 'svelte'
+    const { streamText = '' }: { streamText?: string } = $props()
 
-    const phrases = [
-        'Crafting your moment…',
-        'Weaving the palette…',
-        'Composing the layout…',
-        'Bringing it to life…',
-    ]
-    let phraseIndex = $state(0)
-    let phraseTimer: ReturnType<typeof setInterval> | undefined
-
-    onMount(() => {
-        phraseTimer = setInterval(() => {
-            phraseIndex = (phraseIndex + 1) % phrases.length
-        }, 2600)
-    })
-
-    onDestroy(() => {
-        clearInterval(phraseTimer)
-    })
+    const MAX = 180
+    const visibleText = $derived(
+        streamText.length > MAX ? '…' + streamText.slice(-MAX) : streamText
+    )
 </script>
 
 <div
@@ -41,15 +26,6 @@
         </div>
     </div>
 
-    <!-- cycling phrase -->
-    <div class="h-4 overflow-hidden">
-        {#key phraseIndex}
-            <p
-                class="font-sans text-[11px] tracking-[0.26em] uppercase text-[#555]"
-                in:fade={{ duration: 500 }}
-                out:fade={{ duration: 300 }}
-            >{phrases[phraseIndex]}</p>
-        {/key}
-    </div>
+    <!-- stream text -->
+    <pre class="w-80 h-16 overflow-hidden font-mono text-[10px] leading-[1.6] text-[#444] whitespace-pre-wrap break-all text-left">{visibleText}<span class="animate-pulse">▌</span></pre>
 </div>
-

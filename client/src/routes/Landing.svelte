@@ -1,5 +1,4 @@
 <script lang="ts">
-    import axios from 'axios'
     import { push } from 'svelte-spa-router'
     import { moment } from '../lib/stores/moment'
     import TypeWriter from '../lib/components/landing/TypeWriter.svelte'
@@ -8,27 +7,94 @@
     let prompt = $state('')
     let isGenerating = $state(false)
     let error = $state('')
+    let streamText = $state('')
 
+    // handle submit of the prompt
     async function generateEvent() {
-        if (!prompt.trim()) return
+        if (!prompt.trim()) {
+            return
+        }
+
         isGenerating = true
         error = ''
-
-        const payload = { prompt: JSON.stringify(prompt.trim()) }
+        streamText = ''
 
         try {
-            const { data } = await axios.post(
-                'http://localhost:3000/api/capture',
-                payload,
-            )
-            moment.set(data)
-            push('/preview')
+            const response = await fetchEventStream(prompt.trim())
+            await handleStream(response.body!)
         } catch (e) {
             console.error(e)
             error = 'Something went wrong. Please try again.'
         } finally {
             isGenerating = false
         }
+    }
+
+    // establish the connection for sse events
+    async function fetchEventStream(prompt: string) {
+        const response = await fetch('http://localhost:3000/api/capture', { // temp
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: JSON.stringify(prompt) }),
+        })
+
+        if (!response.ok || !response.body) {
+            throw new Error(`Unexpected response: ${response.status}`)
+        }
+
+        return response
+    }
+
+    // handle the streaming of chunks
+    async function handleStream(stream: ReadableStream<Uint8Array>) {
+        const reader = stream
+            .pipeThrough(new TextDecoderStream() as unknown as ReadableWritablePair<string, Uint8Array>)
+            .getReader()
+
+        let buffer = ''
+
+        while (true) {
+            const { value, done } = await reader.read()
+            if (done) break
+
+            buffer += value
+            const messages = buffer.split('\n\n')
+            buffer = messages.pop() ?? ''
+
+            for (const msg of messages) {
+                handleMessage(msg)
+            }
+        }
+    }
+
+    // parse the message
+    function handleMessage(message: string) {
+        const event = extract(message, /^event:\s*(\w+)/m)
+        const data = extract(message, /^data:\s*(.+)/ms, JSON.parse)
+
+        if (!event || !data) {
+            return
+        }
+
+        switch (event) {
+            case 'chunk':
+                streamText += data.chunk
+                break
+
+            case 'done':
+                moment.set(data)
+                push('/preview')
+                break
+
+            case 'error':
+                throw new Error(data.error)
+        }
+    }
+
+    // helper function
+    function extract<T>(text: string, regex: RegExp, transform: (v: string) => T = (v) => v as unknown as T): T | null {
+        const match = text.match(regex)
+        return match ? transform(match[1]) : null
     }
 </script>
 
@@ -44,7 +110,7 @@
     <main class="flex-1 flex items-center justify-center px-6 py-15">
 
         {#if isGenerating}
-            <Loader/>
+            <Loader {streamText}/>
         {:else}
             <!-- prompt UI -->
             <div class="w-full max-w-180 flex flex-col">
