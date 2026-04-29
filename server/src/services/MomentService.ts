@@ -39,11 +39,12 @@ export default class MomentService {
     }
 
     /**
-     * Generate moment making the request to OpenAI APIs.
+     * Stream moment generation, yielding raw text chunks as they arrive from OpenAI.
+     * Resolves and stores the full Moment once streaming is complete.
      * @param {string} prompt
      */
-    public async generate(prompt: string): Promise<Moment> {
-        const response = await this.openai.chat.completions.create({
+    public async *generateStream(prompt: string): AsyncGenerator<{ chunk?: string; done?: boolean; moment?: Moment; error?: string }> {
+        const stream = await this.openai.chat.completions.create({
             model: 'gpt-5.4',
             messages: [
                 { role: 'system', content: SYSTEM_PROMPT },
@@ -51,28 +52,36 @@ export default class MomentService {
             ],
             response_format: { type: 'json_object' },
             temperature: 0.8,
+            stream: true,
         })
 
-        const content = response.choices[0]?.message?.content
-        if (!content) {
-            throw new Error('AI returned an empty response.')
+        let accumulated = ''
+
+        for await (const part of stream) {
+            const delta = part.choices[0]?.delta?.content ?? ''
+            if (delta) {
+                accumulated += delta
+                yield { chunk: delta }
+            }
         }
 
-        let result: Moment
+        let moment: Moment
         try {
-            result = JSON.parse(content)
+            moment = JSON.parse(accumulated)
         } catch (e) {
-            console.error('[MomentService] AI returned malformed JSON or was truncated:', content)
-            throw new Error('Failed to generate a valid Moment structure.')
+            console.error('[MomentService] Streamed response is malformed JSON:', accumulated)
+            yield { error: 'Failed to generate a valid Moment structure.' }
+            return
         }
 
-        // store even if the structure is invalid
-        await this.store(prompt, result)
+        // store the output
+        await this.store(prompt, moment)
 
-        if (!result.slug || !result.root) {
-            throw new Error('Invalid Moment structure.')
+        if (!moment.slug || !moment.root) {
+            yield { error: 'Invalid Moment structure.' }
+            return
         }
 
-        return result
+        yield { done: true, moment }
     }
 }

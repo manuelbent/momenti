@@ -7,6 +7,7 @@ const router = Router()
 router.post('/api/capture',
     (req, res, next) => ioc.generateMomentRequestValidator.validate(req, res, next),
     (req, res, next) => ioc.promptValidator.handle(req, res, next),
+    (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
     (req, res) => ioc.momentController.capture(req, res)
 )
 
