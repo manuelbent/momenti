@@ -45,11 +45,12 @@
 <style>
     /* Add a subtle hint that it's editable when hovered */
     [contenteditable="true"]:hover {
+        outline: 1px dashed #ccc;
         cursor: text;
     }
 
     /* Remove default focus outline if you prefer a custom look */
     [contenteditable="true"]:focus {
-        outline: 1px dashed #ccc;
+        outline: 2px dashed #ccc;
     }
 </style>
