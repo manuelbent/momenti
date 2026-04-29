@@ -24,8 +24,6 @@
         } catch (e) {
             console.error(e)
             error = 'Something went wrong. Please try again.'
-        } finally {
-            isGenerating = false
         }
     }
 

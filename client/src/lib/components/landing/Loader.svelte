@@ -12,16 +12,17 @@
     const dashOffset = $derived(CIRCUMFERENCE * (1 - progress))
 
     // --- Status messages -----------------------------------------------------
-    // Each milestone is checked in order; the last one that passes wins,
-    // so the label always reflects the most advanced state reached so far.
     const milestones: Array<{ test: (t: string) => boolean; label: string }> = [
-        { test: () => true, label: 'Imagining your moment…' },
-        { test: t => t.includes('"css"'), label: 'Crafting the palette…' },
-        { test: t => t.includes('"children"'), label: 'Composing the layout…' },
-        { test: t => (t.match(/"type":/g) ?? []).length > 3, label: 'Placing the elements…' },
-        { test: t => (t.match(/"html":/g) ?? []).length > 1, label: 'Writing the content…' },
-        { test: t => t.includes('"image"'), label: 'Adding visuals…' },
-        { test: t => t.length > 2200, label: 'Polishing the details…' },
+        { test: () => true, label: 'Imagining your moment...' },
+        { test: t => t.includes('"slug"'), label: 'Naming your moment...' },
+        { test: t => t.includes('"root"'), label: 'Defining the structure...' },
+        { test: t => t.includes('"css"'), label: 'Crafting the palette...' },
+        { test: t => t.includes('"children"'), label: 'Composing the layout...' },
+        { test: t => (t.match(/"type":/g) ?? []).length > 3, label: 'Placing the elements...' },
+        { test: t => (t.match(/"html":/g) ?? []).length > 1, label: 'Writing the content...' },
+        { test: t => t.includes('"image"'), label: 'Adding visuals...' },
+        { test: t => t.includes('"form"'), label: 'Building interactions...' },
+        { test: t => t.length > 2200, label: 'Polishing the details...' },
     ]
 
     function deriveStatus(text: string): string {
@@ -34,7 +35,7 @@
 
     // Throttle: each label must be visible for at least MIN_DURATION ms.
     const MIN_DURATION = 1100
-    let displayedStatus = $state('Imagining your moment…')
+    let displayedStatus = $state('Imagining your moment...')
     let lastUpdate = 0
     let pendingTimer: ReturnType<typeof setTimeout>|undefined
 
