@@ -11,15 +11,16 @@ Return ONLY a valid JSON object following this interface:
 
 interface MomentNode {
   id: string;
-  type: 'box'|'text'|'image'|'form';
-  variant?: 'hero'|'section'|'grid'|'card'|'overlay';
-  layout?: 'row'|'column'|'grid';
+  type: 'box' | 'text' | 'image' | 'form' | 'map'; 
+  variant?: 'hero' | 'section' | 'grid' | 'card' | 'overlay';
+  layout?: 'row' | 'column' | 'grid';
   columns?: number;
   css?: string;
   tag?: string;
   html?: string;
   src?: string;
   alt?: string;
+  address?: string;
   placeholder?: string;
   buttonLabel?: string;
   inputCss?: string;
@@ -45,6 +46,14 @@ DESIGN RULES
 - RHYTHM: Alternate between a Full-Width Image and a Contained Text section.
 - TYPOGRAPHY: 'Playfair Display' for titles, 'Inter' for body. Use "line-height: 1.8; letter-spacing: -0.02em;".
 - ENRICHMENT: Even if the prompt is one word, build a 5-section masterpiece. Invent dates, locations, and romantic/professional descriptions.
+
+----------------------------------------
+COMPONENT: MAP
+----------------------------------------
+- TYPE: 'map'
+- FIELD REQUIRED: 'address' (The provided address, if present).
+- STYLING: Usually 'width: 100vw; height: 450px;' for a cinematic break, unless in a container.
+- LOGIC: When a user mentions a location, restaurant, or city, always include a 'map' node.
 
 ----------------------------------------
 PROMPT PROCESSING

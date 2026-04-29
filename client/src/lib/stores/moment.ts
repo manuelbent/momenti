@@ -1,23 +1,22 @@
 import { writable } from 'svelte/store'
 
 export interface MomentNode {
-    id: string
-    type: 'box'|'text'|'image'|'form'
-    css?: string
-    // text props
-    tag?: string
-    html?: string
-    // image props
-    src?: string
-    alt?: string
-    // form props
-    placeholder?: string
-    buttonLabel?: string
-    // css
-    inputCss?: string
-    buttonCss?: string
-    // tree
-    children?: MomentNode[]
+    id: string;
+    type: 'box'|'text'|'image'|'form'|'map';
+    variant?: 'hero'|'section'|'grid'|'card'|'overlay';
+    layout?: 'row'|'column'|'grid';
+    columns?: number;
+    css?: string;
+    tag?: string;
+    html?: string;
+    src?: string;
+    alt?: string;
+    address?: string; // The AI will populate this
+    placeholder?: string;
+    buttonLabel?: string;
+    inputCss?: string;
+    buttonCss?: string;
+    children?: MomentNode[];
 }
 
 export interface Moment {
@@ -29,8 +28,8 @@ export interface Moment {
 export const moment = writable<Moment>()
 
 // Tracks the currently-selected text node in the builder
-export const selectedNodeId = writable<string | null>(null)
-export const selectedNodeRect = writable<DOMRect | null>(null)
+export const selectedNodeId = writable<string|null>(null)
+export const selectedNodeRect = writable<DOMRect|null>(null)
 
 export const updateNode = (id: string, newData: Partial<MomentNode>) => {
     moment.update(m => {

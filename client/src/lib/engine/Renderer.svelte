@@ -4,6 +4,7 @@
     import BaseText from '../components/primitives/BaseText.svelte'
     import BaseImage from '../components/primitives/BaseImage.svelte'
     import FormElement from '../components/primitives/FormElement.svelte'
+    import BaseMap from '../components/primitives/BaseMap.svelte'
 
     export let node: MomentNode
 </script>
@@ -31,4 +32,6 @@
             placeholder={node.placeholder ?? 'Your name'}
             buttonLabel={node.buttonLabel ?? 'RSVP'}
     />
+{:else if node.type === 'map'}
+    <BaseMap address={node.address} css={node.css} />
 {/if}
