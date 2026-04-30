@@ -2,6 +2,7 @@
     import { moment } from '../lib/stores/moment'
     import ViewToggle from '../lib/components/studio/ViewToggle.svelte'
     import DeviceView from '../lib/components/studio/DeviceView.svelte'
+    import Sidebar from '../lib/components/studio/sidebar/Sidebar.svelte'
 
     let view: 'desktop'|'mobile' = 'desktop'
 </script>
@@ -29,9 +30,8 @@
         </div>
 
         <!-- right sidebar -->
-        <aside class="w-92 border-l border-[#0d0d0d]/6 h-full min-h-screen">
-            sidebar
+        <aside class="w-92 border-l border-[#0d0d0d]/6 shrink-0 overflow-y-auto">
+            <Sidebar />
         </aside>
-
     </main>
 </div>

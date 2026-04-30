@@ -37,9 +37,9 @@
         bind:this={element}
         style={css}
         contenteditable={isEditable}
-        on:focus={handleFocus}
-        on:input={handleInput}
-        on:blur={() => {/* Optional: save to backend here */}}
+        onfocus={handleFocus}
+        oninput={handleInput}
+        onblur={() => {/* Optional: save to backend here */}}
 />
 
 <style>

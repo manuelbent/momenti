@@ -76,7 +76,7 @@
             <input
                     type="color"
                     value={currentColor}
-                    on:input={handleColorInput}
+                    oninput={handleColorInput}
             />
         </label>
     </div>
