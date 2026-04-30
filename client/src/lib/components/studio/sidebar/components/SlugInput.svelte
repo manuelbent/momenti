@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let slug: string = ''
+    import { moment } from '../../../../stores/moment'
 </script>
 
 <div class="flex flex-col gap-1.5">
@@ -7,12 +7,13 @@
         Slug
     </span>
 
-    <label for="slug" class="flex items-center border border-[#0d0d0d]/10 rounded-md px-3 py-2 bg-white focus-within:border-[#0d0d0d]/30 transition-colors cursor-text">
+    <label for="slug"
+           class="flex items-center border border-[#0d0d0d]/10 rounded-md px-3 py-2 bg-white focus-within:border-[#0d0d0d]/30 transition-colors cursor-text">
         <span class="text-[12px] text-[#0d0d0d]/25 shrink-0">https://</span>
         <input
                 id="slug"
                 type="text"
-                value={slug}
+                value={$moment?.slug ?? '<your-custom-input>'}
                 oninput={() => {}}
                 placeholder="your-slug"
                 class="flex-1 text-[12px] text-[#0d0d0d] bg-transparent outline-none placeholder:text-[#0d0d0d]/25"

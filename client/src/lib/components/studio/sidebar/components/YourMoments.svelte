@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte'
+    import { moment } from '../../../../stores/moment'
     import MomentItem from './MomentItem.svelte'
 
     let moments: Moment[] = []
@@ -8,6 +9,12 @@
         const res = await fetch('http://localhost:3000/api/moments')
         if (res.ok) {
             moments = await res.json()
+        }
+
+        // if the store has no moment defined (new session)
+        // use the first one
+        if (!$moment) {
+            moment.set(moments[0])
         }
     })
 </script>
