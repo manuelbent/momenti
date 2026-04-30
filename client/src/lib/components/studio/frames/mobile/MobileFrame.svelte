@@ -8,7 +8,7 @@
 </script>
 
 <div class="justify-center overflow-auto">
-    <div class="relative w-72 shrink-0 rounded-[44px] overflow-hidden border-2 border-[#dfdbd7] flex flex-col">
+    <div class="relative w-72 shrink-0 rounded-[44px] overflow-hidden border border-[#dfdbd7] flex flex-col">
 
         <StatusBar />
 
