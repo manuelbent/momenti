@@ -10,7 +10,10 @@
         const res = await fetch(`http://localhost:3000/api/moments/${$moment.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: $moment.content }),
+            body: JSON.stringify({
+                slug: $moment.slug,
+                content: $moment.content
+            }),
         })
 
         if (res.ok) {

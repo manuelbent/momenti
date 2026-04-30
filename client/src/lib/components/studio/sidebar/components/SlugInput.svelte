@@ -1,36 +1,18 @@
 <script lang="ts">
     import { moment } from '../../../../stores/moment'
-    import { showToast } from '../../../../stores/toast'
 
     let slug = $moment?.slug ?? ''
 
-    $: if ($moment?.slug) slug = $moment.slug
+    $: if ($moment?.slug) {
+        slug = $moment.slug
+    }
 
-    async function onblur() {
-        if (!$moment) {
+    function onkeyup() {
+        if (!$moment || slug === $moment.slug) {
             return
         }
 
-        if (slug === $moment.slug) {
-            return
-        }
-
-        const res = await fetch(`http://localhost:3000/api/moments/${$moment.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ slug }),
-        })
-
-        if (res.ok) {
-            const updatedMoment = await res.json()
-            moment.set(updatedMoment)
-            showToast('Slug updated.')
-        } else {
-            // revert on error
-            slug = $moment.slug
-            console.log(res)
-            showToast('Something went wrong.', 'error')
-        }
+        moment.update(m => ({ ...m, slug }))
     }
 </script>
 
@@ -46,7 +28,7 @@
                 id="slug"
                 type="text"
                 bind:value={slug}
-                {onblur}
+                {onkeyup}
                 placeholder="your-slug"
                 class="flex-1 text-[12px] text-[#0d0d0d] bg-transparent outline-none placeholder:text-[#0d0d0d]/25"
         />
