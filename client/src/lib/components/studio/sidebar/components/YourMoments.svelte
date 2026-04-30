@@ -1,7 +1,15 @@
 <script lang="ts">
+    import { onMount } from 'svelte'
     import MomentItem from './MomentItem.svelte'
 
-    export let moments: Moment[] = []
+    let moments: Moment[] = []
+
+    onMount(async () => {
+        const res = await fetch('http://localhost:3000/api/moments')
+        if (res.ok) {
+            moments = await res.json()
+        }
+    })
 </script>
 
 <div class="flex flex-col gap-1">
