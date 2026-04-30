@@ -1,5 +1,6 @@
 <script lang="ts">
     import { moment } from '../../../../stores/moment'
+    import { showToast } from '../../../../stores/toast'
 
     async function handleSave() {
         if (!$moment) {
@@ -15,6 +16,10 @@
         if (res.ok) {
             const updated: Moment = await res.json()
             moment.set(updated)
+            showToast('Moment updated.')
+        } else {
+            console.log(res)
+            showToast('Something went wrong.', 'error')
         }
     }
 </script>

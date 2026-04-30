@@ -1,5 +1,6 @@
 <script lang="ts">
     import { moment } from '../../../../stores/moment'
+    import { showToast } from '../../../../stores/toast'
 
     let slug = $moment?.slug ?? ''
 
@@ -23,10 +24,12 @@
         if (res.ok) {
             const updatedMoment = await res.json()
             moment.set(updatedMoment)
+            showToast('Slug updated.')
         } else {
             // revert on error
             slug = $moment.slug
             console.log(res)
+            showToast('Something went wrong.', 'error')
         }
     }
 </script>
