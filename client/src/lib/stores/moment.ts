@@ -3,9 +3,16 @@ import { writable } from 'svelte/store'
 // AI-generated moment, stored by the back end and rendered by the Studio
 export const moment = writable<Moment>()
 
-// Tracks the currently-selected text node in the builder
-export const selectedNodeId = writable<string|null>(null)
-export const selectedNodeRect = writable<DOMRect|null>(null)
+// list of moments (sidebar)
+export const moments = writable<Moment[]>([])
+
+// keep the moments list in sync whenever the active moment changes
+moment.subscribe(updated => {
+    if (!updated) return
+    moments.update(list =>
+        list.map(m => m.id === updated.id ? updated : m)
+    )
+})
 
 export const updateNode = (id: string, newData: Partial<MomentNode>) => {
     moment.update(m => {
@@ -21,3 +28,7 @@ export const updateNode = (id: string, newData: Partial<MomentNode>) => {
         return { ...m, root: updateRecursive(m.content.root) }
     })
 }
+
+// tracks the currently-selected text node in the builder
+export const selectedNodeId = writable<string|null>(null)
+export const selectedNodeRect = writable<DOMRect|null>(null)
