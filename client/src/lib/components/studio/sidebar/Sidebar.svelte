@@ -9,7 +9,7 @@
     import PromptViewer from './components/PromptViewer.svelte'
 </script>
 
-<div class="flex flex-col h-full p-6 gap-6 font-sans">
+<div class="flex flex-col h-full overflow-y-auto p-6 gap-6 font-sans">
 
     <PromptCounter used={$moments.length}/>
 
