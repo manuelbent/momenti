@@ -1,11 +1,13 @@
 <script lang="ts">
+    import { moment } from '../lib/stores/moment'
     import ViewToggle from '../lib/components/studio/ViewToggle.svelte'
+    import DeviceView from '../lib/components/studio/DeviceView.svelte'
 
     let view: 'desktop'|'mobile' = 'desktop'
 </script>
 
 <!-- landing layout -->
-<div class="min-h-screen text-[#0d0d0d] bg-[#f0ede8] font-serif flex flex-col">
+<div class="h-screen text-[#0d0d0d] bg-[#f0ede8] font-serif flex flex-col overflow-hidden">
 
     <!-- header -->
     <header class="flex items-center px-6 md:px-10 py-7 border-b border-[#0d0d0d]/6">
@@ -13,16 +15,17 @@
     </header>
 
     <!-- content -->
-    <main class="flex flex-1">
+    <main class="flex flex-1 min-h-0">
 
         <!-- preview -->
-        <div class="flex-1 bg-[#f0ede8] flex flex-col items-center">
-
+        <div class="flex-1 min-h-0 bg-[#f0ede8] flex flex-col overflow-hidden">
             <!-- toggle -->
-            <div class="mt-6">
+            <div class="mt-6 flex justify-center shrink-0">
                 <ViewToggle bind:view/>
             </div>
 
+            <!-- device view -->
+            <DeviceView {view} moment={$moment}/>
         </div>
 
         <!-- right sidebar -->
