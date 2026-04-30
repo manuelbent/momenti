@@ -21,6 +21,7 @@ export interface MomentNode {
 
 export interface Moment {
     slug: string
+    prompt: string
     root: MomentNode
 }
 
