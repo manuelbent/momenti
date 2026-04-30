@@ -1,8 +1,7 @@
 <script lang="ts">
-    import type { Moment } from '../../../../stores/moment'
     import MomentItem from './MomentItem.svelte'
 
-    export let moments: Pick<Moment, 'slug'>[] = []
+    export let moments: Moment[] = []
 </script>
 
 <div class="flex flex-col gap-1">
@@ -14,7 +13,7 @@
             No moments yet.
         </p>
     {:else}
-        {#each moments as m (m.slug)}
+        {#each moments as m}
             <MomentItem moment={m} />
         {/each}
     {/if}

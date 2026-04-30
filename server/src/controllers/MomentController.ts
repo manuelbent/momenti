@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import MomentService from '../services/MomentService'
+import Moment from '../models/Moment'
 
 /**
  * @class MomentController
@@ -10,6 +11,12 @@ export default class MomentController {
      * @param {MomentService} momentService
      */
     constructor(private momentService: MomentService) {}
+
+    // temp
+    public async findAll(_: Request, res: Response) {
+        const moments = await this.momentService.getAll()
+        res.send(moments)
+    }
 
     /**
      * Server-Sent Events endpoint: streams moment generation to the client.

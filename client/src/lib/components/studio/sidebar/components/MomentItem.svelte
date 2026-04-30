@@ -1,14 +1,13 @@
 <script lang="ts">
-    import type { Moment } from '../../../../stores/moment'
     import { moment as activeStore } from '../../../../stores/moment'
 
-    export let moment: Pick<Moment, 'slug'>
+    export let moment: Moment
 
     $: isActive = $activeStore?.slug === moment.slug
 </script>
 
-<button
-    class="group w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left transition-colors duration-150 cursor-pointer
+<button onclick={() => activeStore.set(moment)}
+        class="group w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left transition-colors duration-150 cursor-pointer
         {isActive ? 'bg-[#0d0d0d]/6' : 'hover:bg-[#0d0d0d]/4'}"
 >
     <!-- dot -->
@@ -20,4 +19,3 @@
         {moment.slug}
     </span>
 </button>
-

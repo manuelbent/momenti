@@ -4,4 +4,6 @@ import Moment from '../models/Moment'
 /**
  * @interface MomentRepositoryInterface
  */
-export default interface MomentRepositoryInterface extends RepositoryInterface<Moment> {}
+export default interface MomentRepositoryInterface extends RepositoryInterface<Moment> {
+    findAll(): Promise<Moment[]>
+}

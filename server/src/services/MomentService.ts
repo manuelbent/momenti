@@ -28,6 +28,11 @@ export default class MomentService {
         return this.momentRepository.create(data)
     }
 
+    // temp function
+    public async getAll(): Promise<Moment[]> {
+        return this.momentRepository.findAll()
+    }
+
     /**
      * Stream moment generation, yielding raw text chunks as they arrive from OpenAI.
      * Resolves and stores the full Moment once streaming is complete.

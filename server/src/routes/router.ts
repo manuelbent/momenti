@@ -11,6 +11,11 @@ router.post('/api/capture',
     (req, res) => ioc.momentController.capture(req, res)
 )
 
+// temp
+router.get('/api/moments',
+    (req, res) => ioc.momentController.findAll(req, res)
+)
+
 // healthcheck
 router.get('/healthcheck', ioc.systemController.healthcheck)
 
