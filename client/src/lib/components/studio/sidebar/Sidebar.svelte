@@ -2,6 +2,7 @@
     import SlugInput from './components/SlugInput.svelte'
     import PromptCounter from './components/PromptCounter.svelte'
     import RegenerateButton from './components/RegenerateButton.svelte'
+    import PublishButton from './components/PublishButton.svelte'
 </script>
 
 <div class="flex flex-col h-full p-6 gap-6 font-sans">
@@ -14,11 +15,9 @@
 
     <hr class="border-[#0d0d0d]/6 -mx-6" />
 
-    <!-- re-generate button -->
     <RegenerateButton />
 
-    <!-- publish/unpublish button -->
-
+    <PublishButton />
 
 </div>
 
