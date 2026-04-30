@@ -1,6 +1,6 @@
 import OpenAI from 'openai'
-import type { Moment } from '../types/Moment'
 import { SYSTEM_PROMPT } from '../config/constants'
+import Moment from '../models/Moment'
 import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 
 /**
@@ -18,6 +18,14 @@ export default class MomentService {
      */
     constructor(private momentRepository: MomentRepositoryInterface) {
         this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    }
+
+    /**
+     * Persist moment to DB.
+     * @param {Partial<RawMoment>} data
+     */
+    public async store(data: Partial<Moment>): Promise<Moment> {
+        return this.momentRepository.create(data)
     }
 
     /**
@@ -52,32 +60,26 @@ export default class MomentService {
             }
         }
 
-        let moment: Moment
+        let rawMoment: RawMoment
         try {
-            moment = JSON.parse(accumulated)
+            rawMoment = JSON.parse(accumulated)
         } catch (e) {
             console.error('[MomentService] Streamed response is malformed JSON:', accumulated)
             yield { error: 'Failed to generate a valid Moment structure.' }
             return
         }
 
-        if (!moment.slug || !moment.root) {
+        if (!rawMoment.slug || !rawMoment.root) {
+            console.error('[MomentService] Structure is invalid:', rawMoment)
             yield { error: 'Invalid Moment structure.' }
             return
         }
 
-        // persist to database
-        // move to dedicated function todo
-        try {
-            await this.momentRepository.create({
-                // user_id ?
-                slug: moment.slug,
-                prompt,
-                content: moment
-            })
-        } catch (err) {
-            console.error('[MomentService] Failed to store moment', err)
-        }
+        const moment = await this.store({
+            slug: rawMoment.slug,
+            prompt,
+            content: rawMoment
+        })
 
         yield {
             done: true,

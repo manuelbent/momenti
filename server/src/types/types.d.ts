@@ -1,4 +1,4 @@
-export interface MomentNode {
+interface MomentNode {
     id: string
     type: 'box'|'text'|'image'|'form'
     css?: string
@@ -13,7 +13,7 @@ export interface MomentNode {
     children?: MomentNode[]
 }
 
-export interface Moment {
+interface RawMoment {
     slug: string
     root: MomentNode
 }
