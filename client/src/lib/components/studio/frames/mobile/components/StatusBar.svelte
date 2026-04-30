@@ -6,7 +6,7 @@
     import Battery from './Battery.svelte'
 </script>
 
-<div class="relative flex items-center justify-between px-6 pt-3 pb-1 bg-white shrink-0">
+<div class="relative flex items-center justify-between px-6 pt-3 pb-2 bg-white shrink-0">
     <div class="-mt-1 ml-2">
         <Time/>
     </div>

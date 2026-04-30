@@ -21,7 +21,7 @@
         <!-- preview -->
         <div class="flex-1 min-h-0 bg-[#f0ede8] flex flex-col overflow-hidden">
             <!-- toggle -->
-            <div class="mt-6 flex justify-center shrink-0">
+            <div class="mt-8 flex justify-center shrink-0">
                 <ViewToggle bind:view/>
             </div>
 

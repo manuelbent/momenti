@@ -76,7 +76,7 @@ export default class MomentService {
         }
 
         const moment = await this.store({
-            slug: rawMoment.slug,
+            slug: rawMoment.slug + new Date().getTime(), // temp
             prompt,
             content: rawMoment
         })
