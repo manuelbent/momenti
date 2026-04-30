@@ -1,5 +1,34 @@
 <script lang="ts">
     import { moment } from '../../../../stores/moment'
+
+    let slug = $moment?.slug ?? ''
+
+    $: if ($moment?.slug) slug = $moment.slug
+
+    async function onblur() {
+        if (!$moment) {
+            return
+        }
+
+        if (slug === $moment.slug) {
+            return
+        }
+
+        const res = await fetch(`http://localhost:3000/api/moments/${$moment.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug }),
+        })
+
+        if (res.ok) {
+            const updatedMoment = await res.json()
+            moment.set(updatedMoment)
+        } else {
+            // revert on error
+            slug = $moment.slug
+            console.log(res)
+        }
+    }
 </script>
 
 <div class="flex flex-col gap-1.5">
@@ -13,8 +42,8 @@
         <input
                 id="slug"
                 type="text"
-                value={$moment?.slug ?? '<your-custom-input>'}
-                oninput={() => {}}
+                bind:value={slug}
+                {onblur}
                 placeholder="your-slug"
                 class="flex-1 text-[12px] text-[#0d0d0d] bg-transparent outline-none placeholder:text-[#0d0d0d]/25"
         />
