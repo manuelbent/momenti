@@ -2,6 +2,7 @@
     import SlugInput from './components/SlugInput.svelte'
     import PromptCounter from './components/PromptCounter.svelte'
     import RegenerateButton from './components/RegenerateButton.svelte'
+    import SaveButton from './components/SaveButton.svelte'
     import PublishButton from './components/PublishButton.svelte'
     import YourMoments from './components/YourMoments.svelte'
     import PromptViewer from './components/PromptViewer.svelte'
@@ -26,6 +27,8 @@
     <div class="flex flex-col gap-3">
         <RegenerateButton/>
 
+        <SaveButton/>
+
         <PublishButton/>
     </div>
 
@@ -34,5 +37,3 @@
     <!-- your moments -->
     <YourMoments/>
 </div>
-
-
