@@ -3,7 +3,7 @@ import { writable } from 'svelte/store'
 // AI-generated moment, stored by the back end and rendered by the Studio
 export const moment = writable<Moment>()
 
-// list of moments (sidebar)
+// full list of moments (sidebar)
 export const moments = writable<Moment[]>([])
 
 // keep the moments list in sync whenever the active moment changes
@@ -25,7 +25,7 @@ export const updateNode = (id: string, newData: Partial<MomentNode>) => {
             }
             return node
         }
-        return { ...m, root: updateRecursive(m.content.root) }
+        return { ...m, content: { ...m.content, root: updateRecursive(m.content.root) } }
     })
 }
 
