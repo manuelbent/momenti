@@ -11,6 +11,11 @@ router.post('/api/capture',
     (req, res) => ioc.momentController.capture(req, res)
 )
 
+router.put('/api/moments/:id',
+    (req, res, next) => ioc.updateMomentRequestValidator.validate(req, res, next),
+    (req, res) => ioc.momentController.update(req, res)
+)
+
 // temp
 router.get('/api/moments',
     (req, res) => ioc.momentController.findAll(req, res)

@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import MomentService from '../services/MomentService'
-import Moment from '../models/Moment'
 
 /**
  * @class MomentController
@@ -19,12 +18,26 @@ export default class MomentController {
     }
 
     /**
+     * Update the moment.
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public async update(req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id)
+            const moment = await this.momentService.update(id, req.body)
+            res.json(moment)
+        } catch (err) {
+            console.error('[MomentController] update error:', err)
+            res.status(404).json({ error: 'Moment not found.' })
+        }
+    }
+
+    /**
      * Server-Sent Events endpoint: streams moment generation to the client.
-     * Events:
-     *   - `chunk`  – partial text delta from the model
-     *   - `done`   – final Moment JSON object
-     *   - `error`  – error message string
-     *
+     * chunk: partial text delta from the model
+     * done: final Moment JSON object
+     * error: error message string
      * @param {Request} req
      * @param {Response} res
      */

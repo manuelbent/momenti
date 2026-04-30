@@ -28,6 +28,22 @@ export default class MomentService {
         return this.momentRepository.create(data)
     }
 
+    /**
+     * Update an existing moment by id.
+     * @param {number} id
+     * @param {Partial<Moment>} data
+     */
+    public async update(id: number, data: Partial<Moment>): Promise<Moment> {
+        await this.momentRepository.update(id, data)
+        const moment = await this.momentRepository.findById(id)
+
+        if (!moment) {
+            throw new Error(`Moment ${id} not found after update`)
+        }
+
+        return moment
+    }
+
     // temp function
     public async getAll(): Promise<Moment[]> {
         return this.momentRepository.findAll()
