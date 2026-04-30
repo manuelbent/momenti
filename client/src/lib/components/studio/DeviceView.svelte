@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { Moment } from '../../stores/moment'
     import DesktopFrame from './frames/desktop/DesktopFrame.svelte'
     import MobileFrame from './frames/mobile/MobileFrame.svelte'
 

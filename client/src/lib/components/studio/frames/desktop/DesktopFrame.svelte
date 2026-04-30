@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { Moment } from '../../../../stores/moment'
     import Renderer from '../../../../engine/Renderer.svelte'
     import BrowserChrome from './components/BrowserChrome.svelte'
 
@@ -13,7 +12,7 @@
     <!-- content -->
     <div class="flex-1 min-h-0 bg-white overflow-y-auto">
         {#if moment}
-            <Renderer node={moment.root} />
+            <Renderer node={moment.content.root} />
         {:else}
             <div class="flex items-center justify-center h-64 text-[#0d0d0d]/20 text-sm tracking-wide">
                 no moment yet

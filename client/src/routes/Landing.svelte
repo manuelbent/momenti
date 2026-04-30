@@ -76,7 +76,7 @@
             case 'done':
                 moment.set(data)
                 isLeaving = true
-                setTimeout(() => push('/preview'), 450)
+                setTimeout(() => push('/studio'), 450)
                 break
 
             case 'error':

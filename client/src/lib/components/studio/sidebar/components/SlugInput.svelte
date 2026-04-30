@@ -1,10 +1,5 @@
 <script lang="ts">
-    import { type Moment, moment } from '../../../../stores/moment'
-
-    function updateSlug(e: Event) {
-        const val = (e.target as HTMLInputElement).value
-        moment.update((m: Moment) => m ? { ...m, slug: val } : m)
-    }
+    export let slug: string = ''
 </script>
 
 <div class="flex flex-col gap-1.5">
@@ -17,8 +12,8 @@
         <input
                 id="slug"
                 type="text"
-                value={$moment?.slug ?? ''}
-                oninput={updateSlug}
+                value={slug}
+                oninput={() => {}}
                 placeholder="your-slug"
                 class="flex-1 text-[12px] text-[#0d0d0d] bg-transparent outline-none placeholder:text-[#0d0d0d]/25"
         />

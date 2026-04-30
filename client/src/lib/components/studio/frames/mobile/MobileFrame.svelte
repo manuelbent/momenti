@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { Moment } from '../../../../stores/moment'
     import Renderer from '../../../../engine/Renderer.svelte'
     import StatusBar from './components/StatusBar.svelte'
     import HomeIndicator from './components/HomeIndicator.svelte'
@@ -15,7 +14,7 @@
         <!-- scrollable content -->
         <div class="overflow-y-auto min-h-126 bg-white">
             {#if moment}
-                <Renderer node={moment.root} />
+                <Renderer node={moment.content.root} />
             {:else}
                 <div class="flex items-center justify-center h-64 text-[#0d0d0d]/20 text-sm tracking-wide">
                     no moment yet

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { MomentNode } from '../stores/moment'
     import BaseBox from '../components/primitives/BaseBox.svelte'
     import BaseText from '../components/primitives/BaseText.svelte'
     import BaseImage from '../components/primitives/BaseImage.svelte'

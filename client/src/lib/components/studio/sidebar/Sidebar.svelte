@@ -5,6 +5,8 @@
     import PublishButton from './components/PublishButton.svelte'
     import YourMoments from './components/YourMoments.svelte'
     import PromptViewer from './components/PromptViewer.svelte'
+
+    export let moment: Moment|undefined = undefined
 </script>
 
 <div class="flex flex-col h-full p-6 gap-6 font-sans">
@@ -14,9 +16,9 @@
     <hr class="border-[#0d0d0d]/6 -mx-6" />
 
     <div class="flex flex-col gap-3">
-        <SlugInput/>
+        <SlugInput slug={moment?.slug}/>
 
-        <PromptViewer />
+        <PromptViewer prompt={moment?.prompt}/>
     </div>
 
     <hr class="border-[#0d0d0d]/6 -mx-6" />

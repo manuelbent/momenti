@@ -1,7 +1,5 @@
 <script lang="ts">
-    import { moment } from '../../../../stores/moment'
-
-    $: prompt = $moment?.prompt ?? ''
+    export let prompt: string = ''
 </script>
 
 <div class="flex flex-col gap-1.5">

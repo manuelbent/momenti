@@ -31,7 +31,7 @@
 
         <!-- right sidebar -->
         <aside class="w-92 border-l border-[#0d0d0d]/6 shrink-0 overflow-y-auto">
-            <Sidebar />
+            <Sidebar moment={$moment} />
         </aside>
     </main>
 </div>
