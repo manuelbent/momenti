@@ -6,14 +6,17 @@
     import Loader from '../lib/components/landing/Loader.svelte'
 
     let prompt = $state('')
-    let isGenerating = $state(false)
+    let isCapturing = $state(false)
     let isLeaving = $state(false)
     let error = $state('')
     let streamText = $state('')
 
-    async function generateEvent() {
-        if (!prompt.trim()) return
-        isGenerating = true
+    async function captureMoment() {
+        if (!prompt.trim()) {
+            return
+        }
+
+        isCapturing = true
         isLeaving = false
         error = ''
         streamText = ''
@@ -116,7 +119,7 @@
             </p>
 
             <div class="grid min-h-57.5">
-                {#if isGenerating}
+                {#if isCapturing}
                     <!-- loader replaces the form card -->
                     <div class="[grid-area:1/1] h-full flex items-center justify-center" transition:fade={{ duration: 400 }}>
                         <Loader {streamText}/>
@@ -130,7 +133,7 @@
                                 placeholder="e.g. A bohemian wedding in the woods, May 2026. Earthy tones, lanterns, wildflowers…"
                                 bind:value={prompt}
                                 rows={4}
-                                onkeydown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) generateEvent() }}
+                                onkeydown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) captureMoment() }}
                         ></textarea>
 
                             {#if error}
@@ -138,13 +141,13 @@
                             {/if}
 
                             <div class="flex items-center justify-between py-2.5 pl-5.5 pr-3.5 border-t border-white/6">
-                                <span class="font-sans text-[11px] text-[#3a3a3a] tracking-[0.04em]">⌘↵ to generate</span>
+                                <span class="font-sans text-[11px] text-[#3a3a3a] tracking-[0.04em]">⌘↵ to capture</span>
                                 <button
                                         class="flex items-center gap-2 bg-[#f0ede8] text-[#0d0d0d] rounded-[10px] py-3 px-5.5 font-sans text-[13px] font-semibold tracking-[0.04em] transition-[opacity,transform] duration-150 disabled:opacity-[0.22] disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:opacity-[0.88] enabled:active:scale-[0.97]"
-                                        onclick={generateEvent}
+                                        onclick={captureMoment}
                                         disabled={!prompt.trim()}
                                 >
-                                    Generate
+                                    Capture
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                                         <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"
                                               stroke-linecap="round" stroke-linejoin="round"/>

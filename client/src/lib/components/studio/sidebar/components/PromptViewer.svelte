@@ -7,7 +7,7 @@
 </script>
 
 <div class="flex flex-col gap-1.5">
-    <span class="text-[11px] tracking-[0.12em] text-[#0d0d0d]/40 font-sans">Source</span>
+    <span class="text-[11px] tracking-[0.12em] text-[#0d0d0d]/40 font-sans">Message</span>
     <textarea
             readonly
             bind:value={prompt}

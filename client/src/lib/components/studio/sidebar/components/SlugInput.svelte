@@ -17,9 +17,7 @@
 </script>
 
 <div class="flex flex-col gap-1.5">
-    <span class="text-[11px] tracking-[0.12em] text-[#0d0d0d]/40">
-        Slug
-    </span>
+    <span class="text-[11px] tracking-[0.12em] text-[#0d0d0d]/40">URL</span>
 
     <label for="slug"
            class="flex items-center border border-[#0d0d0d]/10 rounded-md px-3 py-2 bg-white focus-within:border-[#0d0d0d]/30 transition-colors cursor-text">

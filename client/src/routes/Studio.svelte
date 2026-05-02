@@ -2,6 +2,7 @@
     import ViewToggle from '../lib/components/studio/ViewToggle.svelte'
     import DeviceView from '../lib/components/studio/DeviceView.svelte'
     import Sidebar from '../lib/components/studio/sidebar/Sidebar.svelte'
+    import Toast from '../lib/components/ui/Toast.svelte'
 
     let view: 'desktop'|'mobile' = 'desktop'
 </script>
@@ -34,3 +35,5 @@
         </aside>
     </main>
 </div>
+
+<Toast/>
