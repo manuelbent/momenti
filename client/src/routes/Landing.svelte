@@ -67,7 +67,7 @@
 
     function handleMessage(message: string) {
         const event = extract(message, /^event:\s*(\w+)/m)
-        const data  = extract(message, /^data:\s*(.+)/ms, JSON.parse)
+        const data = extract(message, /^data:\s*(.+)/ms, JSON.parse)
 
         if (!event || !data) return
 
@@ -87,7 +87,7 @@
         }
     }
 
-    function extract<T>(text: string, regex: RegExp, transform: (v: string) => T = (v) => v as unknown as T): T | null {
+    function extract<T>(text: string, regex: RegExp, transform: (v: string) => T = (v) => v as unknown as T): T|null {
         const match = text.match(regex)
         return match ? transform(match[1]) : null
     }
@@ -95,8 +95,8 @@
 
 <!-- landing layout -->
 <div
-    class="min-h-screen bg-[#0d0d0d] text-[#f0ede8] font-serif flex flex-col transition-opacity duration-400"
-    class:opacity-0={isLeaving}
+        class="min-h-screen bg-[#0d0d0d] text-[#f0ede8] font-serif flex flex-col transition-opacity duration-400"
+        class:opacity-0={isLeaving}
 >
 
     <!-- header -->
@@ -121,7 +121,8 @@
             <div class="grid min-h-57.5">
                 {#if isCapturing}
                     <!-- loader replaces the form card -->
-                    <div class="[grid-area:1/1] h-full flex items-center justify-center" transition:fade={{ duration: 400 }}>
+                    <div class="[grid-area:1/1] h-full flex items-center justify-center"
+                         transition:fade={{ duration: 400 }}>
                         <Loader {streamText}/>
                     </div>
                 {:else}
@@ -142,17 +143,10 @@
 
                             <div class="flex items-center justify-between py-2.5 pl-5.5 pr-3.5 border-t border-white/6">
                                 <span class="font-sans text-[11px] text-[#3a3a3a] tracking-[0.04em]">⌘↵ to capture</span>
-                                <button
-                                        class="flex items-center gap-2 bg-[#f0ede8] text-[#0d0d0d] rounded-[10px] py-3 px-5.5 font-sans text-[13px] font-semibold tracking-[0.04em] transition-[opacity,transform] duration-150 disabled:opacity-[0.22] disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:opacity-[0.88] enabled:active:scale-[0.97]"
+                                <button class="flex items-center gap-2 bg-[#f0ede8] text-[#0d0d0d] rounded-[10px] py-3 px-5.5 font-sans text-[13px] font-semibold tracking-[0.04em] transition-[opacity,transform] duration-150 disabled:opacity-[0.22] disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:opacity-[0.88] enabled:active:scale-[0.97]"
                                         onclick={captureMoment}
                                         disabled={!prompt.trim()}
-                                >
-                                    Capture
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"
-                                              stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </button>
+                                >Capture</button>
                             </div>
                         </div>
                     </div>
