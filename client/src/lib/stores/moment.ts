@@ -25,10 +25,18 @@ export const moments = writable<Moment[]>([])
 
 // keep the moments list in sync whenever the active moment changes
 moment.subscribe(updated => {
-    if (!updated) return
-    moments.update(list =>
-        list.map(m => m.id === updated.id ? updated : m)
-    )
+    if (!updated) {
+        return
+    }
+
+    moments.update(list => {
+        const exists = list.some(m => m.id === updated.id)
+        if (exists) {
+            return list.map(m => m.id === updated.id ? updated : m)
+        }
+        // new moment (e.g. after re-capture) — prepend to keep recency order
+        return [updated, ...list]
+    })
 })
 
 export const updateNode = (id: string, newData: Partial<MomentNode>) => {

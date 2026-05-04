@@ -6,6 +6,6 @@ export default class MomentRepository extends BaseRepository<Moment> implements 
     constructor() { super(Moment) }
 
     async findAll(): Promise<Moment[]> {
-        return this.model.findAll()
+        return this.model.findAll({ order: [['created_at', 'DESC']] })
     }
 }

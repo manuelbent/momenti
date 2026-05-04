@@ -10,9 +10,9 @@
         }
 
         // if the store has no moment defined (new session)
-        // use the latest one
+        // use the first (most recent) one
         if (!$moment) {
-            moment.set($moments[$moments.length - 1])
+            moment.set($moments[0])
         }
     })
 </script>
