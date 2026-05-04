@@ -1,0 +1,15 @@
+<script lang="ts">
+    import { fade } from 'svelte/transition'
+    import Loader from '../landing/Loader.svelte'
+
+    export let streamText: string = ''
+</script>
+
+<div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-[#f0ede8]/90 backdrop-blur-sm"
+    transition:fade={{ duration: 300 }}
+    aria-live="polite"
+    aria-label="Re-capturing your moment"
+>
+    <Loader {streamText} theme="light" />
+</div>
