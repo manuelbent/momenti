@@ -1,12 +1,13 @@
 <script lang="ts">
     import { fade } from 'svelte/transition'
-    import { push } from 'svelte-spa-router'
     import { moment } from '../lib/stores/moment'
     import Renderer from '../lib/engine/Renderer.svelte'
 
-    // If the user lands here without generating, redirect home
-    if (!$moment) {
-        push('/')
+    try {
+        const m: Moment = JSON.parse(localStorage.getItem('moment__preview')!)
+        moment.set(m)
+    } catch (err) {
+        console.error('[Preview] Could not parse moment for preview.', err)
     }
 </script>
 

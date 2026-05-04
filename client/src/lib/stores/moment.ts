@@ -1,7 +1,24 @@
 import { writable } from 'svelte/store'
 
+// overwrite writeable to add local storage functionality
+const useMomentStore = () => {
+    const { update, subscribe, set } = writable<Moment>()
+    return {
+        update,
+        subscribe,
+        set: (moment: Moment)=> {
+            try {
+                localStorage.setItem('moment__preview', JSON.stringify(moment))
+            } catch (err) {
+                console.error('[Store] Could not store moment for preview.')
+            }
+            set(moment)
+        }
+    }
+}
+
 // AI-generated moment, stored by the back end and rendered by the Studio
-export const moment = writable<Moment>()
+export const moment = useMomentStore()
 
 // full list of moments (sidebar)
 export const moments = writable<Moment[]>([])
