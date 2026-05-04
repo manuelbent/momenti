@@ -6,12 +6,21 @@
     let value = $state('')
     let error = $state('')
 
-    function submit() {
-        // get the inserted value
-        // validate the key (API request)
-        // if valid, store in local storage
-            // trigger onUnlock()
-        // if not valid, show error
+    const submit = async () => {
+        const res = await fetch(`http://localhost:3000/api/invite-keys/validate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ invite_key: value }),
+        })
+
+        const { isValid } = await res.json()
+        if (!isValid) {
+            error = 'Invalid invite key.'
+            return
+        }
+
+        localStorage.setItem('momenti__invite_key', value)
+        onUnlock()
     }
 </script>
 
@@ -35,7 +44,7 @@
 
         <div class="flex flex-col gap-2">
             <input type="text"
-                   class="w-full bg-white/4 border border-white/10 rounded-xl px-4 py-3 font-sans text-[15px] text-[#f0ede8] placeholder-[#3a3a3a] outline-none focus:border-white/25 transition-colors duration-150 tracking-[0.08em] uppercase"
+                   class="w-full bg-white/4 border border-white/10 rounded-xl px-4 py-3 font-sans text-[15px] text-[#f0ede8] placeholder-[#3a3a3a] outline-none focus:border-white/25 transition-colors duration-150 tracking-[0.08em]"
                    bind:value
                    onkeydown={(e) => { if (e.key === 'Enter') submit() }}
                    autocomplete="off"
