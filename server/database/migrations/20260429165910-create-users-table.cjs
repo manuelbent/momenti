@@ -9,11 +9,6 @@ module.exports = {
                 autoIncrement: true,
                 primaryKey: true
             },
-            invite_key: {
-                type: Sequelize.STRING(64),
-                allowNull: false,
-                unique: true
-            },
             name: {
                 type: Sequelize.STRING(255),
                 allowNull: false
