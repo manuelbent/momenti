@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import UserServiceInterface from '../interfaces/UserServiceInterface'
+import InviteKey from '../models/InviteKey'
 
 /**
  * @class MomentController
@@ -23,9 +24,8 @@ export default class MomentController {
      */
     public async loadAll(req: Request, res: Response) {
         try {
-            const inviteKey = req.headers['x-invite-key'] as string
-            const user = (await this.userService.getByInviteKey(inviteKey))!
-            const moments = await this.momentService.getAll(user.id) // to load from user?
+            const inviteKey: InviteKey = res.locals.inviteKey
+            const moments = await this.momentService.getAll(inviteKey.user_id)
             res.send(moments)
         } catch (err) {
             console.error('[MomentController] load all moments error:', err)
@@ -76,8 +76,8 @@ export default class MomentController {
      */
     public async capture(req: Request, res: Response): Promise<void> {
         const { prompt } = req.body
-        const inviteKey = req.headers['x-invite-key'] as string
-        const user = await this.userService.getByInviteKey(inviteKey)
+        const inviteKey: InviteKey = res.locals.inviteKey
+        const user = await this.userService.getByInviteKey(inviteKey.key)
         if (!user) {
             res.status(401).json({ error: 'Invalid invite key.' })
             return

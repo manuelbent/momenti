@@ -2,6 +2,7 @@ import MalformedDataMiddleware from '../middlewares/MalformedDataMiddleware'
 import ValidationErrorMiddleware from '../middlewares/ValidationErrorMiddleware'
 import SseMiddleware from '../middlewares/SseMiddleware'
 import InviteKeyMiddleware from '../middlewares/InviteKeyMiddleware'
+import MomentLimitMiddleware from '../middlewares/MomentLimitMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
@@ -34,6 +35,7 @@ class Container {
     private _validationErrorMiddleware?: ValidationErrorMiddleware
     private _sseMiddleware?: SseMiddleware
     private _inviteKeyMiddleware?: InviteKeyMiddleware
+    private _momentLimitMiddleware?: MomentLimitMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -67,7 +69,11 @@ class Container {
     }
 
     public get inviteKeyMiddleware(): InviteKeyMiddleware {
-        return this._inviteKeyMiddleware ??= new InviteKeyMiddleware()
+        return this._inviteKeyMiddleware ??= new InviteKeyMiddleware(this.inviteKeyRepository)
+    }
+
+    public get momentLimitMiddleware(): MomentLimitMiddleware {
+        return this._momentLimitMiddleware ??= new MomentLimitMiddleware(this.momentRepository)
     }
 
     public get userRepository(): UserRepositoryInterface {

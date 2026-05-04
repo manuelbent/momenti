@@ -80,3 +80,5 @@ TECHNICAL CONSTRAINTS
 - NO MARKDOWN: Output raw JSON only.
 - VALIDATION: Ensure all brackets and quotes are closed.
 `.trim()
+
+export const MAX_MOMENTS_ALLOWED = 10

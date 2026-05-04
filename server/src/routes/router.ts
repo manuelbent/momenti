@@ -6,6 +6,7 @@ const router = Router()
 // capture routes
 router.post('/api/capture',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.momentLimitMiddleware.handle(req, res, next),
     (req, res, next) => ioc.generateMomentRequestValidator.validate(req, res, next),
     (req, res, next) => ioc.promptValidator.handle(req, res, next),
     (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
@@ -19,7 +20,6 @@ router.get('/api/moments',
 )
 
 router.put('/api/moments/:id',
-    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.updateMomentRequestValidator.validate(req, res, next),
     (req, res) => ioc.momentController.update(req, res)
