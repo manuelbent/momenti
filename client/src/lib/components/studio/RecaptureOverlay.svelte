@@ -6,7 +6,7 @@
 </script>
 
 <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-[#f0ede8]/90 backdrop-blur-sm"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-[#f0ede8]/50 backdrop-blur-sm"
     transition:fade={{ duration: 300 }}
     aria-live="polite"
     aria-label="Re-capturing your moment"
