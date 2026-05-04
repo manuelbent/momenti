@@ -43,6 +43,24 @@ LAYOUT BEHAVIOR:
 - Only use 'layout: row' for small UI elements (cards, features, icons).
 - In 'row' layouts, children should default to 'flex: 1 1 100%' unless explicitly designed as multi-column.
 
+HERO LAYOUT RULE
+- Vertically center content using flex (justify-content: center) instead of large padding.
+- Use min-height (e.g., min-height: 70cqh) to create presence.
+- Padding should support spacing, not define layout.
+
+TYPOGRAPHY (RESPONSIVE & CONTAINER-BASED)
+- Font sizes MUST adapt to the parent container, not the viewport.
+- NEVER use 'vw' or 'vh' for font-size.
+- Prefer container-based scaling using clamp() with relative units.
+- Use patterns like: 'font-size: clamp(1.5rem, 5cqw, 3rem);'
+- Text inside constrained containers should scale proportionally with container width.
+- Ensure headings shrink gracefully on smaller containers.
+
+TYPOGRAPHY RULE:
+- Use 'max-width' on headings ONLY when creating intentional editorial stacking.
+- Avoid restrictive 'ch' widths if the layout is wide and not asymmetrical.
+- Prefer fluid or no constraint for cinematic hero sections.
+
 RESPONSIVENESS (CRITICAL)
 - On mobile, children should default to flex: 1 1 100% (full width).
 - Every box with layout: 'row' or layout: 'grid' MUST include flex-wrap: wrap; in its CSS.
