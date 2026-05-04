@@ -1,17 +1,38 @@
 <script lang="ts">
     import { fade } from 'svelte/transition'
     import { push } from 'svelte-spa-router'
+    import { SwatchBook } from 'lucide-svelte'
     import { moment } from '../lib/stores/moment'
     import { capture } from '../lib/api/capture'
-    import TypeWriter from '../lib/components/landing/TypeWriter.svelte'
     import Loader from '../lib/components/landing/Loader.svelte'
-    import { SwatchBook } from 'lucide-svelte'
+    import TypeWriter from '../lib/components/landing/TypeWriter.svelte'
+    import InviteModal from '../lib/components/landing/InviteModal.svelte'
 
     let prompt = $state('')
     let isCapturing = $state(false)
     let isLeaving = $state(false)
     let error = $state('')
     let streamText = $state('')
+    let showInviteModal = $state(false)
+    let inviteKey = $state(localStorage.getItem('momenti_invite_key'))
+
+    function handleCapture() {
+        if (!prompt.trim()) {
+            return
+        }
+
+        if (!inviteKey) {
+            showInviteModal = true
+            return
+        }
+
+        captureMoment()
+    }
+
+    function onUnlock() {
+        showInviteModal = false
+        captureMoment()
+    }
 
     async function captureMoment() {
         if (!prompt.trim()) {
@@ -87,7 +108,7 @@
                                 placeholder="e.g. A wedding in the woods, May 2026. Earthy tones, lanterns, wildflowers..."
                                 bind:value={prompt}
                                 rows={4}
-                                onkeydown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) captureMoment() }}
+                                onkeydown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleCapture() }}
                         ></textarea>
 
                             {#if error}
@@ -97,7 +118,7 @@
                             <div class="flex items-center justify-between py-2.5 pl-5.5 pr-3.5 border-t border-white/6">
                                 <span class="font-sans text-[11px] text-[#3a3a3a] tracking-[0.04em]">⌘↵ to capture</span>
                                 <button class="flex items-center gap-2 bg-[#f0ede8] text-[#0d0d0d] rounded-[10px] py-3 px-5.5 font-sans text-[13px] font-semibold tracking-[0.04em] transition-[opacity,transform] duration-150 disabled:opacity-[0.22] disabled:cursor-not-allowed enabled:cursor-pointer enabled:hover:opacity-[0.88] enabled:active:scale-[0.97]"
-                                        onclick={captureMoment}
+                                        onclick={handleCapture}
                                         disabled={!prompt.trim()}
                                 >Capture
                                 </button>
@@ -114,3 +135,6 @@
     </main>
 </div>
 
+{#if showInviteModal}
+    <InviteModal {onUnlock} onClose={() => (showInviteModal = false)} />
+{/if}
