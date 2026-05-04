@@ -18,7 +18,7 @@ export default class InviteKeyService implements InviteKeyServiceInterface {
      * @returns {Promise<boolean>}
      */
     public async validate(key: string): Promise<boolean> {
-        const inviteKey = await this.inviteKeyRepository.findByKey(key)
+        const inviteKey = await this.inviteKeyRepository.findBy('key', key)
         return !!inviteKey
     }
 }

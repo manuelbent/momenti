@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "migrate:up": "sequelize-cli db:migrate  --config ./database/config.cjs --migrations-path ./database/migrations",
+    "seed:all": "sequelize-cli db:seed:all --config ./database/config.cjs --seeders-path ./database/seeders"
   },
   "dependencies": {
     "cors": "^2.8.5",

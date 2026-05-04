@@ -7,14 +7,4 @@ import InviteKey from '../models/InviteKey'
  */
 export default class InviteKeyRepository extends BaseRepository<InviteKey> implements InviteKeyRepositoryInterface {
     constructor() { super(InviteKey) }
-
-    /**
-     * Find an invite key record by its key string.
-     * @param {string} key
-     * @returns {Promise<InviteKey | null>}
-     */
-    async findByKey(key: string): Promise<InviteKey | null> {
-        return this.findBy('key', key)
-    }
 }
-
