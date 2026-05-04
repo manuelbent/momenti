@@ -7,7 +7,10 @@ export interface CaptureCallbacks {
 export async function capture(prompt: string, callbacks: CaptureCallbacks): Promise<void> {
     const response = await fetch('http://localhost:3000/api/capture', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'x-invite-key': localStorage.getItem('momenti__invite_key') ?? ''
+        },
         body: JSON.stringify({ prompt }),
     })
 

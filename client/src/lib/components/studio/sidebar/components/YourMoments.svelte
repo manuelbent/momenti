@@ -4,7 +4,11 @@
     import MomentItem from './MomentItem.svelte'
 
     onMount(async () => {
-        const res = await fetch('http://localhost:3000/api/moments')
+        const res = await fetch('http://localhost:3000/api/moments', {
+            headers: {
+                'x-invite-key': localStorage.getItem('momenti__invite_key') ?? ''
+            }
+        })
         if (res.ok) {
             moments.set(await res.json())
         }
@@ -27,7 +31,7 @@
         </p>
     {:else}
         {#each $moments as m}
-            <MomentItem moment={m} />
+            <MomentItem moment={m}/>
         {/each}
     {/if}
 

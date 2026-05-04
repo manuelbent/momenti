@@ -1,6 +1,7 @@
 import MalformedDataMiddleware from '../middlewares/MalformedDataMiddleware'
 import ValidationErrorMiddleware from '../middlewares/ValidationErrorMiddleware'
 import SseMiddleware from '../middlewares/SseMiddleware'
+import InviteKeyMiddleware from '../middlewares/InviteKeyMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
@@ -29,6 +30,7 @@ class Container {
     private _malformedDataMiddleware?: MalformedDataMiddleware
     private _validationErrorMiddleware?: ValidationErrorMiddleware
     private _sseMiddleware?: SseMiddleware
+    private _inviteKeyMiddleware?: InviteKeyMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -57,6 +59,10 @@ class Container {
 
     public get sseMiddleware(): SseMiddleware {
         return this._sseMiddleware ??= new SseMiddleware()
+    }
+
+    public get inviteKeyMiddleware(): InviteKeyMiddleware {
+        return this._inviteKeyMiddleware ??= new InviteKeyMiddleware()
     }
 
     public get userRepository(): UserRepositoryInterface {

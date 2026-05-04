@@ -11,7 +11,10 @@
 
         const res = await fetch(`http://localhost:3000/api/moments/${$moment.id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'x-invite-key': localStorage.getItem('momenti__invite_key') ?? ''
+            },
             body: JSON.stringify({
                 slug: $moment.slug,
                 content: $moment.content

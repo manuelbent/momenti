@@ -10,7 +10,11 @@
 
     async function onblur() {
         const params = new URLSearchParams({ slug, excludeId: String($moment.id) })
-        const res = await fetch(`http://localhost:3000/api/moments/check-slug?${params}`)
+        const res = await fetch(`http://localhost:3000/api/moments/check-slug?${params}`, {
+            headers: {
+                'x-invite-key': localStorage.getItem('momenti__invite_key') ?? ''
+            }
+        })
         const { isAvailable } = await res.json()
         if (!isAvailable) {
             showToast('This address is already taken.', 'error')

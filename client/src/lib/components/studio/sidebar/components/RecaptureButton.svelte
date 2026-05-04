@@ -20,7 +20,9 @@
     async function confirm() {
         confirmPending = false
         const prompt = $moment?.prompt
-        if (!prompt) return
+        if (!prompt) {
+            return
+        }
 
         isRecapturing = true
         streamText = ''
