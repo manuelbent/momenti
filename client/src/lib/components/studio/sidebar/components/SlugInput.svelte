@@ -1,5 +1,6 @@
 <script lang="ts">
     import { moment } from '../../../../stores/moment'
+    import { showToast } from '../../../../stores/toast'
 
     let slug = $moment?.slug ?? ''
 
@@ -7,8 +8,12 @@
         slug = $moment.slug
     }
 
-    function onkeyup() {
-        if (!$moment || slug === $moment.slug) {
+    async function onblur() {
+        const params = new URLSearchParams({ slug, excludeId: String($moment.id) })
+        const res = await fetch(`http://localhost:3000/api/moments/check-slug?${params}`)
+        const { isAvailable } = await res.json()
+        if (!isAvailable) {
+            showToast('This address is already taken.', 'error')
             return
         }
 
@@ -27,6 +32,7 @@
                 type="text"
                 bind:value={slug}
                 {onkeyup}
+                {onblur}
                 placeholder="your-slug"
                 class="flex-1 text-[12px] text-[#0d0d0d] bg-transparent outline-none placeholder:text-[#0d0d0d]/25"
         />
