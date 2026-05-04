@@ -14,7 +14,7 @@
     let error = $state('')
     let streamText = $state('')
     let showInviteModal = $state(false)
-    let inviteKey = $state(localStorage.getItem('momenti_invite_key'))
+    let inviteKey = $state(localStorage.getItem('momenti__invite_key'))
 
     function handleCapture() {
         if (!prompt.trim()) {

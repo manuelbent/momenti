@@ -3,7 +3,7 @@ import sequelize from '../../database/sequelize'
 
 export default class User extends Model {
     declare id: number
-    declare api_key: string
+    declare invite_key: string
     declare name: string
     declare email: string
     declare created_at: Date
@@ -15,7 +15,7 @@ User.init({
         autoIncrement: true,
         primaryKey: true
     },
-    api_key: {
+    invite_key: {
         type: DataTypes.STRING(64),
         allowNull: false,
         unique: true
@@ -40,7 +40,7 @@ User.init({
     timestamps: false,
     indexes: [
         {
-            fields: ['api_key'],
+            fields: ['invite_key'],
         }
     ]
 })
