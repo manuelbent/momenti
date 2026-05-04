@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { CloudUpload } from 'lucide-svelte'
     import Button from '../../../ui/Button.svelte'
     import { moment } from '../../../../stores/moment'
     import { showToast } from '../../../../stores/toast'
@@ -29,9 +30,6 @@
 </script>
 
 <Button onclick={handleSave}>
-    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 0 1 0 9Z"/>
-    </svg>
+    <CloudUpload size={13} strokeWidth={1.8} />
     Save
 </Button>
