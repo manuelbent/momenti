@@ -5,6 +5,7 @@
     import { capture } from '../lib/api/capture'
     import TypeWriter from '../lib/components/landing/TypeWriter.svelte'
     import Loader from '../lib/components/landing/Loader.svelte'
+    import { SwatchBook } from 'lucide-svelte'
 
     let prompt = $state('')
     let isCapturing = $state(false)
@@ -48,13 +49,19 @@
     <!-- header -->
     <header class="flex items-center px-6 md:px-10 py-7 border-b border-white/6">
         <span class="text-[18px] font-normal tracking-[0.12em]">momenti</span>
+        <a href="/#/studio" class="ml-auto text-[#888] hover:text-[#f0ede8] transition-colors duration-150">
+            <SwatchBook size={20} strokeWidth={1.5}/>
+        </a>
+
     </header>
 
     <!-- main -->
     <main class="flex-1 flex items-center justify-center px-6 py-15">
         <div class="w-full max-w-180 flex flex-col">
             <h1 class="text-5xl md:text-6xl font-normal leading-[1.05] tracking-[-0.03em] mb-5">
-                Your <TypeWriter words={['moment', 'event', 'story', 'identity', 'chapter']}/><span class="-ml-1">,</span><br>
+                Your
+                <TypeWriter words={['moment', 'event', 'story', 'identity', 'chapter']}/>
+                <span class="-ml-1">,</span><br>
                 one message away.
             </h1>
             <p class="font-sans text-[15px] leading-[1.75] text-[#888] mb-10">
