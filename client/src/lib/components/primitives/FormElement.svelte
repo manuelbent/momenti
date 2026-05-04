@@ -11,7 +11,7 @@
 
 {#if submitted}
     <div style={css}>
-        <p style="font-style: italic;">Thank you, {name}. We've saved your spot!</p>
+        <p style="font-style: italic;">Thank you!</p>
     </div>
 {:else}
     <form style={css} on:submit|preventDefault={() => (submitted = true)}>

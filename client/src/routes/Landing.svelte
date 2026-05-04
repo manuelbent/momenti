@@ -131,7 +131,7 @@
                         <div class="bg-white/3 border border-white/10 rounded-2xl overflow-hidden flex flex-col">
                         <textarea
                                 class="w-full bg-transparent border-none outline-none resize-none px-5.5 py-5 font-serif text-[17px] leading-[1.7] text-[#f0ede8] caret-[#f0ede8] placeholder-[#3a3a3a]"
-                                placeholder="e.g. A bohemian wedding in the woods, May 2026. Earthy tones, lanterns, wildflowers…"
+                                placeholder="e.g. A wedding in the woods, May 2026. Earthy tones, lanterns, wildflowers..."
                                 bind:value={prompt}
                                 rows={4}
                                 onkeydown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) captureMoment() }}
