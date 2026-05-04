@@ -6,13 +6,21 @@
     import RecaptureOverlay from '../../RecaptureOverlay.svelte'
 
     let isRecapturing = $state(false)
+    let confirmPending = $state(false)
     let streamText = $state('')
 
-    async function recapture() {
+    function requestRecapture() {
+        confirmPending = true
+    }
+
+    function cancel() {
+        confirmPending = false
+    }
+
+    async function confirm() {
+        confirmPending = false
         const prompt = $moment?.prompt
-        if (!prompt) {
-            return
-        }
+        if (!prompt) return
 
         isRecapturing = true
         streamText = ''
@@ -33,10 +41,19 @@
 </script>
 
 {#if isRecapturing}
-    <RecaptureOverlay {streamText} />
+    <RecaptureOverlay {streamText}/>
 {/if}
 
-<Button onclick={recapture} disabled={isRecapturing}>
-    <RefreshCw size={12} strokeWidth={1.8} />
-    Re-capture
-</Button>
+<div class="grid">
+    {#if confirmPending}
+        <div class="flex gap-2">
+            <Button onclick={cancel}>Cancel</Button>
+            <Button onclick={confirm} class="text-[#f0ede8] bg-[#0d0d0d]/40 hover:bg-[#0d0d0d]/50">Confirm</Button>
+        </div>
+    {:else}
+        <Button onclick={requestRecapture} disabled={isRecapturing}>
+            <RefreshCw size={12} strokeWidth={1.8}/>
+            Re-capture
+        </Button>
+    {/if}
+</div>
