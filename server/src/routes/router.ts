@@ -16,6 +16,11 @@ router.put('/api/moments/:id',
     (req, res) => ioc.momentController.update(req, res)
 )
 
+router.get('/api/moments/check-slug',
+    (req, res, next) => ioc.checkSlugRequestValidator.validate(req, res, next),
+    (req, res) => ioc.momentController.checkSlug(req, res)
+)
+
 // temp
 router.get('/api/moments',
     (req, res) => ioc.momentController.findAll(req, res)

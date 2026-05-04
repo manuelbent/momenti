@@ -12,6 +12,7 @@ import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 import UserRepository from '../repositories/UserRepository'
 import MomentRepository from '../repositories/MomentRepository'
 import UpdateMomentRequestValidator from '../validators/UpdateMomentRequestValidator'
+import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
 
 /**
  * Dependency injection container.
@@ -34,6 +35,7 @@ class Container {
     private _promptValidator?: PromptValidator
     private _generateMomentRequestValidator?: GenerateMomentRequestValidator
     private _updateMomentRequestValidator?: UpdateMomentRequestValidator
+    private _checkSlugRequestValidator?: CheckSlugRequestValidator
 
     public get malformedDataMiddleware(): MalformedDataMiddleware {
         return this._malformedDataMiddleware ??= new MalformedDataMiddleware()
@@ -77,6 +79,10 @@ class Container {
 
     public get updateMomentRequestValidator(): UpdateMomentRequestValidator {
         return this._updateMomentRequestValidator ??= new UpdateMomentRequestValidator(this.momentService)
+    }
+
+    public get checkSlugRequestValidator(): CheckSlugRequestValidator {
+        return this._checkSlugRequestValidator ??= new CheckSlugRequestValidator()
     }
 }
 

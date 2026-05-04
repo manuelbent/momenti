@@ -18,6 +18,23 @@ export default class MomentController {
     }
 
     /**
+     * Check if a slug is available.
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public async checkSlug(req: Request, res: Response) {
+        try {
+            const slug = String(req.query.slug)
+            const excludeId = req.query.excludeId ? Number(req.query.excludeId) : undefined
+            const exists = await this.momentService.slugExists(slug, excludeId)
+            res.json({ available: !exists })
+        } catch (err) {
+            console.error('[MomentController] check slug error:', err)
+            res.status(500).json({ error: 'Internal server error.' })
+        }
+    }
+
+    /**
      * Update the moment.
      * @param {Request} req
      * @param {Response} res
