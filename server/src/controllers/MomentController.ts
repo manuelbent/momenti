@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
+import UserServiceInterface from '../interfaces/UserServiceInterface'
 
 /**
  * @class MomentController
@@ -8,13 +9,28 @@ export default class MomentController {
     /**
      * @constructor
      * @param {MomentServiceInterface} momentService
+     * @param {UserServiceInterface} userService
      */
-    constructor(private momentService: MomentServiceInterface) {}
+    constructor(
+        private momentService: MomentServiceInterface,
+        private userService: UserServiceInterface
+    ) {}
 
-    // temp
-    public async findAll(_: Request, res: Response) {
-        const moments = await this.momentService.getAll()
-        res.send(moments)
+    /**
+     * Load all moments by invite key.
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public async loadAll(req: Request, res: Response) {
+        try {
+            const inviteKey = req.headers['x-invite-key'] as string
+            const user = (await this.userService.getByInviteKey(inviteKey))!
+            const moments = await this.momentService.getAll(user.id) // to load from user?
+            res.send(moments)
+        } catch (err) {
+            console.error('[MomentController] load all moments error:', err)
+            res.status(500).json({ error: 'Internal server error.' })
+        }
     }
 
     /**
@@ -60,6 +76,12 @@ export default class MomentController {
      */
     public async capture(req: Request, res: Response): Promise<void> {
         const { prompt } = req.body
+        const inviteKey = req.headers['x-invite-key'] as string
+        const user = await this.userService.getByInviteKey(inviteKey)
+        if (!user) {
+            res.status(401).json({ error: 'Invalid invite key.' })
+            return
+        }
 
         const send = (event: string, data: unknown) => {
             res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)
@@ -72,8 +94,14 @@ export default class MomentController {
                     return
                 }
 
-                if (payload.done && payload.moment) {
-                    send('done', payload.moment)
+                if (payload.done && payload.rawMoment && payload.slug) {
+                    const moment = await this.momentService.store({
+                        user_id: user.id,
+                        slug: payload.slug,
+                        prompt,
+                        content: payload.rawMoment
+                    })
+                    send('done', moment)
                     return
                 }
 

@@ -62,4 +62,14 @@ export default class BaseRepository<T extends Model> implements RepositoryInterf
     async findBy(field: string, value: unknown): Promise<T|null> {
         return this.model.findOne({ where: { [field]: value } as any })
     }
+
+    /**
+     * Base method to find all records matching a specific field value.
+     * @param {string} field - The field name to search by.
+     * @param {unknown} value - The value to search for.
+     * @return {Promise<T[]>}
+     */
+    async findManyBy(field: string, value: unknown): Promise<T[]> {
+        return this.model.findAll({ where: { [field]: value } as any })
+    }
 }

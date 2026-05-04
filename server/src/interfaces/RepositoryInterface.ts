@@ -13,4 +13,6 @@ export default interface RepositoryInterface<T> {
     findById(id: string|number): Promise<T|null>
 
     findBy(field: string, value: unknown): Promise<T|null>
+
+    findManyBy(field: string, value: unknown): Promise<T[]>
 }

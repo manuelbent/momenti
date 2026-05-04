@@ -5,10 +5,13 @@ import InviteKeyMiddleware from '../middlewares/InviteKeyMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
+import UserController from '../controllers/UserController'
 import MomentService from '../services/MomentService'
 import InviteKeyService from '../services/InviteKeyService'
+import UserService from '../services/UserService'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
+import UserServiceInterface from '../interfaces/UserServiceInterface'
 import PromptValidator from '../validators/PromptValidator'
 import GenerateMomentRequestValidator from '../validators/GenerateMomentRequestValidator'
 import ValidateInviteKeyRequestValidator from '../validators/ValidateInviteKeyRequestValidator'
@@ -38,10 +41,12 @@ class Container {
     // services
     private _momentService?: MomentServiceInterface
     private _inviteKeyService?: InviteKeyServiceInterface
+    private _userService?: UserServiceInterface
     // controllers
     private _systemController?: SystemController
     private _momentController?: MomentController
     private _inviteKeyController?: InviteKeyController
+    private _userController?: UserController
     // validators
     private _promptValidator?: PromptValidator
     private _generateMomentRequestValidator?: GenerateMomentRequestValidator
@@ -85,8 +90,12 @@ class Container {
         return this._inviteKeyService ??= new InviteKeyService(this.inviteKeyRepository)
     }
 
+    public get userService(): UserServiceInterface {
+        return this._userService ??= new UserService(this.userRepository)
+    }
+
     public get momentController(): MomentController {
-        return this._momentController ??= new MomentController(this.momentService)
+        return this._momentController ??= new MomentController(this.momentService, this.userService)
     }
 
     public get systemController(): SystemController {
@@ -95,6 +104,10 @@ class Container {
 
     public get inviteKeyController(): InviteKeyController {
         return this._inviteKeyController ??= new InviteKeyController(this.inviteKeyService)
+    }
+
+    public get userController(): UserController {
+        return this._userController ??= new UserController(this.userService)
     }
 
     public get promptValidator(): PromptValidator {

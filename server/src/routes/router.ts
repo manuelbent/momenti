@@ -15,7 +15,7 @@ router.post('/api/capture',
 // moments routes
 router.get('/api/moments',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
-    (req, res) => ioc.momentController.findAll(req, res)
+    (req, res) => ioc.momentController.loadAll(req, res)
 )
 
 router.put('/api/moments/:id',

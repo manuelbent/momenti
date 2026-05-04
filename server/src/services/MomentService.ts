@@ -45,9 +45,12 @@ export default class MomentService implements MomentServiceInterface {
         return moment
     }
 
-    // temp function
-    public async getAll(): Promise<Moment[]> {
-        return this.momentRepository.findAll()
+    /**
+     * Get all moments by user id.
+     * @param {number} userId
+     */
+    public async getAll(userId: number): Promise<Moment[]> {
+        return this.momentRepository.findManyBy('user_id', userId)
     }
 
     /**
@@ -76,7 +79,8 @@ export default class MomentService implements MomentServiceInterface {
     public async* generateStream(prompt: string): AsyncGenerator<{
         chunk?: string;
         done?: boolean;
-        moment?: Moment;
+        slug?: string;
+        rawMoment?: RawMoment;
         error?: string
     }> {
         const stream = await this.openai.chat.completions.create({
@@ -119,15 +123,10 @@ export default class MomentService implements MomentServiceInterface {
             ? `${rawMoment.slug}-${Date.now()}`
             : rawMoment.slug
 
-        const moment = await this.store({
-            slug,
-            prompt,
-            content: rawMoment
-        })
-
         yield {
             done: true,
-            moment
+            slug,
+            rawMoment
         }
     }
 }

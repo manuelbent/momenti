@@ -4,4 +4,6 @@ import User from '../models/User'
 /**
  * @interface UserRepositoryInterface
  */
-export default interface UserRepositoryInterface extends RepositoryInterface<User> {}
+export default interface UserRepositoryInterface extends RepositoryInterface<User> {
+    findByInviteKey(key: string): Promise<User | null>
+}

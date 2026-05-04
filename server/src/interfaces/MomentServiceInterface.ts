@@ -6,12 +6,13 @@ import Moment from '../models/Moment'
 export default interface MomentServiceInterface {
     store(data: Partial<Moment>): Promise<Moment>
     update(id: number, data: Partial<Moment>): Promise<Moment>
-    getAll(): Promise<Moment[]>
+    getAll(userId: number): Promise<Moment[]>
     slugExists(slug: string, excludeId?: number): Promise<boolean>
     generateStream(prompt: string): AsyncGenerator<{
         chunk?: string;
         done?: boolean;
-        moment?: Moment;
+        slug?: string;
+        rawMoment?: RawMoment;
         error?: string
     }>
 }
