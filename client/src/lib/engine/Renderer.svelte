@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { setContext, hasContext } from 'svelte'
     import BaseBox from '../components/primitives/BaseBox.svelte'
     import BaseText from '../components/primitives/BaseText.svelte'
     import BaseImage from '../components/primitives/BaseImage.svelte'
@@ -6,6 +7,13 @@
     import BaseMap from '../components/primitives/BaseMap.svelte'
 
     export let node: MomentNode
+    export let viewOnly: boolean = false
+
+    // only set the context at the root Renderer instance
+    // recursive svelte:self children inherit it automatically
+    if (!hasContext('viewOnly')) {
+        setContext('viewOnly', viewOnly)
+    }
 </script>
 
 {#if node.type === 'box'}

@@ -1,12 +1,14 @@
 <script lang="ts">
-    import { onMount } from 'svelte'
+    import { onMount, getContext } from 'svelte'
     import { updateNode, selectedNodeId, selectedNodeRect } from '../../stores/moment'
 
-    export let id: string // We need the ID to update the store
+    export let id: string
     export let tag: string = 'p'
     export let html: string = ''
     export let css: string = ''
-    export let isEditable: boolean = true // For now, we'll keep it true for the builder
+
+    const viewOnly = getContext<boolean>('viewOnly') ?? false
+    $: isEditable = !viewOnly
 
     let element: HTMLElement
 
