@@ -2,11 +2,12 @@ import OpenAI from 'openai'
 import { SYSTEM_PROMPT } from '../config/constants'
 import Moment from '../models/Moment'
 import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
+import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 
 /**
  * @class MomentService
  */
-export default class MomentService {
+export default class MomentService implements MomentServiceInterface {
     /**
      * The OpenAI client instance.
      * @private
@@ -47,6 +48,24 @@ export default class MomentService {
     // temp function
     public async getAll(): Promise<Moment[]> {
         return this.momentRepository.findAll()
+    }
+
+    /**
+     * Check if a slug already exists in the database.
+     * @param {string} slug
+     * @param {number} excludeId - Optional moment id to exclude from the check (useful on updates).
+     */
+    public async slugExists(slug: string, excludeId?: number): Promise<boolean> {
+        const moment = await this.momentRepository.findBy('slug', slug)
+        if (!moment) {
+            return false
+        }
+
+        if (excludeId !== undefined) {
+            return moment.id !== excludeId
+        }
+
+        return true
     }
 
     /**
@@ -96,8 +115,12 @@ export default class MomentService {
             return
         }
 
+        const slug = await this.slugExists(rawMoment.slug)
+            ? `${rawMoment.slug}-${Date.now()}`
+            : rawMoment.slug
+
         const moment = await this.store({
-            slug: rawMoment.slug + new Date().getTime(), // temp
+            slug,
             prompt,
             content: rawMoment
         })

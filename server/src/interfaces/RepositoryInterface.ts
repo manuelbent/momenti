@@ -11,4 +11,6 @@ export default interface RepositoryInterface<T> {
     delete(id: string|number): Promise<void>
 
     findById(id: string|number): Promise<T|null>
+
+    findBy(field: string, value: unknown): Promise<T|null>
 }

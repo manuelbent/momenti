@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import MomentService from '../services/MomentService'
+import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 
 /**
  * @class MomentController
@@ -7,9 +7,9 @@ import MomentService from '../services/MomentService'
 export default class MomentController {
     /**
      * @constructor
-     * @param {MomentService} momentService
+     * @param {MomentServiceInterface} momentService
      */
-    constructor(private momentService: MomentService) {}
+    constructor(private momentService: MomentServiceInterface) {}
 
     // temp
     public async findAll(_: Request, res: Response) {

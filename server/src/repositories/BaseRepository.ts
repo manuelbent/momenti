@@ -52,4 +52,14 @@ export default class BaseRepository<T extends Model> implements RepositoryInterf
     async findById(id: Identifier): Promise<T|null> {
         return this.model.findByPk(id)
     }
+
+    /**
+     * Base method to find a record by a specific field value.
+     * @param {string} field - The field name to search by.
+     * @param {unknown} value - The value to search for.
+     * @return {Promise<T | null>}
+     */
+    async findBy(field: string, value: unknown): Promise<T|null> {
+        return this.model.findOne({ where: { [field]: value } as any })
+    }
 }

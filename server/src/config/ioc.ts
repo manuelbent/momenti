@@ -4,6 +4,7 @@ import SseMiddleware from '../middlewares/SseMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import MomentService from '../services/MomentService'
+import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import PromptValidator from '../validators/PromptValidator'
 import GenerateMomentRequestValidator from '../validators/GenerateMomentRequestValidator'
 import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
@@ -25,7 +26,7 @@ class Container {
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
     // services
-    private _momentService?: MomentService
+    private _momentService?: MomentServiceInterface
     // controllers
     private _systemController?: SystemController
     private _momentController?: MomentController
@@ -54,7 +55,7 @@ class Container {
         return this._momentRepository ??= new MomentRepository()
     }
 
-    public get momentService(): MomentService {
+    public get momentService(): MomentServiceInterface {
         return this._momentService ??= new MomentService(this.momentRepository)
     }
 
@@ -75,7 +76,7 @@ class Container {
     }
 
     public get updateMomentRequestValidator(): UpdateMomentRequestValidator {
-        return this._updateMomentRequestValidator ??= new UpdateMomentRequestValidator()
+        return this._updateMomentRequestValidator ??= new UpdateMomentRequestValidator(this.momentService)
     }
 }
 
