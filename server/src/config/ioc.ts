@@ -3,14 +3,20 @@ import ValidationErrorMiddleware from '../middlewares/ValidationErrorMiddleware'
 import SseMiddleware from '../middlewares/SseMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
+import InviteKeyController from '../controllers/InviteKeyController'
 import MomentService from '../services/MomentService'
+import InviteKeyService from '../services/InviteKeyService'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
+import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
 import PromptValidator from '../validators/PromptValidator'
 import GenerateMomentRequestValidator from '../validators/GenerateMomentRequestValidator'
+import ValidateInviteKeyRequestValidator from '../validators/ValidateInviteKeyRequestValidator'
 import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
 import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
+import InviteKeyRepositoryInterface from '../interfaces/InviteKeyRepositoryInterface'
 import UserRepository from '../repositories/UserRepository'
 import MomentRepository from '../repositories/MomentRepository'
+import InviteKeyRepository from '../repositories/InviteKeyRepository'
 import UpdateMomentRequestValidator from '../validators/UpdateMomentRequestValidator'
 import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
 
@@ -26,16 +32,20 @@ class Container {
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
+    private _inviteKeyRepository?: InviteKeyRepositoryInterface
     // services
     private _momentService?: MomentServiceInterface
+    private _inviteKeyService?: InviteKeyServiceInterface
     // controllers
     private _systemController?: SystemController
     private _momentController?: MomentController
+    private _inviteKeyController?: InviteKeyController
     // validators
     private _promptValidator?: PromptValidator
     private _generateMomentRequestValidator?: GenerateMomentRequestValidator
     private _updateMomentRequestValidator?: UpdateMomentRequestValidator
     private _checkSlugRequestValidator?: CheckSlugRequestValidator
+    private _validateInviteKeyRequestValidator?: ValidateInviteKeyRequestValidator
 
     public get malformedDataMiddleware(): MalformedDataMiddleware {
         return this._malformedDataMiddleware ??= new MalformedDataMiddleware()
@@ -57,8 +67,16 @@ class Container {
         return this._momentRepository ??= new MomentRepository()
     }
 
+    public get inviteKeyRepository(): InviteKeyRepositoryInterface {
+        return this._inviteKeyRepository ??= new InviteKeyRepository()
+    }
+
     public get momentService(): MomentServiceInterface {
         return this._momentService ??= new MomentService(this.momentRepository)
+    }
+
+    public get inviteKeyService(): InviteKeyServiceInterface {
+        return this._inviteKeyService ??= new InviteKeyService(this.inviteKeyRepository)
     }
 
     public get momentController(): MomentController {
@@ -67,6 +85,10 @@ class Container {
 
     public get systemController(): SystemController {
         return this._systemController ??= new SystemController()
+    }
+
+    public get inviteKeyController(): InviteKeyController {
+        return this._inviteKeyController ??= new InviteKeyController(this.inviteKeyService)
     }
 
     public get promptValidator(): PromptValidator {
@@ -83,6 +105,10 @@ class Container {
 
     public get checkSlugRequestValidator(): CheckSlugRequestValidator {
         return this._checkSlugRequestValidator ??= new CheckSlugRequestValidator()
+    }
+
+    public get validateInviteKeyRequestValidator(): ValidateInviteKeyRequestValidator {
+        return this._validateInviteKeyRequestValidator ??= new ValidateInviteKeyRequestValidator()
     }
 }
 

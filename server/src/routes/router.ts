@@ -21,6 +21,11 @@ router.get('/api/moments/check-slug',
     (req, res) => ioc.momentController.checkSlug(req, res)
 )
 
+router.post('/api/invite-keys/validate',
+    (req, res, next) => ioc.validateInviteKeyRequestValidator.validate(req, res, next),
+    (req, res) => ioc.inviteKeyController.validate(req, res)
+)
+
 // temp
 router.get('/api/moments',
     (req, res) => ioc.momentController.findAll(req, res)
