@@ -4,6 +4,7 @@
     import PromptCounter from './components/PromptCounter.svelte'
     import RecaptureButton from './components/RecaptureButton.svelte'
     import SaveButton from './components/SaveButton.svelte'
+    import PreviewButton from './components/PreviewButton.svelte'
     import PublishButton from './components/PublishButton.svelte'
     import YourMoments from './components/YourMoments.svelte'
     import PromptViewer from './components/PromptViewer.svelte'
@@ -27,6 +28,8 @@
         <RecaptureButton/>
 
         <SaveButton/>
+
+        <PreviewButton/>
 
         <PublishButton/>
     </div>
