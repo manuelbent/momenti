@@ -1,15 +1,19 @@
 <script lang="ts">
     import { EyeOff } from 'lucide-svelte'
-    import Button from '../../../ui/Button.svelte'
-    import { moment } from '../../../../stores/moment'
-    import { showToast } from '../../../../stores/toast'
+    import Button from '$lib/components/ui/Button.svelte'
+    import { moment } from '$lib/stores/moment'
+    import { inviteKey } from '$lib/stores/auth'
+    import { showToast } from '$lib/stores/toast'
 
     async function handleUnpublish() {
         if (!$moment) return
 
         const res = await fetch(`http://localhost:3000/api/moments/${$moment.id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'x-invite-key': $inviteKey,
+            },
             body: JSON.stringify({ is_published: false }),
         })
 

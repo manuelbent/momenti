@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount, getContext } from 'svelte'
-    import { updateNode, selectedNodeId, selectedNodeRect } from '../../stores/moment'
+    import { updateNode, selectedNodeId, selectedNodeRect } from '$lib/stores/moment'
 
     export let id: string
     export let tag: string = 'p'

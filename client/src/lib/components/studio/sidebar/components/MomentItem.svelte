@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { moment as activeStore } from '../../../../stores/moment'
+    import { moment as activeStore } from '$lib/stores/moment'
 
     export let moment: Moment
 

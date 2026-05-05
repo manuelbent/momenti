@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fly } from 'svelte/transition'
-    import { toast } from '../../stores/toast'
+    import { toast } from '$lib/stores/toast'
 </script>
 
 {#if $toast}

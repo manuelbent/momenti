@@ -1,10 +1,10 @@
 <script lang="ts">
     import { setContext, hasContext } from 'svelte'
-    import BaseBox from '../components/primitives/BaseBox.svelte'
-    import BaseText from '../components/primitives/BaseText.svelte'
-    import BaseImage from '../components/primitives/BaseImage.svelte'
-    import FormElement from '../components/primitives/FormElement.svelte'
-    import BaseMap from '../components/primitives/BaseMap.svelte'
+    import BaseBox from '$lib/components/primitives/BaseBox.svelte'
+    import BaseText from '$lib/components/primitives/BaseText.svelte'
+    import BaseImage from '$lib/components/primitives/BaseImage.svelte'
+    import FormElement from '$lib/components/primitives/FormElement.svelte'
+    import BaseMap from '$lib/components/primitives/BaseMap.svelte'
 
     export let node: MomentNode
     export let viewOnly: boolean = false

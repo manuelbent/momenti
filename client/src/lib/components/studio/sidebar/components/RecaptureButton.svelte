@@ -1,9 +1,9 @@
 <script lang="ts">
     import { RefreshCw } from 'lucide-svelte'
-    import { moment } from '../../../../stores/moment'
-    import { capture } from '../../../../api/moments'
-    import Button from '../../../ui/Button.svelte'
-    import RecaptureOverlay from '../../RecaptureOverlay.svelte'
+    import { moment } from '$lib/stores/moment'
+    import { capture } from '$lib/api/moments'
+    import Button from '$lib/components/ui/Button.svelte'
+    import RecaptureOverlay from '$lib/components/studio/RecaptureOverlay.svelte'
 
     let isRecapturing = $state(false)
     let confirmPending = $state(false)

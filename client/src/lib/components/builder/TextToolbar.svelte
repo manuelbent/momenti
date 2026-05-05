@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte'
-    import { selectedNodeId, selectedNodeRect, moment, updateNode } from '../../stores/moment'
-    import type { MomentNode } from '../../stores/moment'
+    import { selectedNodeId, selectedNodeRect, moment, updateNode } from '$lib/stores/moment'
 
     let toolbarEl: HTMLElement
 
@@ -29,7 +28,7 @@
     }
 
     $: selectedNode = ($selectedNodeId && $moment)
-        ? findNode($moment.root, $selectedNodeId)
+        ? findNode($moment.content.root, $selectedNodeId)
         : null
 
     $: currentColor = selectedNode ? extractColor(selectedNode.css ?? '') : '#000000'

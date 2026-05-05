@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { moment } from '../../../../stores/moment'
-    import Renderer from '../../../../engine/Renderer.svelte'
+    import { moment } from '$lib/stores/moment'
+    import Renderer from '$lib/engine/Renderer.svelte'
     import BrowserChrome from './components/BrowserChrome.svelte'
 
     const DESKTOP_WIDTH = 1280

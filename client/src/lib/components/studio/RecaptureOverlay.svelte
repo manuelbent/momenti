@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fade } from 'svelte/transition'
-    import Loader from '../landing/Loader.svelte'
+    import Loader from '$lib/components/landing/Loader.svelte'
 
     export let streamText: string = ''
 </script>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { ExternalLink } from 'lucide-svelte'
-    import Button from '../../../ui/Button.svelte'
+    import Button from '$lib/components/ui/Button.svelte'
 </script>
 
 <Button onclick={() => window.open('/#/preview', '_blank')}>

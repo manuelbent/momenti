@@ -1,8 +1,9 @@
 <script lang="ts">
     import { CloudUpload } from 'lucide-svelte'
-    import Button from '../../../ui/Button.svelte'
-    import { moment } from '../../../../stores/moment'
-    import { showToast } from '../../../../stores/toast'
+    import Button from '$lib/components/ui/Button.svelte'
+    import { moment } from '$lib/stores/moment'
+    import { inviteKey } from '$lib/stores/auth'
+    import { showToast } from '$lib/stores/toast'
 
     async function handleSave() {
         if (!$moment) {
@@ -13,7 +14,7 @@
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'x-invite-key': localStorage.getItem('momenti__invite_key') ?? ''
+                'x-invite-key': $inviteKey
             },
             body: JSON.stringify({
                 slug: $moment.slug,

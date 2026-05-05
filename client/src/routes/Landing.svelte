@@ -2,11 +2,12 @@
     import { fade } from 'svelte/transition'
     import { push } from 'svelte-spa-router'
     import { SwatchBook } from 'lucide-svelte'
-    import { capture } from '../lib/api/moments'
-    import { moment } from '../lib/stores/moment'
-    import Loader from '../lib/components/landing/Loader.svelte'
-    import TypeWriter from '../lib/components/landing/TypeWriter.svelte'
-    import InviteModal from '../lib/components/landing/InviteModal.svelte'
+    import { capture } from '$lib/api/moments'
+    import { moment } from '$lib/stores/moment'
+    import { inviteKey } from '$lib/stores/auth'
+    import Loader from '$lib/components/landing/Loader.svelte'
+    import TypeWriter from '$lib/components/landing/TypeWriter.svelte'
+    import InviteModal from '$lib/components/landing/InviteModal.svelte'
 
     let prompt = $state('')
     let isCapturing = $state(false)
@@ -14,14 +15,13 @@
     let error = $state('')
     let streamText = $state('')
     let showInviteModal = $state(false)
-    let inviteKey = $state(localStorage.getItem('momenti__invite_key'))
 
     function handleCapture() {
         if (!prompt.trim()) {
             return
         }
 
-        if (!inviteKey) {
+        if (!$inviteKey) {
             showInviteModal = true
             return
         }
@@ -72,7 +72,7 @@
     <!-- header -->
     <header class="flex items-center px-6 md:px-10 py-7 border-b border-white/6">
         <span class="text-[18px] font-normal tracking-[0.12em]">momenti</span>
-        {#if inviteKey}
+        {#if $inviteKey}
             <a href="/#/studio" class="ml-auto text-[#888] hover:text-[#f0ede8] transition-colors duration-150">
                 <SwatchBook size={20} strokeWidth={1.5}/>
             </a>

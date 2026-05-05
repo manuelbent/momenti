@@ -1,7 +1,7 @@
 <script lang="ts">
     import { fade } from 'svelte/transition'
-    import { moment } from '../lib/stores/moment'
-    import Renderer from '../lib/engine/Renderer.svelte'
+    import { moment } from '$lib/stores/moment'
+    import Renderer from '$lib/engine/Renderer.svelte'
 
     try {
         const m: Moment = JSON.parse(localStorage.getItem('moment__preview')!)

@@ -1,9 +1,12 @@
+import { get } from 'svelte/store'
+import { inviteKey } from '$lib/stores/auth'
+
 export const capture = async (prompt: string, callbacks: CaptureCallbacks): Promise<void> => {
     const response = await fetch('http://localhost:3000/api/capture', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'x-invite-key': localStorage.getItem('momenti__invite_key') ?? ''
+            'x-invite-key': get(inviteKey)
         },
         body: JSON.stringify({ prompt }),
     })

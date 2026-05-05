@@ -1,13 +1,12 @@
 <script lang="ts">
     import { onMount } from 'svelte'
-    import { moment, moments } from '../../../../stores/moment'
+    import { inviteKey } from '$lib/stores/auth'
+    import { moment, moments } from '$lib/stores/moment'
     import MomentItem from './MomentItem.svelte'
 
     onMount(async () => {
         const res = await fetch('http://localhost:3000/api/moments', {
-            headers: {
-                'x-invite-key': localStorage.getItem('momenti__invite_key') ?? ''
-            }
+            headers: { 'x-invite-key': $inviteKey }
         })
         if (res.ok) {
             moments.set(await res.json())

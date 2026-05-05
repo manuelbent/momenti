@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { moment } from '../../../../stores/moment'
+    import { moment } from '$lib/stores/moment'
 
     $: prompt = $moment?.prompt
         .replace(/^"|"$/g, '')   // strip surrounding quotes if any

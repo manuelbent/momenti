@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { moment } from '../../../../stores/moment'
-    import Renderer from '../../../../engine/Renderer.svelte'
+    import { moment } from '$lib/stores/moment'
+    import Renderer from '$lib/engine/Renderer.svelte'
     import StatusBar from './components/StatusBar.svelte'
 </script>
 

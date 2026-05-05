@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { moment } from '../../../../stores/moment'
-    import { showToast } from '../../../../stores/toast'
+    import { moment } from '$lib/stores/moment'
+    import { inviteKey } from '$lib/stores/auth'
+    import { showToast } from '$lib/stores/toast'
 
     let slug = $moment?.slug ?? ''
 
@@ -12,7 +13,7 @@
         const params = new URLSearchParams({ slug, excludeId: String($moment.id) })
         const res = await fetch(`http://localhost:3000/api/moments/check-slug?${params}`, {
             headers: {
-                'x-invite-key': localStorage.getItem('momenti__invite_key') ?? ''
+                'x-invite-key': $inviteKey
             }
         })
         const { isAvailable } = await res.json()

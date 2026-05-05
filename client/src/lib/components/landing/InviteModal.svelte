@@ -1,5 +1,6 @@
 <script lang="ts">
     import { fade } from 'svelte/transition'
+    import { inviteKey } from '$lib/stores/auth'
 
     let { onUnlock, onClose }: { onUnlock: () => void, onClose: () => void } = $props()
 
@@ -19,7 +20,7 @@
             return
         }
 
-        localStorage.setItem('momenti__invite_key', value)
+        inviteKey.set(value)
         onUnlock()
     }
 </script>

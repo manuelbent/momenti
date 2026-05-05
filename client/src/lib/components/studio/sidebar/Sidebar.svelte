@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { moment, moments } from '../../../stores/moment'
+    import { moment, moments } from '$lib/stores/moment'
     import SlugInput from './components/SlugInput.svelte'
     import PromptCounter from './components/PromptCounter.svelte'
     import RecaptureButton from './components/RecaptureButton.svelte'
