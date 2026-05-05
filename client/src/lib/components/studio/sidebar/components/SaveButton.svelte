@@ -2,32 +2,20 @@
     import { CloudUpload } from 'lucide-svelte'
     import Button from '$lib/components/ui/Button.svelte'
     import { moment } from '$lib/stores/moment'
-    import { inviteKey } from '$lib/stores/auth'
     import { showToast } from '$lib/stores/toast'
+    import { updateMoment } from '$lib/api'
 
     async function handleSave() {
-        if (!$moment) {
-            return
-        }
+        if (!$moment) return
 
-        const res = await fetch(`http://localhost:3000/api/moments/${$moment.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-invite-key': $inviteKey
-            },
-            body: JSON.stringify({
+        try {
+            const updated: Moment = await updateMoment($moment.id, {
                 slug: $moment.slug,
-                content: $moment.content
-            }),
-        })
-
-        if (res.ok) {
-            const updated: Moment = await res.json()
+                content: $moment.content,
+            })
             moment.set(updated)
             showToast('Moment updated.')
-        } else {
-            console.log(res)
+        } catch {
             showToast('Something went wrong.', 'error')
         }
     }

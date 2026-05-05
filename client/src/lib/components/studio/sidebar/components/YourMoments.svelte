@@ -1,16 +1,12 @@
 <script lang="ts">
     import { onMount } from 'svelte'
-    import { inviteKey } from '$lib/stores/auth'
     import { moment, moments } from '$lib/stores/moment'
+    import { getMoments } from '$lib/api'
     import MomentItem from './MomentItem.svelte'
 
     onMount(async () => {
-        const res = await fetch('http://localhost:3000/api/moments', {
-            headers: { 'x-invite-key': $inviteKey }
-        })
-        if (res.ok) {
-            moments.set(await res.json())
-        }
+        const list = await getMoments()
+        moments.set(list)
 
         // if the store has no moment defined (new session)
         // use the first (most recent) one

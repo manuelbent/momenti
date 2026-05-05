@@ -1,6 +1,7 @@
 <script lang="ts">
     import { fade } from 'svelte/transition'
     import { inviteKey } from '$lib/stores/auth'
+    import { validateInviteKey } from '$lib/api'
 
     let { onUnlock, onClose }: { onUnlock: () => void, onClose: () => void } = $props()
 
@@ -8,13 +9,7 @@
     let error = $state('')
 
     const submit = async () => {
-        const res = await fetch(`http://localhost:3000/api/invite-keys/validate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ invite_key: value }),
-        })
-
-        const { isValid } = await res.json()
+        const { isValid } = await validateInviteKey(value)
         if (!isValid) {
             error = 'Invalid invite key.'
             return

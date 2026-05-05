@@ -2,26 +2,17 @@
     import { EyeOff } from 'lucide-svelte'
     import Button from '$lib/components/ui/Button.svelte'
     import { moment } from '$lib/stores/moment'
-    import { inviteKey } from '$lib/stores/auth'
     import { showToast } from '$lib/stores/toast'
+    import { updateMoment } from '$lib/api'
 
     async function handleUnpublish() {
         if (!$moment) return
 
-        const res = await fetch(`http://localhost:3000/api/moments/${$moment.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-invite-key': $inviteKey,
-            },
-            body: JSON.stringify({ is_published: false }),
-        })
-
-        if (res.ok) {
-            const updated: Moment = await res.json()
+        try {
+            const updated: Moment = await updateMoment($moment.id, { is_published: false })
             moment.set(updated)
             showToast('Moment unpublished.')
-        } else {
+        } catch {
             showToast('Something went wrong.', 'error')
         }
     }

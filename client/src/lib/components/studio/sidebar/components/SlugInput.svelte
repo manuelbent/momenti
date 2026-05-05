@@ -1,7 +1,7 @@
 <script lang="ts">
     import { moment } from '$lib/stores/moment'
-    import { inviteKey } from '$lib/stores/auth'
     import { showToast } from '$lib/stores/toast'
+    import { checkSlug } from '$lib/api'
 
     let slug = $moment?.slug ?? ''
 
@@ -10,13 +10,7 @@
     }
 
     async function onblur() {
-        const params = new URLSearchParams({ slug, excludeId: String($moment.id) })
-        const res = await fetch(`http://localhost:3000/api/moments/check-slug?${params}`, {
-            headers: {
-                'x-invite-key': $inviteKey
-            }
-        })
-        const { isAvailable } = await res.json()
+        const { isAvailable } = await checkSlug(slug, $moment.id)
         if (!isAvailable) {
             showToast('This address is already taken.', 'error')
             return
