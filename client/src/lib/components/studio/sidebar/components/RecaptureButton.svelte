@@ -1,7 +1,7 @@
 <script lang="ts">
     import { RefreshCw } from 'lucide-svelte'
     import { moment } from '../../../../stores/moment'
-    import { capture } from '../../../../api/capture'
+    import { capture } from '../../../../api/moments'
     import Button from '../../../ui/Button.svelte'
     import RecaptureOverlay from '../../RecaptureOverlay.svelte'
 
@@ -29,10 +29,14 @@
 
         try {
             await capture(prompt, {
-                onChunk: (chunk) => { streamText += chunk },
+                onChunk: (chunk) => {
+                    streamText += chunk
+                },
                 onDone: (data) => {
                     moment.set(data)
-                    setTimeout(() => { isRecapturing = false }, 400)
+                    setTimeout(() => {
+                        isRecapturing = false
+                    }, 400)
                 },
             })
         } catch (e) {

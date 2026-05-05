@@ -75,7 +75,7 @@ export default class MomentController {
         const { prompt } = req.body
 
         const send = (event: string, data: unknown) => {
-            res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)
+            res.write(`{ "event": "${event}", "data": ${JSON.stringify(data)} }\n\n`)
         }
 
         try {

@@ -2,8 +2,8 @@
     import { fade } from 'svelte/transition'
     import { push } from 'svelte-spa-router'
     import { SwatchBook } from 'lucide-svelte'
+    import { capture } from '../lib/api/moments'
     import { moment } from '../lib/stores/moment'
-    import { capture } from '../lib/api/capture'
     import Loader from '../lib/components/landing/Loader.svelte'
     import TypeWriter from '../lib/components/landing/TypeWriter.svelte'
     import InviteModal from '../lib/components/landing/InviteModal.svelte'
@@ -45,7 +45,7 @@
         streamText = ''
 
         try {
-            await capture(JSON.stringify(prompt.trim()), {
+            await capture(prompt.trim(), {
                 onChunk: (chunk) => {
                     streamText += chunk
                 },

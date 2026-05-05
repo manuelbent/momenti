@@ -32,3 +32,9 @@ interface Moment {
     created_at: Date
     updated_at: Date|null
 }
+
+interface CaptureCallbacks {
+    onChunk: (chunk: string) => void
+    onDone: (data: Moment) => void
+    onError?: (err: Error) => void
+}

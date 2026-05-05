@@ -1,10 +1,4 @@
-export interface CaptureCallbacks {
-    onChunk: (chunk: string) => void
-    onDone: (data: Moment) => void
-    onError?: (err: Error) => void
-}
-
-export async function capture(prompt: string, callbacks: CaptureCallbacks): Promise<void> {
+export const capture = async (prompt: string, callbacks: CaptureCallbacks): Promise<void> => {
     const response = await fetch('http://localhost:3000/api/capture', {
         method: 'POST',
         headers: {
@@ -38,11 +32,11 @@ export async function capture(prompt: string, callbacks: CaptureCallbacks): Prom
     }
 }
 
-function handleMessage(message: string, callbacks: CaptureCallbacks): void {
-    const event = extract(message, /^event:\s*(\w+)/m)
-    const data = extract(message, /^data:\s*(.+)/ms, JSON.parse)
-
-    if (!event || !data) return
+const handleMessage = (message: string, callbacks: CaptureCallbacks) => {
+    const { event, data } = JSON.parse(message)
+    if (!event || !data) {
+        return
+    }
 
     switch (event) {
         case 'chunk':
@@ -56,9 +50,4 @@ function handleMessage(message: string, callbacks: CaptureCallbacks): void {
         case 'error':
             throw new Error(data.error)
     }
-}
-
-function extract<T>(text: string, regex: RegExp, transform: (v: string) => T = (v) => v as unknown as T): T|null {
-    const match = text.match(regex)
-    return match ? transform(match[1]) : null
 }
