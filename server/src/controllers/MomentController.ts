@@ -20,7 +20,7 @@ export default class MomentController {
     public async loadAll(_: Request, res: Response) {
         try {
             const user: User = res.locals.user
-            const moments = await user.getMoments()
+            const moments = await user.getMoments({ order: [['created_at', 'DESC']] })
             res.send(moments)
         } catch (err) {
             console.error('[MomentController] load all moments error:', err)
