@@ -46,7 +46,9 @@
 
         try {
             await capture(JSON.stringify(prompt.trim()), {
-                onChunk: (chunk) => { streamText += chunk },
+                onChunk: (chunk) => {
+                    streamText += chunk
+                },
                 onDone: (data) => {
                     moment.set(data)
                     isLeaving = true
