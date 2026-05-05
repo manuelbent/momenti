@@ -42,6 +42,7 @@ LAYOUT BEHAVIOR:
 - Avoid placing multiple large content blocks side-by-side.
 - Only use 'layout: row' for small UI elements (cards, features, icons).
 - In 'row' layouts, children should default to 'flex: 1 1 100%' unless explicitly designed as multi-column.
+- A box with layout: 'row' may contain at most 2 direct children. If more than 2 content groups are needed, you must nest them inside column containers. Never place more than 2 major blocks side-by-side.
 
 HERO LAYOUT RULE
 - Vertically center content using flex (justify-content: center) instead of large padding.
