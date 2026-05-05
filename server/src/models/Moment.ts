@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize'
+import { Model, DataTypes, BelongsToGetAssociationMixin } from 'sequelize'
 import sequelize from '../../database/sequelize'
 import User from './User'
 
@@ -11,6 +11,8 @@ export default class Moment extends Model {
     declare is_published: boolean
     declare created_at: Date
     declare updated_at: Date|null
+
+    declare getUser: BelongsToGetAssociationMixin<User>
 }
 
 Moment.init({

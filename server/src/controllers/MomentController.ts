@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
-import UserServiceInterface from '../interfaces/UserServiceInterface'
-import InviteKey from '../models/InviteKey'
+import User from '../models/User'
 
 /**
  * @class MomentController
@@ -10,22 +9,18 @@ export default class MomentController {
     /**
      * @constructor
      * @param {MomentServiceInterface} momentService
-     * @param {UserServiceInterface} userService
      */
-    constructor(
-        private momentService: MomentServiceInterface,
-        private userService: UserServiceInterface
-    ) {}
+    constructor(private momentService: MomentServiceInterface) {}
 
     /**
      * Load all moments by invite key.
-     * @param {Request} req
+     * @param {Request} _
      * @param {Response} res
      */
-    public async loadAll(req: Request, res: Response) {
+    public async loadAll(_: Request, res: Response) {
         try {
-            const inviteKey: InviteKey = res.locals.inviteKey
-            const moments = await this.momentService.getAll(inviteKey.user_id)
+            const user: User = res.locals.user
+            const moments = await user.getMoments()
             res.send(moments)
         } catch (err) {
             console.error('[MomentController] load all moments error:', err)
@@ -75,13 +70,9 @@ export default class MomentController {
      * @param {Response} res
      */
     public async capture(req: Request, res: Response): Promise<void> {
+        const user: User = res.locals.user
+
         const { prompt } = req.body
-        const inviteKey: InviteKey = res.locals.inviteKey
-        const user = await this.userService.getByInviteKey(inviteKey.key)
-        if (!user) {
-            res.status(401).json({ error: 'Invalid invite key.' })
-            return
-        }
 
         const send = (event: string, data: unknown) => {
             res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)

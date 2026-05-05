@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import InviteKeyRepositoryInterface from '../interfaces/InviteKeyRepositoryInterface'
 
 /**
@@ -33,8 +33,8 @@ export default class InviteKeyMiddleware {
             return
         }
 
-        // set InviteKey object as res property
-        res.locals.inviteKey = inviteKey
+        // set user as res prop
+        res.locals.user = await inviteKey.getUser()
 
         next()
     }

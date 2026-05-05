@@ -1,4 +1,3 @@
-import InviteKey from '../models/InviteKey'
 import InviteKeyRepositoryInterface from '../interfaces/InviteKeyRepositoryInterface'
 import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
 
@@ -22,4 +21,3 @@ export default class InviteKeyService implements InviteKeyServiceInterface {
         return !!inviteKey
     }
 }
-

@@ -1,11 +1,14 @@
-import { Model, DataTypes } from 'sequelize'
+import { Model, DataTypes, HasManyGetAssociationsMixin } from 'sequelize'
 import sequelize from '../../database/sequelize'
+import type Moment from './Moment'
 
 export default class User extends Model {
     declare id: number
     declare name: string
     declare email: string
     declare created_at: Date
+
+    declare getMoments: HasManyGetAssociationsMixin<Moment>
 }
 
 User.init({

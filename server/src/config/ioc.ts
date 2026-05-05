@@ -73,7 +73,7 @@ class Container {
     }
 
     public get momentLimitMiddleware(): MomentLimitMiddleware {
-        return this._momentLimitMiddleware ??= new MomentLimitMiddleware(this.momentRepository)
+        return this._momentLimitMiddleware ??= new MomentLimitMiddleware()
     }
 
     public get userRepository(): UserRepositoryInterface {
@@ -101,7 +101,7 @@ class Container {
     }
 
     public get momentController(): MomentController {
-        return this._momentController ??= new MomentController(this.momentService, this.userService)
+        return this._momentController ??= new MomentController(this.momentService)
     }
 
     public get systemController(): SystemController {
