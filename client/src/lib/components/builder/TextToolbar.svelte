@@ -152,6 +152,8 @@
 </script>
 
 <div bind:this={toolbarEl}
+     onmousedown={e => e.preventDefault()}
+     tabindex="-1"
      class="fixed left-0 top-1/2 z-9999 flex flex-col items-stretch
            bg-[#f0ede8] border border-[#0D0D0D14] text-[#0d0d0d]
            rounded-r-xl p-2.5 font-[Inter,sans-serif] text-xs
@@ -185,6 +187,7 @@
                    max="999"
                    value={fontSizePx}
                    placeholder="px"
+                   onmousedown={e => e.stopPropagation()}
                    oninput={handleFontSizeInput}
                    class="bg-transparent border-none outline-none text-[#0d0d0d] text-[13px] font-[inherit] p-1 text-center
                        [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
