@@ -35,6 +35,6 @@
                 placeholder="your-slug"
                 class="flex-1 text-[12px] text-[#0d0d0d] bg-transparent outline-none placeholder:text-[#0d0d0d]/25"
         />
-        <span class="text-[12px] text-[#0d0d0d]/25 shrink-0">.momenti.ai</span>
+        <span class="text-[12px] text-[#0d0d0d]/25 shrink-0">.momenti.cc</span>
     </label>
 </div>

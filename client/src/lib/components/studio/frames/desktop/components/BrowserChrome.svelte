@@ -8,7 +8,7 @@
     <span class="w-2.5 h-2.5 rounded-full bg-[#0d0d0d]/12"></span>
     <div class="flex-1 mx-4">
         <div class="bg-[#0d0d0d]/6 rounded-md px-3 py-1 text-[11px] text-[#0d0d0d]/35 font-sans tracking-wide w-full mx-auto text-center">
-            https://{slug}.momenti.ai
+            https://{slug}.momenti.cc
         </div>
     </div>
 </div>
