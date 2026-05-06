@@ -49,13 +49,16 @@
         ? findNode($moment.content.root, $selectedNodeId)
         : null
 
-    $: cssMap       = parseCss(selectedNode?.css ?? '')
-    $: currentColor = cssMap['color'] ?? '#000000'
-    $: fontSizeRaw  = cssMap['font-size'] ?? ''
+    // Latch last known CSS so values don't snap to defaults while animating out
+    let latchedCssMap: Record<string, string> = {}
+    $: if (selectedNode) latchedCssMap = parseCss(selectedNode.css ?? '')
+
+    $: currentColor = latchedCssMap['color'] ?? '#000000'
+    $: fontSizeRaw  = latchedCssMap['font-size'] ?? ''
     $: fontSizePx   = parseInt(fontSizeRaw) || ''
-    $: isBold       = cssMap['font-weight'] === 'bold' || parseInt(cssMap['font-weight'] ?? '0') >= 700
-    $: isItalic     = cssMap['font-style'] === 'italic'
-    $: isUnderline  = cssMap['text-decoration'] === 'underline' || cssMap['text-decoration']?.includes('underline')
+    $: isBold       = latchedCssMap['font-weight'] === 'bold' || parseInt(latchedCssMap['font-weight'] ?? '0') >= 700
+    $: isItalic     = latchedCssMap['font-style'] === 'italic'
+    $: isUnderline  = latchedCssMap['text-decoration'] === 'underline' || latchedCssMap['text-decoration']?.includes('underline')
 
     // ── handlers ──────────────────────────────────────────────────────────────
     function handleColorInput(e: Event) {
@@ -137,6 +140,7 @@
                 min="1"
                 max="999"
                 value={fontSizePx}
+                placeholder="px"
                 oninput={handleFontSizeInput}
                 class="size-input"
             />
@@ -266,7 +270,7 @@
         color: #0d0d0d;
         font-size: 13px;
         font-family: inherit;
-        padding: 0 3px;
+        padding: 3px;
         text-align: center;
         -moz-appearance: textfield;
         appearance: textfield;
