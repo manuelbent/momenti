@@ -47,6 +47,9 @@ export default class SubmitFormDataRequestValidator {
             res.status(403).json({ error: 'Cannot submit to an unpublished moment.' })
         }
 
+        // set moment as res prop
+        res.locals.moment = moment
+
         next()
     }
 }

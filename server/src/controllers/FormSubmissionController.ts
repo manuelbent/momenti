@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
 import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
+import Moment from '../models/Moment'
 
 /**
  * @class FormSubmissionController
@@ -22,9 +23,10 @@ export default class FormSubmissionController {
      */
     public async store(req: Request, res: Response) {
         try {
-            const { slug } = req.params
-            const { data } = req.body
-            // todo
+            const { form_id, data } = req.body
+            const moment: Moment = res.locals.moment
+            await this.formSubmissionService.store(moment.id, form_id, data)
+            res.status(204).send()
         } catch (err) {
             console.error('[FormSubmissionController] store error:', err)
             res.status(500).json({ error: 'Internal server error.' })
