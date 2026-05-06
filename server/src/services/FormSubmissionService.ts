@@ -12,7 +12,11 @@ export default class FormSubmissionService implements FormSubmissionServiceInter
      */
     constructor(private formSubmissionRepository: FormSubmissionRepositoryInterface) {}
 
+    /**
+     * @param {number} momentId
+     * @param {Record<string, string>} data
+     */
     async store(momentId: number, data: Record<string, string>): Promise<FormSubmission> {
-        return this.formSubmissionRepository.create({ moment_id: momentId, data } as any)
+        return this.formSubmissionRepository.create({ moment_id: momentId, data })
     }
 }

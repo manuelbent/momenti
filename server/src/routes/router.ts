@@ -25,6 +25,10 @@ router.put('/api/moments/:id',
     (req, res) => ioc.momentController.update(req, res)
 )
 
+router.post('/api/moments/:slug/submissions',
+    (req, res) => ioc.formSubmissionController.store(req, res)
+)
+
 router.get('/api/moments/check-slug',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.checkSlugRequestValidator.validate(req, res, next),
@@ -35,11 +39,6 @@ router.get('/api/moments/check-slug',
 router.post('/api/invite-keys/validate',
     (req, res, next) => ioc.validateInviteKeyRequestValidator.validate(req, res, next),
     (req, res) => ioc.inviteKeyController.validate(req, res)
-)
-
-// form submissions routes
-router.post('/api/form-submissions',
-    (req, res) => ioc.formSubmissionController.store(req, res)
 )
 
 // healthcheck

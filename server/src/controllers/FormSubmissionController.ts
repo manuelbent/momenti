@@ -16,6 +16,13 @@ export default class FormSubmissionController {
      * @param {Response} res
      */
     public async store(req: Request, res: Response) {
-        res.send('storing...')
+        try {
+            const { slug } = req.params
+            const { data } = req.body
+            // todo
+        } catch (err) {
+            console.error('[FormSubmissionController] store error:', err)
+            res.status(500).json({ error: 'Internal server error.' })
+        }
     }
 }

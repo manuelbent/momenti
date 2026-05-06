@@ -29,6 +29,7 @@ import InviteKeyRepository from '../repositories/InviteKeyRepository'
 import FormSubmissionRepository from '../repositories/FormSubmissionRepository'
 import UpdateMomentRequestValidator from '../validators/UpdateMomentRequestValidator'
 import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
+import SubmitFormDataRequestValidator from '../validators/SubmitFormDataRequestValidator'
 
 /**
  * Dependency injection container.
@@ -63,6 +64,7 @@ class Container {
     private _updateMomentRequestValidator?: UpdateMomentRequestValidator
     private _checkSlugRequestValidator?: CheckSlugRequestValidator
     private _validateInviteKeyRequestValidator?: ValidateInviteKeyRequestValidator
+    private _submitFormDataRequestValidator?: SubmitFormDataRequestValidator
 
     public get malformedDataMiddleware(): MalformedDataMiddleware {
         return this._malformedDataMiddleware ??= new MalformedDataMiddleware()
@@ -154,6 +156,10 @@ class Container {
 
     public get validateInviteKeyRequestValidator(): ValidateInviteKeyRequestValidator {
         return this._validateInviteKeyRequestValidator ??= new ValidateInviteKeyRequestValidator()
+    }
+
+    public get submitFormDataRequestValidator(): SubmitFormDataRequestValidator {
+        return this._submitFormDataRequestValidator ??= new SubmitFormDataRequestValidator(this.momentService)
     }
 }
 
