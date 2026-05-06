@@ -36,6 +36,7 @@
 
 <svelte:element
         this={tag}
+        id={id}
         bind:this={element}
         style={css}
         contenteditable={isEditable}
