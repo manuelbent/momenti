@@ -1,3 +1,4 @@
+import { Request, Response } from 'express'
 import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
 
 /**
@@ -9,4 +10,12 @@ export default class FormSubmissionController {
      * @param {FormSubmissionServiceInterface} formSubmissionService
      */
     constructor(private formSubmissionService: FormSubmissionServiceInterface) {}
+
+    /**
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public async store(req: Request, res: Response) {
+        res.send('storing...')
+    }
 }

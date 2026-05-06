@@ -37,6 +37,11 @@ router.post('/api/invite-keys/validate',
     (req, res) => ioc.inviteKeyController.validate(req, res)
 )
 
+// form submissions routes
+router.post('/api/form-submissions',
+    (req, res) => ioc.formSubmissionController.store(req, res)
+)
+
 // healthcheck
 router.get('/healthcheck', ioc.systemController.healthcheck)
 

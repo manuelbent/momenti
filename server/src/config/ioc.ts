@@ -7,21 +7,26 @@ import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
 import UserController from '../controllers/UserController'
+import FormSubmissionController from '../controllers/FormSubmissionController'
 import MomentService from '../services/MomentService'
 import InviteKeyService from '../services/InviteKeyService'
 import UserService from '../services/UserService'
+import FormSubmissionService from '../services/FormSubmissionService'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
 import UserServiceInterface from '../interfaces/UserServiceInterface'
+import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
 import PromptValidator from '../validators/PromptValidator'
 import GenerateMomentRequestValidator from '../validators/GenerateMomentRequestValidator'
 import ValidateInviteKeyRequestValidator from '../validators/ValidateInviteKeyRequestValidator'
 import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
 import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 import InviteKeyRepositoryInterface from '../interfaces/InviteKeyRepositoryInterface'
+import FormSubmissionRepositoryInterface from '../interfaces/FormSubmissionRepositoryInterface'
 import UserRepository from '../repositories/UserRepository'
 import MomentRepository from '../repositories/MomentRepository'
 import InviteKeyRepository from '../repositories/InviteKeyRepository'
+import FormSubmissionRepository from '../repositories/FormSubmissionRepository'
 import UpdateMomentRequestValidator from '../validators/UpdateMomentRequestValidator'
 import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
 
@@ -40,15 +45,18 @@ class Container {
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
     private _inviteKeyRepository?: InviteKeyRepositoryInterface
+    private _formSubmissionRepository?: FormSubmissionRepositoryInterface
     // services
     private _momentService?: MomentServiceInterface
     private _inviteKeyService?: InviteKeyServiceInterface
     private _userService?: UserServiceInterface
+    private _formSubmissionService?: FormSubmissionServiceInterface
     // controllers
     private _systemController?: SystemController
     private _momentController?: MomentController
     private _inviteKeyController?: InviteKeyController
     private _userController?: UserController
+    private _formSubmissionController?: FormSubmissionController
     // validators
     private _promptValidator?: PromptValidator
     private _generateMomentRequestValidator?: GenerateMomentRequestValidator
@@ -88,6 +96,10 @@ class Container {
         return this._inviteKeyRepository ??= new InviteKeyRepository()
     }
 
+    public get formSubmissionRepository(): FormSubmissionRepositoryInterface {
+        return this._formSubmissionRepository ??= new FormSubmissionRepository()
+    }
+
     public get momentService(): MomentServiceInterface {
         return this._momentService ??= new MomentService(this.momentRepository)
     }
@@ -98,6 +110,10 @@ class Container {
 
     public get userService(): UserServiceInterface {
         return this._userService ??= new UserService(this.userRepository)
+    }
+
+    public get formSubmissionService(): FormSubmissionServiceInterface {
+        return this._formSubmissionService ??= new FormSubmissionService(this.formSubmissionRepository)
     }
 
     public get momentController(): MomentController {
@@ -114,6 +130,10 @@ class Container {
 
     public get userController(): UserController {
         return this._userController ??= new UserController(this.userService)
+    }
+
+    public get formSubmissionController(): FormSubmissionController {
+        return this._formSubmissionController ??= new FormSubmissionController(this.formSubmissionService)
     }
 
     public get promptValidator(): PromptValidator {
