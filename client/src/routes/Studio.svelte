@@ -6,6 +6,7 @@
     import DeviceView from '$lib/components/studio/DeviceView.svelte'
     import Sidebar from '$lib/components/studio/sidebar/Sidebar.svelte'
     import Toast from '$lib/components/ui/Toast.svelte'
+    import TextToolbar from '$lib/components/builder/TextToolbar.svelte'
 
     let view: 'desktop'|'mobile' = 'desktop'
 
@@ -46,5 +47,7 @@
         </aside>
     </main>
 </div>
+
+<TextToolbar/>
 
 <Toast/>

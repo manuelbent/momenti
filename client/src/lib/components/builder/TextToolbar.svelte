@@ -1,11 +1,11 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte'
-    import { selectedNodeId, selectedNodeRect, moment, updateNode } from '$lib/stores/moment'
+    import { selectedNodeId, moment, updateNode } from '$lib/stores/moment'
 
     let toolbarEl: HTMLElement
 
-    // Find a node by id anywhere in the tree
-    function findNode(node: MomentNode, id: string): MomentNode|null {
+    // ── tree helpers ──────────────────────────────────────────────────────────
+    function findNode(node: MomentNode, id: string): MomentNode | null {
         if (node.id === id) return node
         for (const child of node.children ?? []) {
             const found = findNode(child, id)
@@ -14,142 +14,311 @@
         return null
     }
 
-    // Extract the `color` value from a CSS string, ignoring background-color
-    function extractColor(css: string): string {
-        const match = css.match(/(?<![a-z-])color:\s*([^;]+)/i)
-        return match ? match[1].trim() : '#000000'
+    // ── CSS helpers ───────────────────────────────────────────────────────────
+    function parseCss(css: string): Record<string, string> {
+        const map: Record<string, string> = {}
+        for (const decl of (css ?? '').split(';')) {
+            const idx = decl.indexOf(':')
+            if (idx === -1) continue
+            const key = decl.slice(0, idx).trim()
+            const val = decl.slice(idx + 1).trim()
+            if (key) map[key] = val
+        }
+        return map
     }
 
-    // Replace (or append) `color` in a CSS string
-    function replaceColor(css: string, newColor: string): string {
-        return /(?<![a-z-])color:/i.test(css)
-            ? css.replace(/(?<![a-z-])color:\s*[^;]+/i, `color: ${newColor}`)
-            : `${css}; color: ${newColor}`
+    function stringifyCss(map: Record<string, string>): string {
+        return Object.entries(map)
+            .filter(([, v]) => v !== '')
+            .map(([k, v]) => `${k}: ${v}`)
+            .join('; ')
     }
 
+    function setCssProp(css: string, prop: string, value: string): string {
+        const map = parseCss(css)
+        if (value === '') {
+            delete map[prop]
+        } else {
+            map[prop] = value
+        }
+        return stringifyCss(map)
+    }
+
+    // ── derived state ─────────────────────────────────────────────────────────
     $: selectedNode = ($selectedNodeId && $moment)
         ? findNode($moment.content.root, $selectedNodeId)
         : null
 
-    $: currentColor = selectedNode ? extractColor(selectedNode.css ?? '') : '#000000'
+    $: cssMap       = parseCss(selectedNode?.css ?? '')
+    $: currentColor = cssMap['color'] ?? '#000000'
+    $: fontSizeRaw  = cssMap['font-size'] ?? ''
+    $: fontSizePx   = parseInt(fontSizeRaw) || ''
+    $: isBold       = cssMap['font-weight'] === 'bold' || parseInt(cssMap['font-weight'] ?? '0') >= 700
+    $: isItalic     = cssMap['font-style'] === 'italic'
+    $: isUnderline  = cssMap['text-decoration'] === 'underline' || cssMap['text-decoration']?.includes('underline')
 
-    // Toolbar position: just above the selected element
-    $: rect = $selectedNodeRect
-    $: toolbarTop = rect ? Math.max(8, rect.top + window.scrollY - 44) : 0
-    $: toolbarLeft = rect ? rect.left + window.scrollX : 0
-
+    // ── handlers ──────────────────────────────────────────────────────────────
     function handleColorInput(e: Event) {
         if (!$selectedNodeId || !selectedNode) return
-        const newColor = (e.target as HTMLInputElement).value
-        updateNode($selectedNodeId, { css: replaceColor(selectedNode.css ?? '', newColor) })
+        updateNode($selectedNodeId, {
+            css: setCssProp(selectedNode.css ?? '', 'color', (e.target as HTMLInputElement).value)
+        })
     }
 
-    // Dismiss toolbar when clicking outside text nodes and the toolbar itself
+    function handleFontSizeInput(e: Event) {
+        if (!$selectedNodeId || !selectedNode) return
+        const raw = (e.target as HTMLInputElement).value.trim()
+        const px  = raw ? `${parseInt(raw)}px` : ''
+        updateNode($selectedNodeId, {
+            css: setCssProp(selectedNode.css ?? '', 'font-size', px)
+        })
+    }
+
+    function toggleBold() {
+        if (!$selectedNodeId || !selectedNode) return
+        updateNode($selectedNodeId, {
+            css: setCssProp(selectedNode.css ?? '', 'font-weight', isBold ? '' : 'bold')
+        })
+    }
+
+    function toggleItalic() {
+        if (!$selectedNodeId || !selectedNode) return
+        updateNode($selectedNodeId, {
+            css: setCssProp(selectedNode.css ?? '', 'font-style', isItalic ? '' : 'italic')
+        })
+    }
+
+    function toggleUnderline() {
+        if (!$selectedNodeId || !selectedNode) return
+        updateNode($selectedNodeId, {
+            css: setCssProp(selectedNode.css ?? '', 'text-decoration', isUnderline ? '' : 'underline')
+        })
+    }
+
+    // ── dismiss on outside click ──────────────────────────────────────────────
     function handleWindowPointerDown(e: PointerEvent) {
-        const target = e.target as HTMLElement
         if (!$selectedNodeId) return
+        const target = e.target as HTMLElement
         if (toolbarEl?.contains(target)) return
-        // If clicking a contenteditable, BaseText's focus handler will re-set selectedNodeId
         if (target.isContentEditable) return
         selectedNodeId.set(null)
     }
 
-    onMount(() => window.addEventListener('pointerdown', handleWindowPointerDown))
+    onMount(()  => window.addEventListener('pointerdown', handleWindowPointerDown))
     onDestroy(() => window.removeEventListener('pointerdown', handleWindowPointerDown))
 </script>
 
-{#if selectedNode}
-    <div
-            bind:this={toolbarEl}
-            class="toolbar"
-            style="top: {toolbarTop}px; left: {toolbarLeft}px"
-    >
-        <span class="toolbar-label">{selectedNode.tag?.toUpperCase() ?? 'TEXT'}</span>
-        <div class="divider"></div>
-        <label class="toolbar-item" title="Font color">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 7h6l3 9H6L9 7z"/>
-                <line x1="12" y1="3" x2="12" y2="7"/>
-                <rect x="3" y="18" width="18" height="3" rx="1" fill={currentColor} stroke="none"/>
-            </svg>
+<div
+    bind:this={toolbarEl}
+    class="toolbar"
+    class:visible={!!selectedNode}
+    role="toolbar"
+    aria-label="Text formatting"
+>
+    <!-- tag label -->
+    <span class="tag-label">{selectedNode?.tag?.toUpperCase() ?? 'TEXT'}</span>
+
+    <div class="divider"></div>
+
+    <!-- color -->
+    <div class="section">
+        <label class="color-wrap" title="Font color">
+            <span class="color-preview" style="background: {currentColor}"></span>
             <input
-                    type="color"
-                    value={currentColor}
-                    oninput={handleColorInput}
+                type="color"
+                value={currentColor}
+                oninput={handleColorInput}
             />
         </label>
     </div>
-{/if}
+
+    <div class="divider"></div>
+
+    <!-- font size -->
+    <div class="section">
+        <div class="size-wrap">
+            <input
+                type="number"
+                min="1"
+                max="999"
+                value={fontSizePx}
+                oninput={handleFontSizeInput}
+                class="size-input"
+            />
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- format -->
+    <div class="section">
+        <div class="format-col">
+            <button
+                class="fmt-btn"
+                class:active={isBold}
+                onclick={toggleBold}
+                title="Bold"
+            ><strong>B</strong></button>
+            <button
+                class="fmt-btn"
+                class:active={isItalic}
+                onclick={toggleItalic}
+                title="Italic"
+            ><em>I</em></button>
+            <button
+                class="fmt-btn"
+                class:active={isUnderline}
+                onclick={toggleUnderline}
+                title="Underline"
+            ><span class="underline-label">U</span></button>
+        </div>
+    </div>
+</div>
 
 <style>
+    /* ── panel ─────────────────────────────────────────────────────────────── */
     .toolbar {
-        position: absolute;
+        position: fixed;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%) translateX(calc(-100% - 12px));
+        transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 9999;
+
         display: flex;
-        align-items: center;
-        gap: 4px;
-        background: #1e1e1e;
-        color: #f0f0f0;
-        border-radius: 8px;
-        padding: 5px 10px;
+        flex-direction: column;
+        align-items: stretch;
+
+        background: #f0ede8;
+        border: 1px solid #0D0D0D14;
+        color: #0d0d0d;
+        border-radius: 0 12px 12px 0;
+        padding: 14px 12px;
         font-family: Inter, sans-serif;
         font-size: 12px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-        white-space: nowrap;
-        /* pointer-events must stay on so color picker works */
     }
 
-    .toolbar-label {
-        font-weight: 600;
-        opacity: 0.5;
+    .toolbar.visible {
+        transform: translateY(-50%) translateX(0);
+    }
+
+    /* ── tag label ─────────────────────────────────────────────────────────── */
+    .tag-label {
         font-size: 10px;
-        letter-spacing: 0.08em;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        opacity: 0.35;
+        text-align: center;
+        padding-bottom: 10px;
     }
 
+    /* ── divider ───────────────────────────────────────────────────────────── */
     .divider {
-        width: 1px;
-        height: 16px;
-        background: rgba(255, 255, 255, 0.15);
-        margin: 0 2px;
+        height: 1px;
+        background: rgba(13, 13, 13, 0.08);
+        margin: 0 -12px;
     }
 
-    .toolbar-item {
+    /* ── section ───────────────────────────────────────────────────────────── */
+    .section {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 10px 0;
+    }
+
+    .section-label {
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.35;
+    }
+
+    /* ── color ─────────────────────────────────────────────────────────────── */
+    .color-wrap {
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 8px;
         cursor: pointer;
-        padding: 2px 4px;
-        border-radius: 4px;
-        transition: background 0.15s;
     }
 
-    .toolbar-item:hover {
-        background: rgba(255, 255, 255, 0.1);
+    .color-preview {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid rgba(13, 13, 13, 0.15);
+        flex-shrink: 0;
+        transition: border-color 0.15s;
     }
 
-    /* Hide the native color swatch but keep it clickable */
-    .toolbar-item input[type="color"] {
-        width: 16px;
-        height: 16px;
+    .color-wrap:hover .color-preview {
+        border-color: rgba(13, 13, 13, 0.4);
+    }
+
+    .color-wrap input[type="color"] {
+        width: 0;
+        height: 0;
+        padding: 0;
         border: none;
-        border-radius: 50%;
-        padding: 0;
-        cursor: pointer;
+        opacity: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    /* ── font size ─────────────────────────────────────────────────────────── */
+    .size-wrap {
+        border: 1px solid rgba(13, 13, 13, 0.08);
+        border-radius: 6px;
+    }
+
+    .size-input {
         background: none;
+        border: none;
+        outline: none;
+        color: #0d0d0d;
+        font-size: 13px;
+        font-family: inherit;
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+
+    .size-input::-webkit-outer-spin-button,
+    .size-input::-webkit-inner-spin-button {
         -webkit-appearance: none;
-        appearance: none;
     }
 
-    .toolbar-item input[type="color"]::-webkit-color-swatch-wrapper {
-        padding: 0;
-        border-radius: 50%;
+    /* ── format buttons ────────────────────────────────────────────────────── */
+    .format-col {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
     }
 
-    .toolbar-item input[type="color"]::-webkit-color-swatch {
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
+    .fmt-btn {
+        height: 28px;
+        border: 1px solid #e4e0dc;
+        border-radius: 6px;
+        color: #0d0d0d;
+        font-size: 12px;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .fmt-btn:hover {
+        border-color: rgba(13, 13, 13, 0.2);
+    }
+
+    .fmt-btn.active {
+        border-color: rgba(13, 13, 13, 0.2);
+    }
+
+    .underline-label {
+        text-decoration: underline;
     }
 </style>
-
-
 
