@@ -38,7 +38,6 @@
                                 value={opt.value}
                                 bind:group={values[field.name]}
                                 required
-                                disabled={viewOnly}
                             />
                             {opt.label}
                         </label>
@@ -55,14 +54,17 @@
                         placeholder={field.placeholder ?? ''}
                         bind:value={values[field.name]}
                         required
-                        disabled={viewOnly}
                     />
                 </label>
             {/if}
         {/each}
 
-        <button type="submit" style={buttonCss} disabled={viewOnly}>{buttonLabel}</button>
+        <button type="submit" style={buttonCss}>{buttonLabel}</button>
     </form>
 {/if}
-
-
+<style>
+    fieldset {
+        display: flex;
+        gap: 2rem;
+    }
+</style>
