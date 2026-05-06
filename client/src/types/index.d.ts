@@ -38,3 +38,11 @@ interface CaptureCallbacks {
     onDone: (data: Moment) => void
     onError?: (err: Error) => void
 }
+
+interface CssComputedVals {
+    color: string
+    fontSizePx: number | ''
+    isBold: boolean
+    isItalic: boolean
+    isUnderline: boolean
+}

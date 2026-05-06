@@ -60,25 +60,7 @@
         ? findNode($moment.content.root, $selectedNodeId)
         : null
 
-    // All display values read from the live computed style of the DOM element.
-    // Latched so they don't snap to defaults while the toolbar animates out.
-    interface ComputedVals {
-        color: string
-        fontSizePx: number | ''
-        isBold: boolean
-        isItalic: boolean
-        isUnderline: boolean
-    }
-
-    const defaultVals: ComputedVals = {
-        color: '#000000',
-        fontSizePx: '',
-        isBold: false,
-        isItalic: false,
-        isUnderline: false,
-    }
-
-    let latchedVals: ComputedVals = { ...defaultVals }
+    let computedVals: CssComputedVals = {} as CssComputedVals
 
     $: if ($selectedNodeId && selectedNode) {
         Promise.resolve().then(() => {
@@ -88,19 +70,17 @@
             }
 
             const s = window.getComputedStyle(el)
-            latchedVals = {
-                color: s.color || '#000000',
-                fontSizePx: parseInt(s.fontSize) || '',
+            computedVals = {
+                color: s.color,
+                fontSizePx: parseInt(s.fontSize),
                 isBold: parseInt(s.fontWeight) >= 700,
                 isItalic: s.fontStyle === 'italic',
                 isUnderline: s.textDecorationLine.includes('underline'),
             }
         })
-    } else {
-        latchedVals = { ...defaultVals }
     }
 
-    $: ({ color: currentColor, fontSizePx, isBold, isItalic, isUnderline } = latchedVals)
+    $: ({ color: currentColor, fontSizePx, isBold, isItalic, isUnderline } = computedVals)
 
     const handleColorInput = (e: Event) => {
         if (!$selectedNodeId || !selectedNode) return
