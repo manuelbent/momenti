@@ -36,8 +36,8 @@
             css={node.css ?? ''}
             inputCss={node.inputCss ?? ''}
             buttonCss={node.buttonCss ?? ''}
-            placeholder={node.placeholder ?? ''}
-            buttonLabel={node.buttonLabel ?? ''}
+            buttonLabel={node.buttonLabel ?? 'Send'}
+            fields={node.fields ?? []}
     />
 {:else if node.type === 'map'}
     <BaseMap address={node.address} css={node.css} />

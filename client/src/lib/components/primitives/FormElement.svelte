@@ -1,16 +1,20 @@
 <script lang="ts">
     import { getContext } from 'svelte'
 
-    export let css: string
-    export let inputCss: string
-    export let buttonCss: string
-    export let placeholder: string
-    export let buttonLabel: string
+    export let css:         string      = ''
+    export let inputCss:    string      = ''
+    export let buttonCss:   string      = ''
+    export let buttonLabel: string      = 'Send'
+    export let fields:      FormField[] = []
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
 
-    let value: string
+    let values: Record<string, string> = {}
     let submitted = false
+
+    function handleSubmit() {
+        submitted = true
+    }
 </script>
 
 {#if submitted}
@@ -18,8 +22,47 @@
         <p style="font-style: italic;">Thank you!</p>
     </div>
 {:else}
-    <form style={css} on:submit|preventDefault={() => (submitted = true)}>
-        <input style={inputCss} bind:value {placeholder} required disabled={viewOnly} />
+    <form style={css} on:submit|preventDefault={handleSubmit}>
+        {#each fields as field}
+            {#if field.type === 'subject'}
+                <p>{field.text}</p>
+
+            {:else if field.type === 'radio'}
+                <fieldset>
+                    {#if field.label}<legend>{field.label}</legend>{/if}
+                    {#each field.options as opt}
+                        <label>
+                            <input
+                                type="radio"
+                                name={field.name}
+                                value={opt.value}
+                                bind:group={values[field.name]}
+                                required
+                                disabled={viewOnly}
+                            />
+                            {opt.label}
+                        </label>
+                    {/each}
+                </fieldset>
+
+            {:else if field.type === 'input'}
+                <label>
+                    {#if field.label}<span>{field.label}</span>{/if}
+                    <input
+                        style={inputCss}
+                        type="text"
+                        name={field.name}
+                        placeholder={field.placeholder ?? ''}
+                        bind:value={values[field.name]}
+                        required
+                        disabled={viewOnly}
+                    />
+                </label>
+            {/if}
+        {/each}
+
         <button type="submit" style={buttonCss} disabled={viewOnly}>{buttonLabel}</button>
     </form>
 {/if}
+
+

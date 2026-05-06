@@ -1,3 +1,8 @@
+type FormField =
+    | { type: 'subject'; text: string }
+    | { type: 'radio';   name: string; label?: string; options: { label: string; value: string }[] }
+    | { type: 'input';   name: string; label?: string; placeholder?: string }
+
 interface MomentNode {
     id: string;
     type: 'box'|'text'|'image'|'form'|'map';
@@ -10,7 +15,8 @@ interface MomentNode {
     src?: string;
     alt?: string;
     address?: string; // The AI will populate this
-    placeholder?: string;
+    // form node
+    fields?: FormField[];
     buttonLabel?: string;
     inputCss?: string;
     buttonCss?: string;
