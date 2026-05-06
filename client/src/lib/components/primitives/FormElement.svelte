@@ -30,10 +30,6 @@
     <div style={css}>
         <p style="font-style: italic;">✓</p>
     </div>
-{:else if error}
-    <div style={css}>
-        <p style="font-style: italic;">Something went wrong. Please try again.</p>
-    </div>
 {:else}
     <form style={css} on:submit|preventDefault={handleSubmit}>
         {#each fields as field}
@@ -46,13 +42,12 @@
                         <legend>{field.label}</legend>
                     {/if}
                     {#each field.options as opt}
-                        <label>
-                            <input
-                                    type="radio"
-                                    name={field.name}
-                                    value={opt.value}
-                                    bind:group={values[field.name]}
-                                    required
+                        <label style="cursor: pointer">
+                            <input type="radio"
+                                   name={field.name}
+                                   value={opt.value}
+                                   bind:group={values[field.name]}
+                                   required
                             />
                             {opt.label}
                         </label>
@@ -62,19 +57,21 @@
             {:else if field.type === 'input'}
                 <label>
                     {#if field.label}<span>{field.label}</span>{/if}
-                    <input
-                            style={inputCss}
-                            type="text"
-                            name={field.name}
-                            placeholder={field.placeholder ?? ''}
-                            bind:value={values[field.name]}
-                            required
+                    <input style={inputCss}
+                           type="text"
+                           name={field.name}
+                           placeholder={field.placeholder ?? ''}
+                           bind:value={values[field.name]}
+                           required
                     />
                 </label>
             {/if}
         {/each}
 
-        <button type="submit" style={buttonCss}>{buttonLabel}</button>
+        <button type="submit" style="cursor: pointer; {buttonCss}">{buttonLabel}</button>
+        {#if error}
+            <p style="font-style: italic;">Something went wrong. Please try again.</p>
+        {/if}
     </form>
 {/if}
 
