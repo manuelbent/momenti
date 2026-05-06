@@ -5,6 +5,7 @@ import Moment from './Moment'
 export default class FormSubmission extends Model {
     declare id: number
     declare moment_id: number
+    declare form_id: string
     declare data: Record<string, string>
     declare submitted_at: Date
 
@@ -24,6 +25,10 @@ FormSubmission.init({
         references: { model: 'moments', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
+    },
+    form_id: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
     data: {
         type: DataTypes.JSON,

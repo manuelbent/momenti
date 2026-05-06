@@ -26,6 +26,7 @@ router.put('/api/moments/:id',
 )
 
 router.post('/api/moments/:slug/submissions',
+    (req, res, next) => ioc.submitFormDataRequestValidator.validate(req, res, next),
     (req, res) => ioc.formSubmissionController.store(req, res)
 )
 

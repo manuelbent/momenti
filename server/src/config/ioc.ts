@@ -135,7 +135,7 @@ class Container {
     }
 
     public get formSubmissionController(): FormSubmissionController {
-        return this._formSubmissionController ??= new FormSubmissionController(this.formSubmissionService)
+        return this._formSubmissionController ??= new FormSubmissionController(this.formSubmissionService, this.momentRepository)
     }
 
     public get promptValidator(): PromptValidator {

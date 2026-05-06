@@ -20,6 +20,10 @@ module.exports = {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE'
             },
+            form_id: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
             data: {
                 type: Sequelize.JSON,
                 allowNull: false,

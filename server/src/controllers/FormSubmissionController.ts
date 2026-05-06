@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
+import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 
 /**
  * @class FormSubmissionController
@@ -8,8 +9,12 @@ export default class FormSubmissionController {
     /**
      * @constructor
      * @param {FormSubmissionServiceInterface} formSubmissionService
+     * @param {MomentRepositoryInterface} momentRepository
      */
-    constructor(private formSubmissionService: FormSubmissionServiceInterface) {}
+    constructor(
+        private formSubmissionService: FormSubmissionServiceInterface,
+        private momentRepository: MomentRepositoryInterface
+    ) {}
 
     /**
      * @param {Request} req

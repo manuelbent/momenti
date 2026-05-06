@@ -10,6 +10,7 @@ export default class SubmitFormDataRequestValidator {
      * @private {ZodObject}
      */
     schema = z.object({
+        form_id: z.string().min(1),
         data: z.record(z.string(), z.string())
     }).strict()
 
