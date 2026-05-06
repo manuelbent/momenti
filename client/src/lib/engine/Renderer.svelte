@@ -33,6 +33,7 @@
     <BaseImage src={node.src ?? ''} alt={node.alt ?? ''} css={node.css ?? ''}/>
 {:else if node.type === 'form'}
     <FormElement
+            id={node.id}
             css={node.css ?? ''}
             inputCss={node.inputCss ?? ''}
             buttonCss={node.buttonCss ?? ''}

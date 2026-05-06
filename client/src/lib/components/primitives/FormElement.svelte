@@ -1,64 +1,82 @@
 <script lang="ts">
-    import { getContext } from 'svelte'
+    import { submitForm } from '$lib/api/submissions'
+    import { moment } from '$lib/stores/moment'
 
+    export let id: string = ''
     export let css: string = ''
     export let inputCss: string = ''
     export let buttonCss: string = ''
     export let buttonLabel: string = 'Send'
     export let fields: FormField[] = []
 
-    const viewOnly = getContext<boolean>('viewOnly') ?? false
+    const momentSlug = $moment?.slug ?? ''
 
     let values: Record<string, string> = {}
     let submitted = false
+    let error = false
 
-    function handleSubmit() {
-        submitted = true
+    async function handleSubmit() {
+        try {
+            await submitForm(momentSlug, id, values)
+            submitted = true
+        } catch (err) {
+            console.error('[FormElement] submit error:', err)
+            error = true
+        }
     }
 </script>
 
+{#if submitted}
+    <div style={css}>
+        <p style="font-style: italic;">✓</p>
+    </div>
+{:else if error}
+    <div style={css}>
+        <p style="font-style: italic;">Something went wrong. Please try again.</p>
+    </div>
+{:else}
+    <form style={css} on:submit|preventDefault={handleSubmit}>
+        {#each fields as field}
+            {#if field.type === 'subject'}
+                <p>{field.text}</p>
 
-<form style={css} on:submit|preventDefault={handleSubmit}>
-    {#each fields as field}
-        {#if field.type === 'subject'}
-            <p>{field.text}</p>
+            {:else if field.type === 'radio'}
+                <fieldset>
+                    {#if field.label}
+                        <legend>{field.label}</legend>
+                    {/if}
+                    {#each field.options as opt}
+                        <label>
+                            <input
+                                    type="radio"
+                                    name={field.name}
+                                    value={opt.value}
+                                    bind:group={values[field.name]}
+                                    required
+                            />
+                            {opt.label}
+                        </label>
+                    {/each}
+                </fieldset>
 
-        {:else if field.type === 'radio'}
-            <fieldset>
-                {#if field.label}
-                    <legend>{field.label}</legend>
-                {/if}
-                {#each field.options as opt}
-                    <label>
-                        <input
-                                type="radio"
-                                name={field.name}
-                                value={opt.value}
-                                bind:group={values[field.name]}
-                                required
-                        />
-                        {opt.label}
-                    </label>
-                {/each}
-            </fieldset>
+            {:else if field.type === 'input'}
+                <label>
+                    {#if field.label}<span>{field.label}</span>{/if}
+                    <input
+                            style={inputCss}
+                            type="text"
+                            name={field.name}
+                            placeholder={field.placeholder ?? ''}
+                            bind:value={values[field.name]}
+                            required
+                    />
+                </label>
+            {/if}
+        {/each}
 
-        {:else if field.type === 'input'}
-            <label>
-                {#if field.label}<span>{field.label}</span>{/if}
-                <input
-                        style={inputCss}
-                        type="text"
-                        name={field.name}
-                        placeholder={field.placeholder ?? ''}
-                        bind:value={values[field.name]}
-                        required
-                />
-            </label>
-        {/if}
-    {/each}
-
-    <button type="submit" style={buttonCss}>{buttonLabel}</button>
-</form>
+        <button type="submit" style={buttonCss}>{buttonLabel}</button>
+    </form>
+{/if}
 
 <style>
     fieldset {
