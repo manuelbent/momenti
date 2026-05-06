@@ -1,15 +1,15 @@
 <script lang="ts">
     import { getContext } from 'svelte'
 
-    export let css: string = ''
-    export let inputCss: string = ''
-    export let buttonCss: string = ''
-    export let placeholder: string = 'Your name'
-    export let buttonLabel: string = 'RSVP'
+    export let css: string
+    export let inputCss: string
+    export let buttonCss: string
+    export let placeholder: string
+    export let buttonLabel: string
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
 
-    let name = ''
+    let value: string
     let submitted = false
 </script>
 
@@ -19,7 +19,7 @@
     </div>
 {:else}
     <form style={css} on:submit|preventDefault={() => (submitted = true)}>
-        <input style={inputCss} bind:value={name} {placeholder} required disabled={viewOnly} />
+        <input style={inputCss} bind:value {placeholder} required disabled={viewOnly} />
         <button type="submit" style={buttonCss} disabled={viewOnly}>{buttonLabel}</button>
     </form>
 {/if}
