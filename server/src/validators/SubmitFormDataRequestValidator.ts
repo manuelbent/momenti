@@ -38,9 +38,13 @@ export default class SubmitFormDataRequestValidator {
             return
         }
 
-        if (!await this.momentService.slugExists(slug)) {
+        const moment = await this.momentService.getBySlug(slug)
+        if (!moment) {
             res.status(409).json({ error: 'The provided slug does not exist.' })
             return
+        }
+        if (!moment.is_published) {
+            res.status(403).json({ error: 'Cannot submit to an unpublished moment.' })
         }
 
         next()
