@@ -80,7 +80,7 @@
 
     let latchedVals: ComputedVals = { ...defaultVals }
 
-    $: if ($selectedNodeId) {
+    $: if ($selectedNodeId && selectedNode) {
         Promise.resolve().then(() => {
             const el = document.getElementById($selectedNodeId!)
             if (!el) {
