@@ -115,11 +115,6 @@
     role="toolbar"
     aria-label="Text formatting"
 >
-    <!-- tag label -->
-    <span class="tag-label">{selectedNode?.tag?.toUpperCase() ?? 'TEXT'}</span>
-
-    <div class="divider"></div>
-
     <!-- color -->
     <div class="section">
         <label class="color-wrap" title="Font color">
@@ -193,7 +188,7 @@
         border: 1px solid #0D0D0D14;
         color: #0d0d0d;
         border-radius: 0 12px 12px 0;
-        padding: 14px 12px;
+        padding: 10px;
         font-family: Inter, sans-serif;
         font-size: 12px;
     }
@@ -216,23 +211,15 @@
     .divider {
         height: 1px;
         background: rgba(13, 13, 13, 0.08);
-        margin: 0 -12px;
+        margin: 8px -12px;
     }
 
     /* ── section ───────────────────────────────────────────────────────────── */
     .section {
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 6px;
-        padding: 10px 0;
-    }
-
-    .section-label {
-        font-size: 9px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        opacity: 0.35;
     }
 
     /* ── color ─────────────────────────────────────────────────────────────── */
@@ -279,6 +266,8 @@
         color: #0d0d0d;
         font-size: 13px;
         font-family: inherit;
+        padding: 0 3px;
+        text-align: center;
         -moz-appearance: textfield;
         appearance: textfield;
     }
@@ -296,7 +285,7 @@
     }
 
     .fmt-btn {
-        height: 28px;
+        padding: 5px 10px;
         border: 1px solid #e4e0dc;
         border-radius: 6px;
         color: #0d0d0d;
