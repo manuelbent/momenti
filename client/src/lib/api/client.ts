@@ -9,4 +9,3 @@ export function authHeaders(): HeadersInit {
         'x-invite-key': get(inviteKey)
     }
 }
-

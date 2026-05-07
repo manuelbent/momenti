@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { submitForm } from '$lib/api/submissions'
     import { moment } from '$lib/stores/moment'
+    import { submitForm } from '$lib/api'
 
     export let id: string = ''
     export let css: string = ''
