@@ -1,30 +1,31 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte'
 
+    const words = ['moment', 'event', 'story', 'identity', 'chapter']
+
     interface Props {
-        words: string[]
         pauseMs?: number
-        backspeedMs?: number
-        typespeedMs?: number
+        backspaceSpeedMs?: number
+        typingSpeedMs?: number
     }
 
-    let { words, pauseMs = 1000, backspeedMs = 65, typespeedMs = 95 }: Props = $props()
+    let { pauseMs = 1000, backspaceSpeedMs = 65, typingSpeedMs = 95 }: Props = $props()
 
     let cycleIndex = 0
     const initial = words[0] ?? ''
     let displayed = $state<string>(initial)
-    let typeTimeout: ReturnType<typeof setTimeout> | undefined
+    let typeTimeout: ReturnType<typeof setTimeout>|undefined
 
     function runTyper() {
         const current = words[cycleIndex]
-        const next    = words[(cycleIndex + 1) % words.length]
+        const next = words[(cycleIndex + 1) % words.length]
         let step = current.length
 
         function backspace() {
             step--
             displayed = current.slice(0, step)
             if (step > 0) {
-                typeTimeout = setTimeout(backspace, backspeedMs)
+                typeTimeout = setTimeout(backspace, backspaceSpeedMs)
             } else {
                 cycleIndex = (cycleIndex + 1) % words.length
                 let i = 0
@@ -32,7 +33,7 @@
                     i++
                     displayed = next.slice(0, i)
                     typeTimeout = i < next.length
-                        ? setTimeout(typeChar, typespeedMs)
+                        ? setTimeout(typeChar, typingSpeedMs)
                         : setTimeout(runTyper, pauseMs)
                 }, 140)
             }
@@ -52,8 +53,13 @@
         font-weight: 200;
         animation: blink 1.1s step-start infinite;
     }
+
     @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0; }
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+        }
     }
 </style>
