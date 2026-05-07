@@ -1,4 +1,4 @@
-import { BASE_URL } from './client'
+import { authHeaders, BASE_URL } from './client'
 
 export const submitForm = async (
     slug: string,
@@ -11,4 +11,13 @@ export const submitForm = async (
         body: JSON.stringify({ form_id, data }),
     })
     if (!res.ok) throw new Error(`Failed to submit form: ${res.status}`)
+}
+
+export const downloadFormSubmissions = async (slug: string) => {
+    const res = await fetch(`${BASE_URL}/api/moments/${slug}/submissions`, {
+        method: 'GET',
+        headers: authHeaders(), // to change
+    })
+    if (!res.ok) throw new Error(`Failed to submit form: ${res.status}`)
+    return res.json()
 }

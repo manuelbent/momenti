@@ -30,6 +30,12 @@ router.post('/api/moments/:slug/submissions',
     (req, res) => ioc.formSubmissionController.store(req, res)
 )
 
+router.get('/api/moments/:slug/submissions',
+    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.downloadFormSubmissionsMiddleware.handle(req, res, next),
+    (req, res) => ioc.formSubmissionController.download(req, res)
+)
+
 router.get('/api/moments/check-slug',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.checkSlugRequestValidator.validate(req, res, next),

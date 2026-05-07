@@ -32,4 +32,12 @@ export default class FormSubmissionController {
             res.status(500).json({ error: 'Internal server error.' })
         }
     }
+
+    /**
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public async download(req: Request, res: Response) {
+        res.status(200).json({ exporting: true })
+    }
 }

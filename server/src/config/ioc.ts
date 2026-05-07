@@ -3,6 +3,7 @@ import ValidationErrorMiddleware from '../middlewares/ValidationErrorMiddleware'
 import SseMiddleware from '../middlewares/SseMiddleware'
 import InviteKeyMiddleware from '../middlewares/InviteKeyMiddleware'
 import MomentLimitMiddleware from '../middlewares/MomentLimitMiddleware'
+import DownloadFormSubmissionsMiddleware from '../middlewares/DownloadFormSubmissionsMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
@@ -42,6 +43,7 @@ class Container {
     private _sseMiddleware?: SseMiddleware
     private _inviteKeyMiddleware?: InviteKeyMiddleware
     private _momentLimitMiddleware?: MomentLimitMiddleware
+    private _downloadFormSubmissionsMiddleware?: DownloadFormSubmissionsMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -84,6 +86,10 @@ class Container {
 
     public get momentLimitMiddleware(): MomentLimitMiddleware {
         return this._momentLimitMiddleware ??= new MomentLimitMiddleware()
+    }
+
+    public get downloadFormSubmissionsMiddleware(): DownloadFormSubmissionsMiddleware {
+        return this._downloadFormSubmissionsMiddleware ??= new DownloadFormSubmissionsMiddleware()
     }
 
     public get userRepository(): UserRepositoryInterface {

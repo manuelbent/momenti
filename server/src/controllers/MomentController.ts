@@ -21,7 +21,7 @@ export default class MomentController {
         try {
             const user: User = res.locals.user
             const moments = await user.getMoments({ order: [['created_at', 'DESC']] })
-            res.send(moments)
+            res.json(moments)
         } catch (err) {
             console.error('[MomentController] load all moments error:', err)
             res.status(500).json({ error: 'Internal server error.' })
