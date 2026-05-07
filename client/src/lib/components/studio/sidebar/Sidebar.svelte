@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { moment, moments } from '$lib/stores/moment'
+    import { moment, moments, hasForms } from '$lib/stores/moment'
     import SlugInput from './components/SlugInput.svelte'
     import PromptCounter from './components/PromptCounter.svelte'
     import RecaptureButton from './components/RecaptureButton.svelte'
@@ -40,7 +40,9 @@
             <PublishButton/>
         {/if}
 
-        <DownloadFormSubmissionsButton/>
+        {#if $hasForms}
+            <DownloadFormSubmissionsButton/>
+        {/if}
     </div>
 
     <hr class="border-[#0d0d0d]/6 -mx-6"/>

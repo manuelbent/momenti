@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store'
+import { writable, derived } from 'svelte/store'
 
 // overwrite writeable to add local storage functionality
 const useMomentStore = () => {
@@ -57,3 +57,12 @@ export const updateNode = (id: string, newData: Partial<MomentNode>) => {
 // tracks the currently-selected text node in the builder
 export const selectedNodeId = writable<string|null>(null)
 export const selectedNodeRect = writable<DOMRect|null>(null)
+
+// true when the active moment contains at least one form node
+const hasFormNodeRecursive = (node: MomentNode): boolean =>
+    node.type === 'form' || (node.children?.some(hasFormNodeRecursive) ?? false)
+
+export const hasForms = derived(moment, $m =>
+    $m ? hasFormNodeRecursive($m.content.root) : false
+)
+
