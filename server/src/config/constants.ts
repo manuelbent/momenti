@@ -15,8 +15,8 @@ type FormField =
 interface MomentNode {
   id: string;
   type: 'box' | 'text' | 'image' | 'form' | 'map'; 
-  variant?: 'hero' | 'section' | 'grid' | 'card' | 'overlay';
-  layout?: 'row' | 'column' | 'grid';
+  variant?: 'hero' | 'section' | 'card' | 'overlay';
+  layout?: 'row' | 'column';
   columns?: number;
   css?: string;
   tag?: string;
@@ -37,36 +37,44 @@ interface Moment {
   root: MomentNode;
 }
 
-LAYOUT ARCHITECTURE (THE COMPOSER)
-- THE HERO (FULL-BLEED): Use 'width: 100%;' to fill the container. NEVER use 'vw' units.
+LAYOUT ARCHITECTURE
 - THE CONTAINER (CENTERED): Text-heavy sections MUST be contained. 
 - Every type: 'box' with layout: 'row' MUST include flex-wrap: wrap; in its CSS.
 - Never use fixed pixels.
 
-LAYOUT BEHAVIOR:
-- Use 'layout: column' for most sections unless a multi-column layout is explicitly needed.
-- Avoid placing multiple large content blocks side-by-side.
-- Only use 'layout: row' for small UI elements (cards, features, icons).
-- In 'row' layouts, children should default to 'flex: 1 1 100%' unless explicitly designed as multi-column.
-- A box with layout: 'row' may contain at most 2 direct children. If more than 2 content groups are needed, you must nest them inside column containers. Never place more than 2 major blocks side-by-side.
-- If content is text-heavy, ALWAYS use a single column layout.
+LAYOUT BEHAVIOR
+- Prefer vertical stacking for most content.
+- Use layout: 'column' by default.
+- Use layout: 'row' only for small supporting UI elements such as cards, icons, tags, or compact metadata.
+- Avoid placing large text or major content blocks side-by-side.
+- When in doubt, stack vertically.
 
-COMPOSITION RULES (CRITICAL)
-- Multi-column layouts are only allowed for:
-  - small cards
-  - short features
-  - images
-  - compact UI elements
+LAYOUT PHILOSOPHY
+- The experience should feel vertically immersive and editorial.
+- Stack major content vertically.
+- Prefer single-column compositions.
+- Use horizontal layouts sparingly and only for tiny supporting elements.
+- Avoid card-heavy or dashboard-like sections.
+- Structure should emerge from spacing, typography, and imagery.
+
+VERTICAL FLOW (CRITICAL)
+- The page should read as a vertical sequence of sections.
+- Major content blocks must stack vertically from top to bottom.
+- Avoid dashboard-like compositions, card walls, or multi-column storytelling.
+- Prefer one strong element per horizontal row.
+- Sections should feel sequential, immersive, and scroll-driven.
+- Horizontal layouts should be rare and minimal.
+
+COMPOSITION RULES
 - If a section contains more than one paragraph or heading, it must be stacked vertically.
-- When in doubt, prefer stacking over columns.
+- When in doubt, prefer stacking vertically.
 
 HERO LAYOUT RULE
-- Hero sections must have a SINGLE content column.
-  - Never place multiple text blocks side-by-side in a hero.
-  - Supporting elements (badges, small info) may be horizontal, but main text must stack vertically.
-- Vertically center content using flex (justify-content: center) instead of large padding.
-- Use min-height (e.g., min-height: 70cqh) to create presence.
-- Padding should support spacing, not define layout.
+- Hero content must be vertically stacked.
+- Use layout: 'column' for the main hero container.
+- Never place hero elements side-by-side.
+- Headings, paragraphs, buttons, and supporting text must flow top-to-bottom.
+- The hero should feel spacious, readable, and focused around a single narrative flow.
 
 TYPOGRAPHY (RESPONSIVE & CONTAINER-BASED)
 - Font sizes MUST adapt to the parent container, not the viewport.
@@ -81,9 +89,9 @@ TYPOGRAPHY RULE:
 - Avoid restrictive 'ch' widths if the layout is wide and not asymmetrical.
 - Prefer fluid or no constraint for cinematic hero sections.
 
-RESPONSIVENESS (CRITICAL)
+RESPONSIVENESS
 - On mobile, children should default to flex: 1 1 100% (full width).
-- Every box with layout: 'row' or layout: 'grid' MUST include flex-wrap: wrap; in its CSS.
+- Every box with layout: 'row' MUST include flex-wrap: wrap; in its CSS.
 - Avoid absolute centering.
 
 COMPONENT: MAP
@@ -103,9 +111,6 @@ COMPONENT: FORM
 - Do not add helper text like 'Select an option' or similar instructions
 - Radio groups should be self-explanatory (e.g. 'Yes', 'No')
 - Keep wording extremely concise
-
-PICTURES
-- Images: Use high-res Unsplash links.
 
 TECHNICAL CONSTRAINTS
 - NO MARKDOWN: Output raw JSON only.
