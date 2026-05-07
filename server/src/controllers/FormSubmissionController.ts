@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
-import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 import Moment from '../models/Moment'
 
 /**
@@ -10,12 +9,8 @@ export default class FormSubmissionController {
     /**
      * @constructor
      * @param {FormSubmissionServiceInterface} formSubmissionService
-     * @param {MomentRepositoryInterface} momentRepository
      */
-    constructor(
-        private formSubmissionService: FormSubmissionServiceInterface,
-        private momentRepository: MomentRepositoryInterface
-    ) {}
+    constructor(private formSubmissionService: FormSubmissionServiceInterface) {}
 
     /**
      * @param {Request} req
@@ -34,10 +29,26 @@ export default class FormSubmissionController {
     }
 
     /**
-     * @param {Request} req
+     * @param {Request} _
      * @param {Response} res
      */
-    public async download(req: Request, res: Response) {
-        res.status(200).json({ exporting: true })
+    public async download(_: Request, res: Response) {
+        try {
+            const moment: Moment = res.locals.moment
+            const formSubmissions = await moment.getFormSubmissions()
+            if (!formSubmissions.length) {
+                res.status(204).send()
+                return
+            }
+
+            const csv = this.formSubmissionService.generateCSV(formSubmissions)
+
+            res.setHeader('Content-Type', 'text/csv')
+            res.setHeader('Content-Disposition', `attachment; filename="${moment.slug}-responses.csv"`)
+            res.status(200).send(csv)
+        } catch (err) {
+            console.error('[FormSubmissionController] download form submissions error:', err)
+            res.status(500).json({ error: 'Internal server error.' })
+        }
     }
 }

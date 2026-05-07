@@ -9,6 +9,8 @@
     import UnpublishButton from './components/UnpublishButton.svelte'
     import YourMoments from './components/YourMoments.svelte'
     import PromptViewer from './components/PromptViewer.svelte'
+    import DownloadFormSubmissionsButton
+        from '$lib/components/studio/sidebar/components/DownloadFormSubmissionsButton.svelte'
 </script>
 
 <div class="flex flex-col h-full overflow-y-auto p-6 gap-6 font-sans">
@@ -37,6 +39,8 @@
         {:else}
             <PublishButton/>
         {/if}
+
+        <DownloadFormSubmissionsButton/>
     </div>
 
     <hr class="border-[#0d0d0d]/6 -mx-6"/>

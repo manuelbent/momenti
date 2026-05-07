@@ -5,4 +5,5 @@ import FormSubmission from '../models/FormSubmission'
  */
 export default interface FormSubmissionServiceInterface {
     store(momentId: number, formId: string, data: Record<string, string>): Promise<FormSubmission>
+    generateCSV(formSubmissions: FormSubmission[]): string|null
 }

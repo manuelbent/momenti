@@ -16,8 +16,19 @@ export const submitForm = async (
 export const downloadFormSubmissions = async (slug: string) => {
     const res = await fetch(`${BASE_URL}/api/moments/${slug}/submissions`, {
         method: 'GET',
-        headers: authHeaders(), // to change
+        headers: {
+            ...authHeaders(),
+            'Accept': 'text/csv',
+        },
     })
-    if (!res.ok) throw new Error(`Failed to submit form: ${res.status}`)
-    return res.json()
+    if (res.status === 204) return  // no submissions
+    if (!res.ok) throw new Error(`Failed to download submissions: ${res.status}`)
+
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${slug}-responses.csv`
+    a.click()
+    URL.revokeObjectURL(url)
 }

@@ -13,6 +13,11 @@ export default class DownloadFormSubmissionsMiddleware {
      * @returns {Promise<void>}
      */
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
+        if (!req.accepts('text/csv')) {
+            res.status(406).json({ error: 'Unacceptable request.' })
+            return
+        }
+
         const user: User = res.locals.user
         if (!user) {
             console.error('[DownloadFormSubmissionMiddleware] could not get user from locals.')
