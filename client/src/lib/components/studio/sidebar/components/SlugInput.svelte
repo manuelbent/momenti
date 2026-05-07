@@ -30,7 +30,6 @@
                 id="slug"
                 type="text"
                 bind:value={slug}
-                {onkeyup}
                 {onblur}
                 placeholder="your-slug"
                 class="flex-1 text-[12px] text-[#0d0d0d] bg-transparent outline-none placeholder:text-[#0d0d0d]/25"

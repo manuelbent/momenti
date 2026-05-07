@@ -25,7 +25,7 @@
 
 <div class="fixed inset-0 z-50 flex items-center justify-center">
     <!-- blurred overlay — fades independently so backdrop-filter blurs in smoothly -->
-    <div class="absolute inset-0 bg-[#0d0d0d]/70 backdrop-blur-md" transition:fade={{ duration: 300 }} onclick={onClose}></div>
+    <div class="absolute inset-0 bg-[#0d0d0d]/70 backdrop-blur-md" role="presentation" transition:fade={{ duration: 300 }} onclick={onClose}></div>
 
     <!-- modal card -->
     <div class="relative z-10 w-full max-w-sm mx-4 bg-[#141414] border border-white/10 rounded-2xl px-8 py-9 flex flex-col gap-5 shadow-2xl"
