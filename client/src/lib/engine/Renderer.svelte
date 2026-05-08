@@ -30,7 +30,12 @@
             css={node.css ?? ''}
     />
 {:else if node.type === 'image'}
-    <BaseImage src={node.src ?? ''} alt={node.alt ?? ''} css={node.css ?? ''}/>
+    <BaseImage
+            id={node.id ?? ''}
+            src={node.src ?? ''}
+            alt={node.alt ?? ''}
+            css={node.css ?? ''}
+    />
 {:else if node.type === 'form'}
     <FormElement
             id={node.id}

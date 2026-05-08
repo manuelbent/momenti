@@ -42,7 +42,6 @@
         contenteditable={isEditable}
         onfocus={handleFocus}
         oninput={handleInput}
-        onblur={() => {/* Optional: save to backend here */}}
 />
 
 <style>

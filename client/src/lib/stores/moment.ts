@@ -54,6 +54,21 @@ export const updateNode = (id: string, newData: Partial<MomentNode>) => {
     })
 }
 
+export const deleteNode = (id: string) => {
+    moment.update(m => {
+        const deleteRecursive = (node: MomentNode): MomentNode => {
+            if (!node.children) return node
+            return {
+                ...node,
+                children: node.children
+                    .filter(c => c.id !== id)
+                    .map(deleteRecursive)
+            }
+        }
+        return { ...m, content: { ...m.content, root: deleteRecursive(m.content.root) } }
+    })
+}
+
 // tracks the currently-selected text node in the builder
 export const selectedNodeId = writable<string|null>(null)
 export const selectedNodeRect = writable<DOMRect|null>(null)

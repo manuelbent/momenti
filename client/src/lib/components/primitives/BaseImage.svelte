@@ -1,6 +1,9 @@
 <script lang="ts">
     import { getContext } from 'svelte'
+    import { Upload, Trash2 } from 'lucide-svelte'
+    import { deleteNode } from '$lib/stores/moment'
 
+    export let id: string = ''
     export let src: string = ''
     export let alt: string = ''
     export let css: string = ''
@@ -9,7 +12,7 @@
 
     let fileInput: HTMLInputElement;
 
-    function onFileSelected(e: Event) {
+    const onFileSelected = (e: Event) => {
         const target = e.target as HTMLInputElement;
         if (target.files && target.files[0]) {
             src = URL.createObjectURL(target.files[0]);
@@ -21,12 +24,14 @@
     <img {src} {alt} class="main-img" />
 
     {#if !viewOnly}
-        <button class="upload-overlay" onclick={() => fileInput.click()}>
-            <div class="glass-pill">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span>Upload</span>
-            </div>
-        </button>
+        <div class="overlay">
+            <button class="overlay-button" onclick={() => fileInput.click()}>
+                <Upload class="h-4"/>
+            </button>
+            <button class="overlay-button text-red-800" onclick={() => deleteNode(id)}>
+                <Trash2 class="h-4"/>
+            </button>
+        </div>
 
         <input type="file" accept="image/*" bind:this={fileInput} onchange={onFileSelected} hidden />
     {/if}
@@ -47,7 +52,7 @@
         object-fit: cover;
     }
 
-    .upload-overlay {
+    .overlay {
         position: absolute;
         inset: 0;
         background: rgba(0, 0, 0, 0.2);
@@ -57,26 +62,26 @@
         opacity: 0;
         transition: opacity 0.3s ease;
         border: none;
-        cursor: pointer;
-        z-index: 5; /* Ensure it stays above the image but potentially below the text */
+        z-index: 5;
+        gap: 8px;
     }
 
-    .momenti-img-container:hover .upload-overlay {
+    .momenti-img-container:hover .overlay {
         opacity: 1;
     }
 
-    .glass-pill {
+    .overlay-button {
         background: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(10px);
-        padding: 8px 16px;
-        border-radius: 100px;
+        padding: 8px 7px;
+        border-radius: 5px;
         display: flex;
         align-items: center;
         gap: 8px;
         font-family: sans-serif;
         font-size: 13px;
         font-weight: 500;
-        color: #000;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        cursor: pointer;
     }
 </style>
