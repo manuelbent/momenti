@@ -20,5 +20,5 @@
 
 <Button onclick={handleDownload}>
     <CloudDownload size={12} strokeWidth={1.8}/>
-    Download responses
+    See responses
 </Button>
