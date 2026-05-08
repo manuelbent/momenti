@@ -58,7 +58,7 @@
     let computedVals: CssComputedVals = {} as CssComputedVals
 
     $: if (isTextSelected && $selectedNodeId && selectedTextNode) {
-        Promise.resolve().then(() => {
+        (() => {
             const el = document.getElementById($selectedNodeId!)
             if (!el) {
                 return
@@ -68,11 +68,11 @@
             computedVals = {
                 color: s.color,
                 fontSizePx: parseInt(s.fontSize),
-                isBold: parseInt(s.fontWeight) >= 700,
+                isBold: parseInt(s.fontWeight) >= 500,
                 isItalic: s.fontStyle === 'italic',
                 isUnderline: s.textDecorationLine.includes('underline'),
             }
-        })
+        })()
     }
 
     $: ({ color: currentColor, fontSizePx, isBold, isItalic, isUnderline } = computedVals)
