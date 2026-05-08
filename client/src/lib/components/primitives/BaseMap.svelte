@@ -1,14 +1,31 @@
 <script lang="ts">
+    import { getContext } from 'svelte'
+
+    export let id: string = ''
     export let address: string = '';
     export let css: string = '';
+    export let isSelected: boolean = false
+    export let onSelect: (() => void) | undefined = undefined
+
+    const viewOnly = getContext<boolean>('viewOnly') ?? false
 
     // We use the public embed URL which only needs a q (query) parameter
     $: encodedAddress = encodeURIComponent(address);
     $: mapUrl = `https://www.google.com/maps?q=${encodedAddress}&output=embed`;
 </script>
 
-<div class="momento-map-container" style={css}>
+<div class="momenti-map-container"
+     class:momenti-selected={isSelected}
+     id={id}
+     data-nid={id}
+     style={css ?? ''}
+     onclick={() => !viewOnly && onSelect?.()}
+>
     {#if address}
+        <!-- click-shield so the iframe doesn't capture builder clicks -->
+        {#if !viewOnly}
+            <div class="map-click-shield" onpointerdown={(e) => { e.stopPropagation(); onSelect?.() }}></div>
+        {/if}
         <iframe
                 title="Map for {address}"
                 width="100%"
@@ -26,12 +43,19 @@
 </div>
 
 <style>
-    .momento-map-container {
+    .momenti-map-container {
         position: relative;
         overflow: hidden;
         background: #f8f8f8;
         /* Ensure the map has a default height if the AI forgets to provide it */
         min-height: 300px;
+    }
+
+    .map-click-shield {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        cursor: pointer;
     }
 
     .map-placeholder {

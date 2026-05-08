@@ -69,9 +69,24 @@ export const deleteNode = (id: string) => {
     })
 }
 
-// tracks the currently-selected text node in the builder
-export const selectedNodeId = writable<string|null>(null)
-export const selectedNodeRect = writable<DOMRect|null>(null)
+// tracks the currently-selected node in the builder
+export const selectedNodeId     = writable<string|null>(null)
+export const selectedNodeType   = writable<MomentNode['type']|null>(null)
+export const selectedNodeDeleteId = writable<string|null>(null)
+export const selectedNodeRect   = writable<DOMRect|null>(null)
+
+/** Select any node. Pass deleteId = parentId when the whole parent section should be removed (e.g. form). */
+export const selectNode = ({ id, type, deleteId }: { id: string, type: MomentNode['type'], deleteId: string }) => {
+    selectedNodeId.set(id)
+    selectedNodeType.set(type)
+    selectedNodeDeleteId.set(deleteId)
+}
+
+export const clearSelection = () => {
+    selectedNodeId.set(null)
+    selectedNodeType.set(null)
+    selectedNodeDeleteId.set(null)
+}
 
 // true when the active moment contains at least one form node
 const hasFormNodeRecursive = (node: MomentNode): boolean =>

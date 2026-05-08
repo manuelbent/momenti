@@ -5,8 +5,8 @@
     import ViewToggle from '$lib/components/studio/ViewToggle.svelte'
     import DeviceView from '$lib/components/studio/DeviceView.svelte'
     import Sidebar from '$lib/components/studio/sidebar/Sidebar.svelte'
+    import ElementToolbar from '$lib/components/builder/ElementToolbar.svelte'
     import Toast from '$lib/components/ui/Toast.svelte'
-    import TextToolbar from '$lib/components/builder/TextToolbar.svelte'
 
     let view: 'desktop'|'mobile' = 'desktop'
 
@@ -48,6 +48,6 @@
     </main>
 </div>
 
-<TextToolbar/>
+<ElementToolbar/>
 
 <Toast/>
