@@ -1,7 +1,7 @@
 import { get } from 'svelte/store'
 import { inviteKey } from '$lib/stores/auth'
 
-export const BASE_URL = import.meta.env.VITE_MOMENTI_API_URL
+export const API_URL = import.meta.env.VITE_MOMENTI_API_URL
 
 export function authHeaders(): HeadersInit {
     return {

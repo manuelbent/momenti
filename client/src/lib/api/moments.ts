@@ -1,7 +1,7 @@
-import { BASE_URL, authHeaders } from './client'
+import { API_URL, authHeaders } from './client'
 
 export const capture = async (prompt: string, callbacks: CaptureCallbacks): Promise<void> => {
-    const response = await fetch(`${BASE_URL}/api/capture`, {
+    const response = await fetch(`${API_URL}/capture`, {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ prompt }),
@@ -48,7 +48,7 @@ const handleMessage = (message: string, callbacks: CaptureCallbacks) => {
 }
 
 export const getMoments = async (): Promise<Moment[]> => {
-    const res = await fetch(`${BASE_URL}/api/moments`, {
+    const res = await fetch(`${API_URL}/moments`, {
         headers: authHeaders(),
     })
     if (!res.ok) throw new Error(`Failed to fetch moments: ${res.status}`)
@@ -56,7 +56,7 @@ export const getMoments = async (): Promise<Moment[]> => {
 }
 
 export const updateMoment = async (id: number, data: Partial<Moment>): Promise<Moment> => {
-    const res = await fetch(`${BASE_URL}/api/moments/${id}`, {
+    const res = await fetch(`${API_URL}/moments/${id}`, {
         method: 'PUT',
         headers: authHeaders(),
         body: JSON.stringify(data),
@@ -67,7 +67,7 @@ export const updateMoment = async (id: number, data: Partial<Moment>): Promise<M
 
 export const checkSlug = async (slug: string, excludeId: number): Promise<{ isAvailable: boolean }> => {
     const params = new URLSearchParams({ slug, excludeId: String(excludeId) })
-    const res = await fetch(`${BASE_URL}/api/moments/check-slug?${params}`, {
+    const res = await fetch(`${API_URL}/moments/check-slug?${params}`, {
         headers: authHeaders(),
     })
     if (!res.ok) throw new Error(`Failed to check slug: ${res.status}`)

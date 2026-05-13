@@ -1,7 +1,7 @@
-import { BASE_URL } from './client'
+import { API_URL } from './client'
 
 export const validateInviteKey = async (invite_key: string): Promise<{ isValid: boolean }> => {
-    const res = await fetch(`${BASE_URL}/api/invite-keys/validate`, {
+    const res = await fetch(`${API_URL}/invite-keys/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ invite_key }),

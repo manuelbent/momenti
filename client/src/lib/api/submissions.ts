@@ -1,11 +1,11 @@
-import { authHeaders, BASE_URL } from './client'
+import { authHeaders, API_URL } from './client'
 
 export const submitForm = async (
     slug: string,
     form_id: string,
     data: Record<string, string>
 ): Promise<void> => {
-    const res = await fetch(`${BASE_URL}/api/moments/${slug}/submissions`, {
+    const res = await fetch(`${API_URL}/moments/${slug}/submissions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ form_id, data }),
@@ -14,7 +14,7 @@ export const submitForm = async (
 }
 
 export const downloadFormSubmissions = async (slug: string) => {
-    const res = await fetch(`${BASE_URL}/api/moments/${slug}/submissions`, {
+    const res = await fetch(`${API_URL}/moments/${slug}/submissions`, {
         method: 'GET',
         headers: {
             ...authHeaders(),
