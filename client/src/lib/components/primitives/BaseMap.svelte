@@ -14,6 +14,7 @@
     $: mapUrl = `https://www.google.com/maps?q=${encodedAddress}&output=embed`;
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 <div class="momenti-map-container"
      class:momenti-selected={isSelected}
      id={id}
@@ -24,6 +25,7 @@
     {#if address}
         <!-- click-shield so the iframe doesn't capture builder clicks -->
         {#if !viewOnly}
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
             <div class="map-click-shield" onpointerdown={(e) => { e.stopPropagation(); onSelect?.() }}></div>
         {/if}
         <iframe
