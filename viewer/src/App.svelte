@@ -10,7 +10,7 @@
     onMount(async () => {
         const [slug] = window.location.hostname.split('.')
         moment = await getMomentBySlug(slug)
-        document.title = moment?.content.slug || 'momenti | Not found.'
+        document.title = moment?.content.slug || document.title
         loading = false
     })
 </script>
