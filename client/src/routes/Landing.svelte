@@ -133,7 +133,7 @@
             <p class="font-sans text-[11px] text-[#2e2e2e] mt-4 tracking-[0.02em] text-center">
                 © 2026 momenti. All rights reserved.
                 <br>
-                v0.0.0
+                v0.0.0-alpha
             </p>
         </div>
     </main>
