@@ -9,23 +9,22 @@ on:
 
 jobs:
   deploy:
+    name: Deploy to Ionos
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./client
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'npm'
           cache-dependency-path: './client/package-lock.json'
 
-      - name: Install and Build
+      - name: Build Client
+        working-directory: ./client
         run: |
           npm ci
           npm run build
@@ -35,6 +34,10 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
 
+      - name: Add Remote Host to Known Hosts
+        run: ssh-keyscan -H ${{ secrets.IONOS_HOST }} >> ~/.ssh/known_hosts
+
       - name: Deploy via Rsync
         run: |
-          rsync -avz ./client/dist/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/client/dist/
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" \
+          ./client/dist/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/client/dist/
