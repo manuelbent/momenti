@@ -38,9 +38,9 @@ jobs:
         run: |
           # 1. Sync BOTH the server source AND the newly created 'dist' folder
           # We exclude node_modules because we'll install production-only deps on the server
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no" \
-          --exclude 'node_modules' \
-          --exclude 'src' \
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
+          --exclude '.git/' \
+          --exclude 'node_modules/' \
           ./server/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/server/
 
           # 2. Refresh the server
