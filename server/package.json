@@ -1,6 +1,6 @@
 {
   "name": "momenti-server",
-  "version": "1.0.0",
+  "version": "0.0.0-alpha",
   "description": "momenti API – bridge between the Svelte frontend and OpenAI",
   "type": "commonjs",
   "main": "dist/server.js",
