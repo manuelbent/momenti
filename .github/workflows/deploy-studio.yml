@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'studio/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -25,6 +26,8 @@ jobs:
 
       - name: Build Studio
         working-directory: ./studio
+        env:
+          VITE_MOMENTI_API_URL: 'https://api.momenti.cc'
         run: |
           npm ci
           npm run build
