@@ -54,6 +54,9 @@ jobs:
             # Install only production dependencies (saves space/time)
             npm ci --production
           
+            # Run migrations
+            NODE_ENV=prod npm run migrate:up
+          
             # Restart PM2
             pm2 reload momenti-api || pm2 start dist/server.js --name momenti-api
             pm2 save
