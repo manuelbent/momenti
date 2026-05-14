@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Express to Ionos
+    name: Deploy to Ionos
     runs-on: ubuntu-latest
 
     steps:
