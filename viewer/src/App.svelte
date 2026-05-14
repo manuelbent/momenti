@@ -2,15 +2,15 @@
     import { onMount } from 'svelte'
     import { getMomentBySlug } from '$lib/api/moments'
     import Renderer from '$lib/engine/Renderer.svelte'
+    import NotFound from '$lib/components/NotFound.svelte'
 
-    let moment: Moment | null = null
+    let moment: Moment|null = null
     let loading = true
 
     onMount(async () => {
-        const [ slug ] = window.location.hostname.split('.')
-        if (slug !== 'momenti') {
-            moment = await getMomentBySlug(slug)
-        }
+        const [slug] = window.location.hostname.split('.')
+        moment = await getMomentBySlug(slug)
+        document.title = moment?.content.slug || 'momenti | Not found.'
         loading = false
     })
 </script>
@@ -20,5 +20,5 @@
 {:else if moment}
     <Renderer node={moment.content.root}/>
 {:else}
-    <p>Moment not found</p>
+    <NotFound/>
 {/if}
