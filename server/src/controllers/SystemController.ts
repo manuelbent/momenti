@@ -11,7 +11,7 @@ export default class SystemController {
     public async healthcheck(_: Request, res: Response) {
         res.status(200).json({
             name: 'momenti',
-            version: '0.0.0-alfa',
+            version: '0.0.0-alpha',
             description: 'AI-powered page builder. Your moment, one message away.',
         })
     }
