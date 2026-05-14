@@ -2,9 +2,7 @@ export const API_URL = import.meta.env.VITE_MOMENTI_API_URL
 
 export const getMomentBySlug = async (slug: string): Promise<Moment|null> => {
     const res = await fetch(`${API_URL}/moments/${slug}`, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
     })
     if (!res.ok) throw new Error(`Failed to fetch moment: ${res.status}`)
     return res.json()

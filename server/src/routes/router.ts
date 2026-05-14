@@ -20,7 +20,7 @@ router.get('/moments',
 )
 
 router.get('/moments/:slug',
-    (req, res) => ioc.momentController.loadBySlug(req, res)
+    (req, res) => ioc.momentController.loadPublishedBySlug(req, res)
 )
 
 router.put('/moments/:id',

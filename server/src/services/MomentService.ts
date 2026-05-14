@@ -46,11 +46,20 @@ export default class MomentService implements MomentServiceInterface {
     }
 
     /**
-     * Update an existing moment by its slug.
+     * Find a moment by its slug.
      * @param {string} slug
      */
     public async getBySlug(slug: string): Promise<Moment|null> {
         return this.momentRepository.findBy('slug', slug)
+    }
+
+    /**
+     * Find a published moment by its slug.
+     * @param {string} slug
+     * @return {Moment|null}
+     */
+    public async getPublishedBySlug(slug: string): Promise<Moment|null> {
+        return await this.momentRepository.findPublishedBySlug(slug)
     }
 
     /**

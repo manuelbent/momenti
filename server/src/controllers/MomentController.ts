@@ -29,16 +29,17 @@ export default class MomentController {
     }
 
     /**
-     * Load moment by its slug.
+     * This function is public, because consumed by the viewer.
+     * A moment is loaded by slug, if published.
      * @param {Request} req
      * @param {Response} res
      */
-    public async loadBySlug(req: Request, res: Response) {
+    public async loadPublishedBySlug(req: Request, res: Response) {
         try {
             // todo: implement cache
 
             const slug = String(req.params.slug)
-            const moment = await this.momentService.getBySlug(slug)
+            const moment = await this.momentService.getPublishedBySlug(slug)
             res.json(moment)
         } catch (err) {
             console.error('[MomentController] load moment by slug:', err)
