@@ -3,7 +3,7 @@
 
 <div class="min-h-screen bg-[#0d0d0d] text-[#f0ede8] font-serif flex flex-col items-center justify-center">
     <div class="text-center">
-        <h1 class="text-5xl md:text-6xl font-normal leading-[1.05] tracking-[-0.03em] mb-5">
+        <h1 class="text-4xl md:text-6xl font-normal leading-[1.05] tracking-[-0.03em] mb-5">
             Moment not found
         </h1>
         <p class="font-sans text-[15px] leading-[1.75] text-[#888] mb-10">
