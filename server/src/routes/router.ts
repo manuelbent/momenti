@@ -19,6 +19,12 @@ router.get('/moments',
     (req, res) => ioc.momentController.loadAll(req, res)
 )
 
+router.get('/moments/check-slug',
+    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.checkSlugRequestValidator.validate(req, res, next),
+    (req, res) => ioc.momentController.checkSlug(req, res)
+)
+
 router.get('/moments/:slug',
     (req, res) => ioc.momentController.loadPublishedBySlug(req, res)
 )
@@ -38,12 +44,6 @@ router.get('/moments/:slug/submissions',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.downloadFormSubmissionsMiddleware.handle(req, res, next),
     (req, res) => ioc.formSubmissionController.download(req, res)
-)
-
-router.get('/moments/check-slug',
-    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
-    (req, res, next) => ioc.checkSlugRequestValidator.validate(req, res, next),
-    (req, res) => ioc.momentController.checkSlug(req, res)
 )
 
 // invite keys routes
