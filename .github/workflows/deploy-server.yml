@@ -26,8 +26,6 @@ jobs:
 
       - name: Build Server
         working-directory: ./server
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           npm ci
           npm run build
@@ -36,6 +34,10 @@ jobs:
         uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
+
+      - name: Inject Secrets into Config
+        run: |
+          sed -i "s/placeholder/${{ secrets.OPENAI_API_KEY }}/g" server/ecosystem.config.js
 
       - name: Deploy and Restart via SSH
         run: |
@@ -60,7 +62,7 @@ jobs:
             # Run migrations
             NODE_ENV=prod npm run migrate:up
           
-            # Restart PM2
-            pm2 reload momenti-api || pm2 start dist/server.js --name momenti-api
+            # Restart PM2 using the ecosystem configuration
+            pm2 startOrReload ecosystem.config.js --update-env
             pm2 save
           EOF
