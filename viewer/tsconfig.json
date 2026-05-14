@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "types": [
+      "vite/client"
+    ],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "$lib/*": [
+        "src/lib/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}

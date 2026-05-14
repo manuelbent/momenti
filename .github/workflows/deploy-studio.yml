@@ -1,11 +1,11 @@
-name: Client CI/CD
+name: Studio CI/CD
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'client/**'
+      - 'studio/**'
 
 jobs:
   deploy:
@@ -21,10 +21,10 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
-          cache-dependency-path: './client/package-lock.json'
+          cache-dependency-path: './studio/package-lock.json'
 
-      - name: Build Client
-        working-directory: ./client
+      - name: Build Studio
+        working-directory: ./studio
         run: |
           npm ci
           npm run build
@@ -40,4 +40,4 @@ jobs:
       - name: Deploy via Rsync
         run: |
           rsync -avz -e "ssh -o StrictHostKeyChecking=no" \
-          ./client/dist/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/client/dist/
+          ./studio/dist/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/studio/dist/

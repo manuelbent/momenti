@@ -1,19 +1,16 @@
 <script lang="ts">
     import { getContext } from 'svelte'
-    import { moment } from '$lib/stores/moment'
-    import { submitForm } from '$lib/api'
+    import { submitForm } from '$lib/api/moments'
 
-    export let id: string = ''
+    export let id: string
     export let css: string = ''
     export let inputCss: string = ''
     export let buttonCss: string = ''
     export let buttonLabel: string = 'Send'
     export let fields: FormField[] = []
-    export let isSelected: boolean = false
-    export let onSelect: (() => void) | undefined = undefined
 
-    const momentSlug = $moment?.slug ?? ''
-    const viewOnly = getContext<boolean>('viewOnly') ?? false
+    const moment = getContext<Moment>('moment')
+    const momentSlug = moment?.slug ?? ''
 
     let values: Record<string, string> = {}
     let submitted = false
@@ -32,11 +29,9 @@
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
-<form data-nid={id}
-      class:momenti-selected={isSelected}
-      style={css}
-      onsubmit={handleSubmit}
-      onclick={() => !viewOnly && onSelect?.()}
+<form
+        style={css}
+        onsubmit={handleSubmit}
 >
     {#each fields as field}
         {#if field.type === 'subject'}
