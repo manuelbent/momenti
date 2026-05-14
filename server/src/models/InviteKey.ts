@@ -1,5 +1,5 @@
 import { Model, DataTypes, BelongsToGetAssociationMixin } from 'sequelize'
-import sequelize from '../../database/sequelize'
+import sequelize from '../config/sequelize'
 import User from './User'
 
 export default class InviteKey extends Model {

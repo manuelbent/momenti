@@ -5,10 +5,10 @@ module.exports = {
     },
     dev: {
         dialect: 'sqlite',
-        storage: './data/db.sqlite',
+        storage: './../database/data/db.sqlite',
     },
     prod: {
         dialect: 'sqlite',
-        storage: './data/db.sqlite',
+        storage: './../database/data/db.sqlite',
     },
 }

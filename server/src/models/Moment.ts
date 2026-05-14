@@ -1,5 +1,5 @@
 import { Model, DataTypes, BelongsToGetAssociationMixin, HasManyGetAssociationsMixin } from 'sequelize'
-import sequelize from '../../database/sequelize'
+import sequelize from '../config/sequelize'
 import User from './User'
 import type FormSubmission from './FormSubmission'
 

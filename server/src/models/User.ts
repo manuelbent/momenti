@@ -1,5 +1,5 @@
 import { Model, DataTypes, HasManyGetAssociationsMixin } from 'sequelize'
-import sequelize from '../../database/sequelize'
+import sequelize from '../config/sequelize'
 import type Moment from './Moment'
 
 export default class User extends Model {

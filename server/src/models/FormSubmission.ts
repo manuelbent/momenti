@@ -1,5 +1,5 @@
 import { Model, DataTypes, BelongsToGetAssociationMixin } from 'sequelize'
-import sequelize from '../../database/sequelize'
+import sequelize from '../config/sequelize'
 import Moment from './Moment'
 
 export default class FormSubmission extends Model {

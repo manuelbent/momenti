@@ -4,7 +4,7 @@ import ioc from '../config/ioc'
 const router = Router()
 
 // capture routes
-router.post('/api/capture',
+router.post('/capture',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.momentLimitMiddleware.handle(req, res, next),
     (req, res, next) => ioc.generateMomentRequestValidator.validate(req, res, next),
@@ -14,36 +14,36 @@ router.post('/api/capture',
 )
 
 // moments routes
-router.get('/api/moments',
+router.get('/moments',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res) => ioc.momentController.loadAll(req, res)
 )
 
-router.put('/api/moments/:id',
+router.put('/moments/:id',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.updateMomentRequestValidator.validate(req, res, next),
     (req, res) => ioc.momentController.update(req, res)
 )
 
-router.post('/api/moments/:slug/submissions',
+router.post('/moments/:slug/submissions',
     (req, res, next) => ioc.submitFormDataRequestValidator.validate(req, res, next),
     (req, res) => ioc.formSubmissionController.store(req, res)
 )
 
-router.get('/api/moments/:slug/submissions',
+router.get('/moments/:slug/submissions',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.downloadFormSubmissionsMiddleware.handle(req, res, next),
     (req, res) => ioc.formSubmissionController.download(req, res)
 )
 
-router.get('/api/moments/check-slug',
+router.get('/moments/check-slug',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.checkSlugRequestValidator.validate(req, res, next),
     (req, res) => ioc.momentController.checkSlug(req, res)
 )
 
 // invite keys routes
-router.post('/api/invite-keys/validate',
+router.post('/invite-keys/validate',
     (req, res, next) => ioc.validateInviteKeyRequestValidator.validate(req, res, next),
     (req, res) => ioc.inviteKeyController.validate(req, res)
 )
