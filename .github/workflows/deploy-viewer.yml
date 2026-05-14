@@ -1,0 +1,43 @@
+name: Studio CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'viewer/**'
+
+jobs:
+  deploy:
+    name: Deploy to Ionos
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: './viewer/package-lock.json'
+
+      - name: Build Viewer
+        working-directory: ./viewer
+        run: |
+          npm ci
+          npm run build
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
+
+      - name: Add Remote Host to Known Hosts
+        run: ssh-keyscan -H ${{ secrets.IONOS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via Rsync
+        run: |
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" \
+          ./viewer/dist/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/viewer/dist/
