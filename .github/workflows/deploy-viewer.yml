@@ -1,4 +1,4 @@
-name: Studio CI/CD
+name: Viewer CI/CD
 
 on:
   push:
