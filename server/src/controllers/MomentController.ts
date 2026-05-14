@@ -29,6 +29,24 @@ export default class MomentController {
     }
 
     /**
+     * Load moment by its slug.
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public async loadBySlug(req: Request, res: Response) {
+        try {
+            // todo: implement cache
+
+            const slug = String(req.params.slug)
+            const moment = await this.momentService.getBySlug(slug)
+            res.json(moment)
+        } catch (err) {
+            console.error('[MomentController] load moment by slug:', err)
+            res.status(500).json({ error: 'Internal server error.' })
+        }
+    }
+
+    /**
      * Check if a slug is available.
      * @param {Request} req
      * @param {Response} res

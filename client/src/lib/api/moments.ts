@@ -47,6 +47,16 @@ const handleMessage = (message: string, callbacks: CaptureCallbacks) => {
     }
 }
 
+export const getMomentBySlug = async (slug: string): Promise<Moment|null> => {
+    const res = await fetch(`${API_URL}/moments/${slug}`, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    if (!res.ok) throw new Error(`Failed to fetch moment: ${res.status}`)
+    return res.json()
+}
+
 export const getMoments = async (): Promise<Moment[]> => {
     const res = await fetch(`${API_URL}/moments`, {
         headers: authHeaders(),
