@@ -2,7 +2,7 @@
   "name": "momenti-server",
   "version": "1.0.0",
   "description": "momenti API – bridge between the Svelte frontend and OpenAI",
-  "type": "module",
+  "type": "commonjs",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
