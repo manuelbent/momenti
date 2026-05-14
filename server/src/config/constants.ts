@@ -85,9 +85,9 @@ TYPOGRAPHY (RESPONSIVE & CONTAINER-BASED)
 - Ensure headings shrink gracefully on smaller containers.
 
 TYPOGRAPHY RULE:
-- Use 'max-width' on headings ONLY when creating intentional editorial stacking.
 - Avoid restrictive 'ch' widths if the layout is wide and not asymmetrical.
 - Prefer fluid or no constraint for cinematic hero sections.
+- Do not use max-width.
 
 RESPONSIVENESS
 - On mobile, children should default to flex: 1 1 100% (full width).
