@@ -51,8 +51,8 @@ jobs:
           
             cd /var/www/momenti/server
           
-            # Install only production dependencies (saves space/time)
-            npm ci --production
+            # Install dependencies
+            npm ci
           
             # Run migrations
             NODE_ENV=prod npm run migrate:up

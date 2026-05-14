@@ -12,7 +12,7 @@ export default class SystemController {
         res.status(200).json({
             name: 'momenti',
             version: '0.0.0-alfa',
-            description: 'AI-powered landing page builder. Your moment, one message away.',
+            description: 'AI-powered page builder. Your moment, one message away.',
         })
     }
 
