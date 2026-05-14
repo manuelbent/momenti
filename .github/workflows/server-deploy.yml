@@ -1,0 +1,55 @@
+name: Server CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/**'
+
+jobs:
+  deploy:
+    name: Deploy to Ionos
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: './server/package-lock.json'
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
+
+      - name: Deploy and Restart via SSH
+        run: |
+          # 1. Sync the server files first (excluding node_modules)
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" \
+          --exclude 'node_modules' \
+          ./server/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/server/
+
+          # 2. Run remote commands to update dependencies and restart PM2
+          ssh -o StrictHostKeyChecking=no ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }} << 'EOF'
+            set -e
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          
+            cd /var/www/momenti/server
+          
+            nvm use
+          
+            echo "Installing dependencies..."
+            npm ci --production
+          
+            echo "Restarting application..."
+            pm2 reload index.js --name momenti-api
+          
+            pm2 save
+          EOF
