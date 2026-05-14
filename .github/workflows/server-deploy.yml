@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Ionos
+    name: Deploy Express to Ionos
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +23,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: './server/package-lock.json'
 
+      - name: Build Server
+        working-directory: ./server
+        run: |
+          npm ci
+          npm run build
+
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.10.0
         with:
@@ -30,26 +36,25 @@ jobs:
 
       - name: Deploy and Restart via SSH
         run: |
-          # 1. Sync the server files first (excluding node_modules)
+          # 1. Sync BOTH the server source AND the newly created 'dist' folder
+          # We exclude node_modules because we'll install production-only deps on the server
           rsync -avz -e "ssh -o StrictHostKeyChecking=no" \
           --exclude 'node_modules' \
+          --exclude 'src' \
           ./server/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/server/
 
-          # 2. Run remote commands to update dependencies and restart PM2
+          # 2. Refresh the server
           ssh -o StrictHostKeyChecking=no ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }} << 'EOF'
             set -e
             export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            source "$NVM_DIR/nvm.sh"
           
             cd /var/www/momenti/server
           
-            nvm use
-          
-            echo "Installing dependencies..."
+            # Install only production dependencies (saves space/time)
             npm ci --production
           
-            echo "Restarting application..."
-            pm2 reload index.js --name momenti-api
-          
+            # Restart PM2
+            pm2 reload momenti-api || pm2 start dist/server.js --name momenti-api
             pm2 save
           EOF

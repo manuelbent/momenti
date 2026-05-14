@@ -1,7 +1,7 @@
 {
   "name": "momenti-server",
   "version": "0.0.0-alpha",
-  "description": "momenti API",
+  "description": "momenti API: server component exposing APIs for the Svelte client.",
   "type": "commonjs",
   "main": "dist/server.js",
   "scripts": {
