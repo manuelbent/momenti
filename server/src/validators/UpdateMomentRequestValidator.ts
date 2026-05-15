@@ -10,7 +10,7 @@ export default class UpdateMomentRequestValidator {
      * @private {ZodObject}
      */
     schema = z.object({
-        slug: z.string().optional(),
+        slug: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug may only contain lowercase letters, numbers, and hyphens, and cannot start or end with a hyphen.').optional(),
         prompt: z.string().optional(),
         content: z.record(z.unknown()).optional(),
         is_published: z.boolean().optional(),
