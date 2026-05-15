@@ -1,10 +1,12 @@
 <script lang="ts">
     import { onMount } from 'svelte'
-    import { moment, moments } from '$lib/stores/moment'
+    import { moment, moments, isLoading } from '$lib/stores/moment'
     import { getMoments } from '$lib/api'
     import MomentItem from './MomentItem.svelte'
 
     onMount(async () => {
+        isLoading.set(true)
+
         const list = await getMoments()
         moments.set(list)
 
@@ -13,6 +15,8 @@
         if (!$moment) {
             moment.set($moments[0])
         }
+
+        isLoading.set(false)
     })
 </script>
 

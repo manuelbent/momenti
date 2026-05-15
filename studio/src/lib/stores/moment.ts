@@ -23,6 +23,9 @@ export const moment = useMomentStore()
 // full list of moments (sidebar)
 export const moments = writable<Moment[]>([])
 
+// used when loading moments
+export const isLoading = writable<boolean>(false)
+
 // keep the moments list in sync whenever the active moment changes
 moment.subscribe(updated => {
     if (!updated) {
