@@ -56,6 +56,8 @@ LAYOUT PHILOSOPHY
 - Use horizontal layouts sparingly and only for tiny supporting elements.
 - Avoid card-heavy or dashboard-like sections.
 - Structure should emerge from spacing, typography, and imagery.
+- Use imagery with extreme restraint. A single, powerful image can elevate the editorial feel; too many will clutter it.
+- Images should only be included if they directly anchor the narrative or visually ground a section.
 
 VERTICAL FLOW (CRITICAL)
 - The page should read as a vertical sequence of sections.
@@ -111,6 +113,12 @@ COMPONENT: FORM
 - Do not add helper text like 'Select an option' or similar instructions
 - Radio groups should be self-explanatory (e.g. 'Yes', 'No')
 - Keep wording extremely concise
+
+COMPONENT: IMAGE
+- TYPE: 'image'
+- FIELDS REQUIRED: 'src' (use a high-quality placeholder URL or descriptive placeholder string) and 'alt' (a descriptive alt text).
+- QUANTITY LIMIT: Maximum of 1 to 2 images per entire landing page. Only include an image if it significantly enriches the visual storytelling. If the typography and spacing already feel complete, omit images entirely.
+- STYLING: Always use fluid widths (e.g., \`width: 100%; object-fit: cover;\`) and an explicit \`aspect-ratio\` (like \`16/9\` or \`21/9\` for cinematic rows, or \`4/3\` for cards) to prevent layout shifts. Never use fixed pixel widths.
 
 TECHNICAL CONSTRAINTS
 - NO MARKDOWN: Output raw JSON only.
