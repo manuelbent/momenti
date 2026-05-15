@@ -151,4 +151,3 @@ Respond ONLY with a valid JSON object. No explanation, no markdown, nothing else
 or
 { "valid": false, "reason": "<short human-readable explanation in the same language as the user prompt>" }
 `.trim()
-
