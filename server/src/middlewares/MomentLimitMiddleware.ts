@@ -24,7 +24,7 @@ export default class MomentLimitMiddleware {
         const user: User = res.locals.user
         const moments = await user.getMoments()
         if (moments.length >= MAX_MOMENTS_ALLOWED) {
-            res.status(429).json({ error: `Moments limit reached. You can generate at most ${MAX_MOMENTS_ALLOWED} moments.` })
+            res.status(429).json({ error: `Limit reached. You can generate at most ${MAX_MOMENTS_ALLOWED} moments.` })
             return
         }
 

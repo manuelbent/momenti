@@ -113,7 +113,7 @@
                         ></textarea>
 
                             {#if error}
-                                <p class="font-sans text-xs text-[#e07070] px-5.5 pb-2">{error}</p>
+                                <p class="font-sans text-xs text-[#e07070] px-5.5 py-2">{error}</p>
                             {/if}
 
                             <div class="flex items-center justify-between py-2.5 pl-5.5 pr-3.5 border-t border-white/6">
