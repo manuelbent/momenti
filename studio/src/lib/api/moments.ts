@@ -1,17 +1,22 @@
 import { API_URL, authHeaders } from './client'
 
 export const capture = async (prompt: string, callbacks: CaptureCallbacks): Promise<void> => {
-    const response = await fetch(`${API_URL}/capture`, {
+    const res = await fetch(`${API_URL}/capture`, {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ prompt }),
     })
 
-    if (!response.ok || !response.body) {
-        throw new Error(`Unexpected response: ${response.status}`)
+    if (!res.ok) {
+        const body = await res.json()
+        throw new Error(body.error ?? `Unexpected response: ${res.status}`)
     }
 
-    const reader = response.body
+    if (!res.body) {
+        throw new Error(`Unexpected response: ${res.status}`)
+    }
+
+    const reader = res.body
         .pipeThrough(new TextDecoderStream() as unknown as ReadableWritablePair<string, Uint8Array>)
         .getReader()
 

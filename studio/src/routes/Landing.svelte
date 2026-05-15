@@ -56,8 +56,7 @@
                 },
             })
         } catch (e) {
-            console.error(e)
-            error = 'Something went wrong. Please try again.'
+            error = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
             isCapturing = false
         }
     }
