@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte'
-    import { Bold, Italic, Trash2, Underline, Upload } from 'lucide-svelte'
+    import { Bold, Italic, Minus, Plus, Trash2, Underline, Upload } from 'lucide-svelte'
     import {
         selectedNodeId, selectedNodeType, selectedNodeDeleteId,
         moment, updateNode, deleteNode, clearSelection
@@ -104,6 +104,41 @@
     const toggleUnderline = () => {
         if (!$selectedNodeId || !selectedTextNode) return
         updateNode($selectedNodeId, { css: setCssProp(selectedTextNode.css ?? '', 'text-decoration', isUnderline ? '' : 'underline') })
+    }
+
+    // --- margin helpers (available for every node type) ---
+    const findAnyNode = (id: string): MomentNode|null =>
+        $moment ? findNode($moment.content.root, id) : null
+
+    const getMarginPx = (): number => {
+        if (!$selectedNodeId) return 0
+        const node = findAnyNode($selectedNodeId)
+        const raw = parseCss(node?.css ?? '')['margin']
+        return raw ? parseInt(raw) || 0 : 0
+    }
+
+    $: currentMarginPx = (() => {
+        if (!$selectedNodeId || !$moment) return 0
+        const node = findNode($moment.content.root, $selectedNodeId)
+        const raw = parseCss(node?.css ?? '')['margin']
+        return raw ? parseInt(raw) || 0 : 0
+    })()
+
+    const MARGIN_STEP = 1
+
+    const increaseMargin = () => {
+        if (!$selectedNodeId) return
+        const node = findAnyNode($selectedNodeId)
+        const next = getMarginPx() + MARGIN_STEP
+        updateNode($selectedNodeId, { css: setCssProp(node?.css ?? '', 'margin', `${next}px 0`) })
+    }
+
+    const decreaseMargin = () => {
+        if (!$selectedNodeId) return
+        const node = findAnyNode($selectedNodeId)
+        const next = Math.max(0, getMarginPx() - MARGIN_STEP)
+        const val = next === 0 ? '' : `${next}px 0`
+        updateNode($selectedNodeId, { css: setCssProp(node?.css ?? '', 'margin', val) })
     }
 
     const handleDelete = () => {
@@ -212,6 +247,23 @@
 
         <div class="h-px bg-black/8 -mx-1.5 my-2"></div>
     {/if}
+
+    <!-- margin — always visible -->
+    <div class="flex flex-col items-center gap-1">
+        <button class="py-1 px-2.5 border border-[#e4e0dc] hover:border-black/20 rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
+                       transition-colors flex items-center justify-center"
+                onclick={increaseMargin} title="Increase margin">
+            <Plus class="w-3"/>
+        </button>
+        <span class="text-[10px] text-black/40 leading-none">{currentMarginPx}</span>
+        <button class="py-1 px-2.5 border border-[#e4e0dc] hover:border-black/20 rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
+                       transition-colors flex items-center justify-center"
+                onclick={decreaseMargin} title="Decrease margin">
+            <Minus class="w-3"/>
+        </button>
+    </div>
+
+    <div class="h-px bg-black/8 -mx-1.5 my-2"></div>
 
     <!-- delete — always visible -->
     <button class="py-1 px-2.5 border border-[#e4e0dc] hover:border-black/20 rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
