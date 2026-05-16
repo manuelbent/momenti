@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CloudUpload, Loader } from 'lucide-svelte'
+    import { CloudUpload, LoaderCircle } from 'lucide-svelte'
     import Button from '$lib/components/ui/Button.svelte'
     import { moment } from '$lib/stores/moment'
     import { showToast } from '$lib/stores/toast'
@@ -30,7 +30,7 @@
 
 <Button onclick={handleSave} disabled={isSaving}>
     {#if isSaving}
-        <Loader size={13} strokeWidth={1.8} class="animate-spin"/>
+        <LoaderCircle size={13} strokeWidth={1.8} class="animate-spin"/>
     {:else}
         <CloudUpload size={13} strokeWidth={1.8} />
     {/if}
