@@ -5,6 +5,7 @@
         selectedNodeId, selectedNodeType, selectedNodeDeleteId,
         moment, updateNode, deleteNode, clearSelection
     } from '$lib/stores/moment'
+    import { pendingImages } from '$lib/stores/pendingImages'
 
     let toolbarEl: HTMLElement
     let fileInput: HTMLInputElement
@@ -12,9 +13,13 @@
     const handleFileSelected = (e: Event) => {
         if (!$selectedNodeId) return
         const target = e.target as HTMLInputElement
-        if (target.files?.[0]) {
-            updateNode($selectedNodeId, { src: URL.createObjectURL(target.files[0]) })
-        }
+        const file = target.files?.[0]
+        if (!file) return
+
+        const blobUrl = URL.createObjectURL(file)
+        pendingImages.add(blobUrl, file)
+        updateNode($selectedNodeId, { src: blobUrl })
+        target.value = ''
     }
 
     // traverse the tree to find the node (used for text-specific computations)
