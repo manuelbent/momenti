@@ -128,7 +128,7 @@ TECHNICAL CONSTRAINTS
 export const MAX_MOMENTS_ALLOWED = 10
 
 export const MIN_PROMPT_LENGTH = 10
-export const MAX_PROMPT_LENGTH = 800
+export const MAX_PROMPT_LENGTH = 1500
 
 export const PROMPT_CLASSIFIER_PROMPT = `
 You are a prompt quality validator for a landing page generator called "momenti".
