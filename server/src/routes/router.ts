@@ -52,6 +52,13 @@ router.post('/invite-keys/validate',
     (req, res) => ioc.inviteKeyController.validate(req, res)
 )
 
+// image upload route
+router.post('/images',
+    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.uploadMiddleware.handle(req, res, next),
+    (req, res) => ioc.imageController.upload(req, res)
+)
+
 // healthcheck
 router.get('/healthcheck', ioc.systemController.healthcheck)
 

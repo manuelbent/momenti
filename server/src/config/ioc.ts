@@ -4,6 +4,7 @@ import SseMiddleware from '../middlewares/SseMiddleware'
 import InviteKeyMiddleware from '../middlewares/InviteKeyMiddleware'
 import MomentLimitMiddleware from '../middlewares/MomentLimitMiddleware'
 import DownloadFormSubmissionsMiddleware from '../middlewares/DownloadFormSubmissionsMiddleware'
+import UploadMiddleware from '../middlewares/UploadMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
@@ -13,6 +14,8 @@ import MomentService from '../services/MomentService'
 import InviteKeyService from '../services/InviteKeyService'
 import UserService from '../services/UserService'
 import FormSubmissionService from '../services/FormSubmissionService'
+import R2Service from '../services/R2Service'
+import ImageController from '../controllers/ImageController'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
 import UserServiceInterface from '../interfaces/UserServiceInterface'
@@ -44,6 +47,7 @@ class Container {
     private _inviteKeyMiddleware?: InviteKeyMiddleware
     private _momentLimitMiddleware?: MomentLimitMiddleware
     private _downloadFormSubmissionsMiddleware?: DownloadFormSubmissionsMiddleware
+    private _uploadMiddleware?: UploadMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -54,12 +58,15 @@ class Container {
     private _inviteKeyService?: InviteKeyServiceInterface
     private _userService?: UserServiceInterface
     private _formSubmissionService?: FormSubmissionServiceInterface
+    // services (non-interface)
+    private _r2Service?: R2Service
     // controllers
     private _systemController?: SystemController
     private _momentController?: MomentController
     private _inviteKeyController?: InviteKeyController
     private _userController?: UserController
     private _formSubmissionController?: FormSubmissionController
+    private _imageController?: ImageController
     // validators
     private _promptValidator?: PromptValidator
     private _generateMomentRequestValidator?: GenerateMomentRequestValidator
@@ -90,6 +97,10 @@ class Container {
 
     public get downloadFormSubmissionsMiddleware(): DownloadFormSubmissionsMiddleware {
         return this._downloadFormSubmissionsMiddleware ??= new DownloadFormSubmissionsMiddleware()
+    }
+
+    public get uploadMiddleware(): UploadMiddleware {
+        return this._uploadMiddleware ??= new UploadMiddleware()
     }
 
     public get userRepository(): UserRepositoryInterface {
@@ -166,6 +177,14 @@ class Container {
 
     public get submitFormDataRequestValidator(): SubmitFormDataRequestValidator {
         return this._submitFormDataRequestValidator ??= new SubmitFormDataRequestValidator(this.momentService)
+    }
+
+    public get r2Service(): R2Service {
+        return this._r2Service ??= new R2Service()
+    }
+
+    public get imageController(): ImageController {
+        return this._imageController ??= new ImageController(this.r2Service)
     }
 }
 
