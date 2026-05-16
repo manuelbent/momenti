@@ -2,7 +2,6 @@
     import { moment, moments, hasForms } from '$lib/stores/moment'
     import SlugInput from './components/SlugInput.svelte'
     import PromptCounter from './components/PromptCounter.svelte'
-    import RecaptureButton from './components/RecaptureButton.svelte'
     import SaveButton from './components/SaveButton.svelte'
     import PreviewButton from './components/PreviewButton.svelte'
     import ViewButton from './components/ViewButton.svelte'
@@ -28,8 +27,6 @@
     <hr class="border-[#0d0d0d]/6 -mx-6"/>
 
     <div class="flex flex-col gap-3">
-        <RecaptureButton/>
-
         <SaveButton/>
 
         {#if $moment?.is_published}
