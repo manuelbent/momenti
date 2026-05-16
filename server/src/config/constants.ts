@@ -58,6 +58,7 @@ LAYOUT PHILOSOPHY
 - Structure should emerge from spacing, typography, and imagery.
 - Use imagery with extreme restraint. A single, powerful image can elevate the editorial feel; too many will clutter it.
 - Images should only be included if they directly anchor the narrative or visually ground a section.
+- Never use rem for padding, prefer percentage.
 
 VERTICAL FLOW (CRITICAL)
 - The page should read as a vertical sequence of sections.
