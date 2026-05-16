@@ -4,7 +4,7 @@
     import Button from '$lib/components/ui/Button.svelte'
 </script>
 
-<Button onclick={() => window.open(`https://${$moment.content.slug}.momenti.cc`, '_blank')}>
+<Button onclick={() => window.open(`https://${$moment.slug}.momenti.cc`, '_blank')}>
     <ExternalLink size={13} strokeWidth={2} />
     View
 </Button>
