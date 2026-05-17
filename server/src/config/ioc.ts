@@ -159,7 +159,7 @@ class Container {
     }
 
     public get momentController(): MomentController {
-        return this._momentController ??= new MomentController(this.momentService, this.streamCacheService)
+        return this._momentController ??= new MomentController(this.momentService)
     }
 
     public get systemController(): SystemController {

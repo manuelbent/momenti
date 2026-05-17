@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
-import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
 import User from '../models/User'
 
 /**
@@ -10,12 +9,8 @@ export default class MomentController {
     /**
      * @constructor
      * @param {MomentServiceInterface} momentService
-     * @param {StreamCacheServiceInterface} streamCacheService
      */
-    constructor(
-        private momentService: MomentServiceInterface,
-        private streamCacheService: StreamCacheServiceInterface,
-    ) {}
+    constructor(private momentService: MomentServiceInterface) {}
 
     /**
      * Load all moments by invite key.
@@ -41,8 +36,6 @@ export default class MomentController {
      */
     public async loadPublishedBySlug(req: Request, res: Response) {
         try {
-            // todo: implement cache
-
             const slug = String(req.params.slug)
             const moment = await this.momentService.getPublishedBySlug(slug)
             res.json(moment)
@@ -98,19 +91,14 @@ export default class MomentController {
 
         const { prompt } = req.body
 
-        // discard any stale cache entry for this user before starting a fresh stream.
-        this.streamCacheService.clear(user.id)
-
         const send = (event: 'chunk'|'done'|'error', data: unknown) => {
             res.write(`{ "event": "${event}", "data": ${JSON.stringify(data)} }\n\n`)
-            this.streamCacheService.append(user.id, { event, data })
         }
 
         try {
             for await (const payload of this.momentService.generateStream(prompt.trim())) {
                 if (payload.error) {
                     send('error', { error: payload.error })
-                    this.streamCacheService.finalize(user.id)
                     return
                 }
 
@@ -122,7 +110,6 @@ export default class MomentController {
                         content: payload.rawMoment
                     })
                     send('done', moment)
-                    this.streamCacheService.finalize(user.id)
                     return
                 }
 
@@ -133,7 +120,6 @@ export default class MomentController {
         } catch (err) {
             console.error('[MomentController] SSE Error:', err)
             send('error', { error: 'Failed to generate the Moment. Please try again.' })
-            this.streamCacheService.finalize(user.id)
         } finally {
             res.end()
         }
