@@ -18,11 +18,11 @@
 
     <hr class="border-[#0d0d0d]/6 -mx-6"/>
 
-    <div class="flex flex-col gap-3">
-        <SlugInput/>
+    <PromptViewer/>
 
-        <PromptViewer/>
-    </div>
+    <hr class="border-[#0d0d0d]/6 -mx-6"/>
+
+    <SlugInput/>
 
     <hr class="border-[#0d0d0d]/6 -mx-6"/>
 
