@@ -29,6 +29,11 @@ export default class SqliteRateLimitStore implements Store {
     private windowMs: number = 60_000
 
     /**
+     * @private {Promise<void> | null}
+     */
+    private initPromise: Promise<void> | null = null
+
+    /**
      * @param {string} dbPath
      * @constructor
      */
@@ -67,7 +72,8 @@ export default class SqliteRateLimitStore implements Store {
      */
     async init(options: Options): Promise<void> {
         this.windowMs = options.windowMs
-        await this.setup()
+        this.initPromise = this.setup()
+        await this.initPromise
     }
 
     /**
@@ -93,14 +99,26 @@ export default class SqliteRateLimitStore implements Store {
     }
 
     /**
+     * Internal helper to guarantee the schema is ready before writing/reading queries.
+     * @return {Promise<void>}
+     * @private
+     */
+    private async ensureReady(): Promise<void> {
+        if (this.initPromise) {
+            await this.initPromise
+        }
+    }
+
+    /**
      * @param {string} key
      * @return {Promise<ClientRateLimitInfo>}
      */
     async increment(key: string): Promise<ClientRateLimitInfo> {
+        await this.ensureReady()
+
         const now = Date.now()
         const resetAt = now + this.windowMs
 
-        // By using RETURNING, we guarantee atomicity and save a database round-trip
         const sql = `
             INSERT INTO rate_limit_hits (key, hits, reset_at)
             VALUES (?, 1, ?) ON CONFLICT(key) DO
@@ -124,10 +142,12 @@ export default class SqliteRateLimitStore implements Store {
     }
 
     /**
-     * @param {string }key
+     * @param {string} key
      * @return {Promise<void>}
      */
     async decrement(key: string): Promise<void> {
+        await this.ensureReady()
+
         await this.execute(
             'UPDATE rate_limit_hits SET hits = MAX(0, hits - 1) WHERE key = ?',
             [key]
@@ -139,6 +159,8 @@ export default class SqliteRateLimitStore implements Store {
      * @return {Promise<void>}
      */
     async resetKey(key: string): Promise<void> {
+        await this.ensureReady()
+
         await this.execute('DELETE FROM rate_limit_hits WHERE key = ?', [key])
     }
 }
