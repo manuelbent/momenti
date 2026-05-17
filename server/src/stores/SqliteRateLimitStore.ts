@@ -75,6 +75,7 @@ export default class SqliteRateLimitStore implements Store {
      * @private
      */
     private async setup(): Promise<void> {
+        // WAL requires a file, skip when memory
         if (this.dbPath !== ':memory:') {
             await this.execute('PRAGMA journal_mode=WAL')
         }
