@@ -38,6 +38,7 @@ router.put('/moments/:id',
 )
 
 router.post('/moments/:slug/submissions',
+    (req, res, next) => ioc.rateLimitMiddleware.handle(req, res, next),
     (req, res, next) => ioc.submitFormDataRequestValidator.validate(req, res, next),
     (req, res) => ioc.formSubmissionController.store(req, res)
 )
@@ -50,12 +51,14 @@ router.get('/moments/:slug/submissions',
 
 // invite keys routes
 router.post('/invite-keys/validate',
+    (req, res, next) => ioc.rateLimitMiddleware.handle(req, res, next),
     (req, res, next) => ioc.validateInviteKeyRequestValidator.validate(req, res, next),
     (req, res) => ioc.inviteKeyController.validate(req, res)
 )
 
 // image upload route
 router.post('/images',
+    (req, res, next) => ioc.rateLimitMiddleware.handle(req, res, next),
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.uploadMiddleware.handle(req, res, next),
     (req, res) => ioc.imageController.upload(req, res)

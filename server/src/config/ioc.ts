@@ -7,6 +7,7 @@ import DownloadFormSubmissionsMiddleware from '../middlewares/DownloadFormSubmis
 import UploadMiddleware from '../middlewares/UploadMiddleware'
 import PromptSafetyMiddleware from '../middlewares/PromptSafetyMiddleware'
 import PromptClassifierMiddleware from '../middlewares/PromptClassifierMiddleware'
+import RateLimitMiddleware from '../middlewares/RateLimitMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
@@ -52,6 +53,7 @@ class Container {
     private _uploadMiddleware?: UploadMiddleware
     private _promptSafetyMiddleware?: PromptSafetyMiddleware
     private _promptClassifierMiddleware?: PromptClassifierMiddleware
+    private _rateLimitMiddleware?: RateLimitMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -113,6 +115,10 @@ class Container {
 
     public get promptClassifierMiddleware(): PromptClassifierMiddleware {
         return this._promptClassifierMiddleware ??= new PromptClassifierMiddleware()
+    }
+
+    public get rateLimitMiddleware(): RateLimitMiddleware {
+        return this._rateLimitMiddleware ??= new RateLimitMiddleware()
     }
 
     public get userRepository(): UserRepositoryInterface {
