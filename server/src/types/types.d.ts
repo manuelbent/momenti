@@ -17,3 +17,8 @@ interface RawMoment {
     slug: string
     root: MomentNode
 }
+
+interface StreamEvent {
+    event: 'chunk' | 'done' | 'error'
+    data: unknown
+}

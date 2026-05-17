@@ -17,6 +17,8 @@ import InviteKeyService from '../services/InviteKeyService'
 import UserService from '../services/UserService'
 import FormSubmissionService from '../services/FormSubmissionService'
 import R2Service from '../services/R2Service'
+import StreamCacheService from '../services/StreamCacheService'
+import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
 import ImageController from '../controllers/ImageController'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
@@ -62,6 +64,7 @@ class Container {
     private _inviteKeyService?: InviteKeyServiceInterface
     private _userService?: UserServiceInterface
     private _formSubmissionService?: FormSubmissionServiceInterface
+    private _streamCacheService?: StreamCacheServiceInterface
     // services (non-interface)
     private _r2Service?: R2Service
     // controllers
@@ -147,8 +150,16 @@ class Container {
         return this._formSubmissionService ??= new FormSubmissionService(this.formSubmissionRepository)
     }
 
+    public get r2Service(): R2Service {
+        return this._r2Service ??= new R2Service()
+    }
+
+    public get streamCacheService(): StreamCacheServiceInterface {
+        return this._streamCacheService ??= new StreamCacheService()
+    }
+
     public get momentController(): MomentController {
-        return this._momentController ??= new MomentController(this.momentService)
+        return this._momentController ??= new MomentController(this.momentService, this.streamCacheService)
     }
 
     public get systemController(): SystemController {
@@ -191,9 +202,6 @@ class Container {
         return this._submitFormDataRequestValidator ??= new SubmitFormDataRequestValidator(this.momentService)
     }
 
-    public get r2Service(): R2Service {
-        return this._r2Service ??= new R2Service()
-    }
 
     public get imageController(): ImageController {
         return this._imageController ??= new ImageController(this.r2Service)
