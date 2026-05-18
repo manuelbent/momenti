@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
+import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
+import Moment from '../models/Moment'
 import User from '../models/User'
 
 /**
@@ -9,8 +11,12 @@ export default class MomentController {
     /**
      * @constructor
      * @param {MomentServiceInterface} momentService
+     * @param {StreamWorkerInterface} streamWorker
      */
-    constructor(private momentService: MomentServiceInterface) {}
+    constructor(
+        private momentService: MomentServiceInterface,
+        private streamWorker: StreamWorkerInterface,
+    ) {}
 
     /**
      * Load all moments by invite key.
@@ -86,42 +92,44 @@ export default class MomentController {
      * @param {Request} req
      * @param {Response} res
      */
-    public async capture(req: Request, res: Response): Promise<void> {
+    public capture(req: Request, res: Response): void {
         const user: User = res.locals.user
-
         const { prompt } = req.body
 
-        const send = (event: 'chunk'|'done'|'error', data: unknown) => {
+        const send = (event: StreamEvent['event'], data: unknown) => {
             res.write(`{ "event": "${event}", "data": ${JSON.stringify(data)} }\n\n`)
         }
 
-        try {
-            for await (const payload of this.momentService.generateStream(prompt.trim())) {
-                if (payload.error) {
-                    send('error', { error: payload.error })
-                    return
-                }
+        // start the worker, detached
+        this.streamWorker.start(user.id, prompt.trim())
 
-                if (payload.done && payload.rawMoment && payload.slug) {
-                    const moment = await this.momentService.store({
-                        user_id: user.id,
-                        slug: payload.slug,
-                        prompt,
-                        content: payload.rawMoment
-                    })
-                    send('done', moment)
-                    return
-                }
+        // the emitter exists right after start
+        const emitter = this.streamWorker.getEmitter(user.id)!
 
-                if (payload.chunk) {
-                    send('chunk', { chunk: payload.chunk })
-                }
-            }
-        } catch (err) {
-            console.error('[MomentController] SSE Error:', err)
-            send('error', { error: 'Failed to generate the Moment. Please try again.' })
-        } finally {
+        const onChunk = (data: { chunk: string }) => {
+            send('chunk', data)
+        }
+
+        const onDone = (moment: Moment) => {
+            send('done', moment)
             res.end()
         }
+
+        const onError = (data: { error: string }) => {
+            send('error', data)
+            res.end()
+        }
+
+        emitter.on('chunk', onChunk)
+        emitter.once('done', onDone)
+        emitter.once('error', onError)
+
+        // if the client disconnects mid-stream, stop forwarding but
+        // let the worker keep running so the cache stays populated for a future resume
+        req.once('close', () => {
+            emitter.off('chunk', onChunk)
+            emitter.off('done', onDone)
+            emitter.off('error', onError)
+        })
     }
 }

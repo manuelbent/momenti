@@ -13,7 +13,7 @@ import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
  *
  * Emitted events on each EventEmitter:
  *   'chunk': { chunk: string }
- *   'done': { slug: string, rawMoment: RawMoment }
+ *   'done': Moment (fully persisted)
  *   'error': { error: string }
  *
  * @class StreamWorker
@@ -74,7 +74,13 @@ export default class StreamWorker implements StreamWorkerInterface {
                 }
 
                 if (payload.done && payload.slug && payload.rawMoment) {
-                    this.emit(userId, emitter, 'done', { slug: payload.slug, rawMoment: payload.rawMoment })
+                    const moment = await this.momentService.store({
+                        user_id: userId,
+                        slug: payload.slug,
+                        prompt,
+                        content: payload.rawMoment,
+                    })
+                    this.emit(userId, emitter, 'done', moment)
                     break
                 }
 

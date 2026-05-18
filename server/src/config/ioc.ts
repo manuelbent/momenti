@@ -19,6 +19,8 @@ import FormSubmissionService from '../services/FormSubmissionService'
 import R2Service from '../services/R2Service'
 import StreamCacheService from '../services/StreamCacheService'
 import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
+import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
+import StreamWorker from '../workers/StreamWorker'
 import ImageController from '../controllers/ImageController'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
@@ -67,6 +69,8 @@ class Container {
     private _streamCacheService?: StreamCacheServiceInterface
     // services (non-interface)
     private _r2Service?: R2Service
+    // workers
+    private _streamWorker?: StreamWorkerInterface
     // controllers
     private _systemController?: SystemController
     private _momentController?: MomentController
@@ -158,8 +162,12 @@ class Container {
         return this._streamCacheService ??= new StreamCacheService()
     }
 
+    public get streamWorker(): StreamWorkerInterface {
+        return this._streamWorker ??= new StreamWorker(this.momentService, this.streamCacheService)
+    }
+
     public get momentController(): MomentController {
-        return this._momentController ??= new MomentController(this.momentService)
+        return this._momentController ??= new MomentController(this.momentService, this.streamWorker)
     }
 
     public get systemController(): SystemController {
