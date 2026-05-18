@@ -7,6 +7,7 @@ const router = Router()
 router.post('/capture',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.momentLimitMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.generationGuardMiddleware.handle(req, res, next),
     (req, res, next) => ioc.generateMomentRequestValidator.validate(req, res, next),
     (req, res, next) => ioc.promptValidator.handle(req, res, next),
     (req, res, next) => ioc.promptSafetyMiddleware.handle(req, res, next),

@@ -2,18 +2,18 @@ import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterfa
 
 /**
  * Internal structure for a single cache entry.
+ * Its presence in the store means a generation is in progress.
  */
 interface CacheEntry {
     events: StreamEvent[]
-    complete: boolean
     timer: ReturnType<typeof setTimeout>
 }
 
 /**
- * @class StreamCacheService
- *
- * In-memory cache for SSE stream events, keyed by invite key.
- * Each entry is automatically evicted after the configured TTL.
+ * In-memory cache for SSE stream events, keyed by userId.
+ * An entry exists only while generation is in progress.
+ * Each entry is automatically evicted after the configured TTL
+ * as a safety net against entries that never resolve.
  * @class StreamCacheService
  */
 export default class StreamCacheService implements StreamCacheServiceInterface {
@@ -30,56 +30,43 @@ export default class StreamCacheService implements StreamCacheServiceInterface {
     constructor(private ttlMs: number = 10 * 60 * 1000) {}
 
     /**
-     * Returns the existing cache entry for the given invite key,
-     * or creates a fresh one with a TTL timer.
+     * Initializes a fresh cache entry for the given user.
      * @param {number} userId
-     * @private
      */
-    private getOrCreate(userId: number): CacheEntry {
-        const existing = this.store.get(userId)
-        if (existing) {
-            return existing
-        }
-
-        const timer = setTimeout(() => {
-            this.store.delete(userId)
-        }, this.ttlMs)
-
-        const entry: CacheEntry = { events: [], complete: false, timer }
-        this.store.set(userId, entry)
-        return entry
+    public init(userId: number): void {
+        const timer = setTimeout(() => this.store.delete(userId), this.ttlMs)
+        this.store.set(userId, { events: [], timer })
     }
 
-    /** @inheritdoc */
+    /**
+     * Returns true if a generation is currently in progress for the given user.
+     * @param {number} userId
+     */
+    public isGenerating(userId: number): boolean {
+        return this.store.has(userId)
+    }
+
+    /**
+     * Appends a new event to the buffer for the given user.
+     * @param {number} userId
+     * @param {StreamEvent} event
+     */
     public append(userId: number, event: StreamEvent): void {
-        const entry = this.getOrCreate(userId)
-        entry.events.push(event)
+        this.store.get(userId)?.events.push(event)
     }
 
-    /** @inheritdoc */
+    /**
+     * Returns all buffered events for the given user.
+     * @param {number} userId
+     */
     public getAllEvents(userId: number): StreamEvent[] {
         return this.store.get(userId)?.events ?? []
     }
 
-    /** @inheritdoc */
-    public finalize(userId: number): void {
-        const entry = this.store.get(userId)
-        if (entry) {
-            entry.complete = true
-        }
-    }
-
-    /** @inheritdoc */
-    public isComplete(userId: number): boolean {
-        return this.store.get(userId)?.complete ?? false
-    }
-
-    /** @inheritdoc */
-    public has(userId: number): boolean {
-        return this.store.has(userId)
-    }
-
-    /** @inheritdoc */
+    /**
+     * Clears the cache entry entirely for the given user.
+     * @param {number} userId
+     */
     public clear(userId: number): void {
         const entry = this.store.get(userId)
         if (entry) {
@@ -88,4 +75,3 @@ export default class StreamCacheService implements StreamCacheServiceInterface {
         }
     }
 }
-

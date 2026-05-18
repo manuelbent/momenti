@@ -132,4 +132,48 @@ export default class MomentController {
             emitter.off('error', onError)
         })
     }
+
+    /**
+     * Server-Sent Events endpoint: resumes a stream for the current user.
+     * - No generation in progress: sends a single 'idle' event and closes.
+     * - Generation in progress: subscribes to the live emitter, replays buffered
+     *   chunks, then continues forwarding events as they arrive.
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public resume(req: Request, res: Response): void {
+        const user: User = res.locals.user
+
+        const send = (event: string, data: unknown) => {
+            res.write(`{ "event": "${event}", "data": ${JSON.stringify(data)} }\n\n`)
+        }
+
+        // no generation in progress for this user
+        if (!this.streamWorker.isGenerating(user.id)) {
+            send('idle', {})
+            res.end()
+            return
+        }
+
+        // stream in progress: subscribe first, then replay buffered chunks
+        const emitter = this.streamWorker.getEmitter(user.id)!
+
+        const onChunk = (data: { chunk: string }) => send('chunk', data)
+        const onDone = (moment: Moment) => { send('done', moment); res.end() }
+        const onError = (data: { error: string }) => { send('error', data); res.end() }
+
+        emitter.on('chunk', onChunk)
+        emitter.once('done', onDone)
+        emitter.once('error', onError)
+
+        for (const event of this.streamWorker.getBufferedEvents(user.id)) {
+            send(event.event, event.data)
+        }
+
+        req.once('close', () => {
+            emitter.off('chunk', onChunk)
+            emitter.off('done', onDone)
+            emitter.off('error', onError)
+        })
+    }
 }

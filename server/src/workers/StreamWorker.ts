@@ -19,10 +19,6 @@ import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
  * @class StreamWorker
  */
 export default class StreamWorker implements StreamWorkerInterface {
-    /**
-     * Live emitters, one per active userId.
-     * @private
-     */
     private emitters = new Map<number, EventEmitter>()
 
     /**
@@ -35,27 +31,43 @@ export default class StreamWorker implements StreamWorkerInterface {
         private streamCacheService: StreamCacheServiceInterface,
     ) {}
 
-    /** @inheritdoc */
+    /**
+     * Starts a new generation stream for the given user.
+     * Clears any existing entry for the user before beginning.
+     * @param {number} userId
+     * @param {string} prompt
+     */
     public start(userId: number, prompt: string): void {
-        // discard any previous stream state for this user
-        // if start is fired, it's a fresh new generation
         this.streamCacheService.clear(userId)
         this.emitters.delete(userId)
 
+        this.streamCacheService.init(userId)
         const emitter = new EventEmitter()
         this.emitters.set(userId, emitter)
 
         // run the generation loop detached from the call stack
-        this.run(userId, prompt, emitter).catch((err) => {
-            console.error(`[StreamWorker] Unhandled error for userId ${userId}:`, err)
-            this.emit(userId, emitter, 'error', { error: 'Unexpected error during generation.' })
-            this.finalize(userId)
-        })
+        void this.run(userId, prompt, emitter)
     }
 
-    /** @inheritdoc */
-    public getEmitter(userId: number): EventEmitter | undefined {
+    /**
+     * @param {number} userId
+     */
+    public getEmitter(userId: number): EventEmitter|undefined {
         return this.emitters.get(userId)
+    }
+
+    /**
+     * @param {number} userId
+     */
+    public isGenerating(userId: number): boolean {
+        return this.streamCacheService.isGenerating(userId)
+    }
+
+    /**
+     * @param {number} userId
+     */
+    public getBufferedEvents(userId: number): StreamEvent[] {
+        return this.streamCacheService.getAllEvents(userId)
     }
 
     /**
@@ -110,12 +122,13 @@ export default class StreamWorker implements StreamWorkerInterface {
     }
 
     /**
-     * Marks the stream as complete in the cache and removes the live emitter.
+     * Clears the cache entry and removes the live emitter.
+     * Called after every terminal event (done or error).
      * @param {number} userId
      * @private
      */
     private finalize(userId: number): void {
-        this.streamCacheService.finalize(userId)
+        this.streamCacheService.clear(userId)
         this.emitters.delete(userId)
     }
 }

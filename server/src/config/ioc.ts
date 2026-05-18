@@ -7,6 +7,7 @@ import DownloadFormSubmissionsMiddleware from '../middlewares/DownloadFormSubmis
 import UploadMiddleware from '../middlewares/UploadMiddleware'
 import PromptSafetyMiddleware from '../middlewares/PromptSafetyMiddleware'
 import PromptClassifierMiddleware from '../middlewares/PromptClassifierMiddleware'
+import GenerationGuardMiddleware from '../middlewares/GenerationGuardMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
@@ -56,6 +57,7 @@ class Container {
     private _uploadMiddleware?: UploadMiddleware
     private _promptSafetyMiddleware?: PromptSafetyMiddleware
     private _promptClassifierMiddleware?: PromptClassifierMiddleware
+    private _generationGuardMiddleware?: GenerationGuardMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -120,6 +122,10 @@ class Container {
 
     public get promptClassifierMiddleware(): PromptClassifierMiddleware {
         return this._promptClassifierMiddleware ??= new PromptClassifierMiddleware()
+    }
+
+    public get generationGuardMiddleware(): GenerationGuardMiddleware {
+        return this._generationGuardMiddleware ??= new GenerationGuardMiddleware(this.streamWorker)
     }
 
     public get userRepository(): UserRepositoryInterface {
