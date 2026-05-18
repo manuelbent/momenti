@@ -16,7 +16,21 @@ export const capture = async (prompt: string, callbacks: CaptureCallbacks): Prom
         throw new Error(`Unexpected response: ${res.status}`)
     }
 
-    const reader = res.body
+    await readStream(res.body, callbacks)
+}
+
+export const resume = async (callbacks: CaptureCallbacks): Promise<void> => {
+    const res = await fetch(`${API_URL}/capture/resume`, {
+        headers: authHeaders(),
+    })
+
+    if (!res.ok || !res.body) return
+
+    await readStream(res.body, callbacks)
+}
+
+const readStream = async (body: ReadableStream<Uint8Array>, callbacks: CaptureCallbacks): Promise<void> => {
+    const reader = body
         .pipeThrough(new TextDecoderStream() as unknown as ReadableWritablePair<string, Uint8Array>)
         .getReader()
 
@@ -31,16 +45,19 @@ export const capture = async (prompt: string, callbacks: CaptureCallbacks): Prom
         buffer = messages.pop() ?? ''
 
         for (const msg of messages) {
-            handleMessage(msg, callbacks)
+            if (handleMessage(msg, callbacks) === 'idle') return
         }
     }
 }
 
-const handleMessage = (message: string, callbacks: CaptureCallbacks) => {
+const handleMessage = (message: string, callbacks: CaptureCallbacks): 'idle' | void => {
     const { event, data } = JSON.parse(message)
     if (!event || !data) return
 
     switch (event) {
+        case 'idle':
+            callbacks.onIdle?.()
+            return 'idle'
         case 'chunk':
             callbacks.onChunk(data.chunk)
             break

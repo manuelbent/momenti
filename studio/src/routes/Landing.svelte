@@ -1,8 +1,9 @@
 <script lang="ts">
+    import { onMount } from 'svelte'
     import { fade } from 'svelte/transition'
     import { push } from 'svelte-spa-router'
     import { SwatchBook } from 'lucide-svelte'
-    import { capture } from '$lib/api/moments'
+    import { capture, resume } from '$lib/api/moments'
     import { moment } from '$lib/stores/moment'
     import { inviteKey } from '$lib/stores/auth'
     import Loader from '$lib/components/landing/Loader.svelte'
@@ -15,6 +16,31 @@
     let error = $state('')
     let streamText = $state('')
     let showInviteModal = $state(false)
+    let loading = $state(!!$inviteKey)
+
+    onMount(async () => {
+        if (!$inviteKey) return
+
+        try {
+            await resume({
+                onIdle: () => {
+                    loading = false
+                },
+                onChunk: (chunk) => {
+                    loading = false
+                    isCapturing = true
+                    streamText += chunk
+                },
+                onDone: (data) => {
+                    moment.set(data)
+                    isLeaving = true
+                    setTimeout(() => push('/studio'), 450)
+                },
+            })
+        } catch {
+            loading = false
+        }
+    })
 
     function handleCapture() {
         if (!prompt.trim()) {
@@ -94,7 +120,9 @@
             </p>
 
             <div class="grid min-h-57.5">
-                {#if isCapturing}
+                {#if loading}
+                    <!-- -->
+                {:else if isCapturing}
                     <!-- loader replaces the form card -->
                     <div class="[grid-area:1/1] h-full flex items-center justify-center"
                          transition:fade={{ duration: 400 }}>
@@ -139,5 +167,5 @@
 </div>
 
 {#if showInviteModal}
-    <InviteModal {onUnlock} onClose={() => (showInviteModal = false)} />
+    <InviteModal {onUnlock} onClose={() => (showInviteModal = false)}/>
 {/if}
