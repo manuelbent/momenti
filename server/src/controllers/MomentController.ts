@@ -86,46 +86,79 @@ export default class MomentController {
 
     /**
      * Server-Sent Events endpoint: streams moment generation to the client.
-     * chunk: partial text delta from the model
-     * done: final Moment JSON object
-     * error: error message string
      * @param {Request} req
      * @param {Response} res
      */
-    public capture(req: Request, res: Response): void {
+    public capture = (req: Request, res: Response): void => {
         const user: User = res.locals.user
         const { prompt } = req.body
 
-        const send = (event: StreamEvent['event'], data: unknown) => {
-            res.write(`{ "event": "${event}", "data": ${JSON.stringify(data)} }\n\n`)
-        }
-
-        // start the worker, detached
+        // Start the worker, detached
         this.streamWorker.start(user.id, prompt.trim())
 
-        // the emitter exists right after start
-        const emitter = this.streamWorker.getEmitter(user.id)!
+        // Subscribe to events
+        this.setupStreamListeners(req, res, user.id)
+    }
+
+    /**
+     * Server-Sent Events endpoint: resumes a stream for the current user.
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public resume = (req: Request, res: Response): void => {
+        const user: User = res.locals.user
+
+        // No generation in progress for this user
+        if (!this.streamWorker.isGenerating(user.id)) {
+            this.sendSseEvent(res, 'idle', {})
+            res.end()
+            return
+        }
+
+        // Setup live listeners and replay history
+        this.setupStreamListeners(req, res, user.id, { replayBuffer: true })
+    }
+
+    /**
+     * Core helper to manage event subscription, chunk playback, and connection cleanup.
+     * @param {Request} req
+     * @param {Response} res
+     * @param {number} userId
+     * @param {{replayBuffer: boolean}} options
+     */
+    private setupStreamListeners(
+        req: Request,
+        res: Response,
+        userId: number,
+        options: { replayBuffer?: boolean } = {}
+    ): void {
+        const emitter = this.streamWorker.getEmitter(userId)!
 
         const onChunk = (data: { chunk: string }) => {
-            send('chunk', data)
+            this.sendSseEvent(res, 'chunk', data)
         }
-
         const onDone = (moment: Moment) => {
-            send('done', moment)
+            this.sendSseEvent(res, 'done', moment)
             res.end()
         }
-
         const onError = (data: { error: string }) => {
-            send('error', data)
+            this.sendSseEvent(res, 'error', data)
             res.end()
         }
 
+        // subscribe to live events
         emitter.on('chunk', onChunk)
         emitter.once('done', onDone)
         emitter.once('error', onError)
 
-        // if the client disconnects mid-stream, stop forwarding but
-        // let the worker keep running so the cache stays populated for a future resume
+        // if it's a resume, replay chunks
+        if (options.replayBuffer) {
+            for (const event of this.streamWorker.getBufferedEvents(userId)) {
+                this.sendSseEvent(res, event.event, event.data)
+            }
+        }
+
+        // handle disconnection
         req.once('close', () => {
             emitter.off('chunk', onChunk)
             emitter.off('done', onDone)
@@ -134,46 +167,10 @@ export default class MomentController {
     }
 
     /**
-     * Server-Sent Events endpoint: resumes a stream for the current user.
-     * - No generation in progress: sends a single 'idle' event and closes.
-     * - Generation in progress: subscribes to the live emitter, replays buffered
-     *   chunks, then continues forwarding events as they arrive.
-     * @param {Request} req
-     * @param {Response} res
+     * Formats and writes data conforming to the official EventStream specification.
      */
-    public resume(req: Request, res: Response): void {
-        const user: User = res.locals.user
-
-        const send = (event: string, data: unknown) => {
-            res.write(`{ "event": "${event}", "data": ${JSON.stringify(data)} }\n\n`)
-        }
-
-        // no generation in progress for this user
-        if (!this.streamWorker.isGenerating(user.id)) {
-            send('idle', {})
-            res.end()
-            return
-        }
-
-        // stream in progress: subscribe first, then replay buffered chunks
-        const emitter = this.streamWorker.getEmitter(user.id)!
-
-        const onChunk = (data: { chunk: string }) => send('chunk', data)
-        const onDone = (moment: Moment) => { send('done', moment); res.end() }
-        const onError = (data: { error: string }) => { send('error', data); res.end() }
-
-        emitter.on('chunk', onChunk)
-        emitter.once('done', onDone)
-        emitter.once('error', onError)
-
-        for (const event of this.streamWorker.getBufferedEvents(user.id)) {
-            send(event.event, event.data)
-        }
-
-        req.once('close', () => {
-            emitter.off('chunk', onChunk)
-            emitter.off('done', onDone)
-            emitter.off('error', onError)
-        })
+    private sendSseEvent(res: Response, event: string, data: unknown): void {
+        res.write(`event: ${event}\n`)
+        res.write(`data: ${JSON.stringify(data)}\n\n`)
     }
 }

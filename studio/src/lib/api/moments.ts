@@ -51,21 +51,31 @@ const readStream = async (body: ReadableStream<Uint8Array>, callbacks: CaptureCa
 }
 
 const handleMessage = (message: string, callbacks: CaptureCallbacks): 'idle' | void => {
-    const { event, data } = JSON.parse(message)
-    if (!event || !data) return
+    let event: string | undefined
+    let data: unknown
+
+    for (const line of message.split('\n')) {
+        if (line.startsWith('event:')) {
+            event = line.slice('event:'.length).trim()
+        } else if (line.startsWith('data:')) {
+            data = JSON.parse(line.slice('data:'.length).trim())
+        }
+    }
+
+    if (!event || data === undefined) return
 
     switch (event) {
         case 'idle':
             callbacks.onIdle?.()
             return 'idle'
         case 'chunk':
-            callbacks.onChunk(data.chunk)
+            callbacks.onChunk((data as { chunk: string }).chunk)
             break
         case 'done':
-            callbacks.onDone(data)
+            callbacks.onDone(data as Moment)
             break
         case 'error':
-            throw new Error(data.error)
+            throw new Error((data as { error: string }).error)
     }
 }
 
