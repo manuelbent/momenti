@@ -37,11 +37,11 @@ jobs:
 
       - name: Inject Secrets into Config
         run: |
-          sed -i "s/'OPENAI_API_KEY'/'${{ secrets.OPENAI_API_KEY }}'/g" server/ecosystem.config.js
-          sed -i "s/'R2_ACCOUNT_ID'/'${{ secrets.R2_ACCOUNT_ID }}'/g" server/ecosystem.config.js
-          sed -i "s/'R2_ACCESS_KEY_ID'/'${{ secrets.R2_ACCESS_KEY_ID }}'/g" server/ecosystem.config.js
-          sed -i "s/'R2_SECRET_ACCESS_KEY'/'${{ secrets.R2_SECRET_ACCESS_KEY }}'/g" server/ecosystem.config.js
-          sed -i "s/'R2_PUBLIC_URL'/'${{ secrets.R2_PUBLIC_URL }}'/g" server/ecosystem.config.js
+          sed -i "s/OPENAI_API_KEY_VALUE/${{ secrets.OPENAI_API_KEY }}/g" server/ecosystem.config.js
+          sed -i "s/R2_ACCOUNT_ID_VALUE/${{ secrets.R2_ACCOUNT_ID }}/g" server/ecosystem.config.js
+          sed -i "s/R2_ACCESS_KEY_ID_VALUE/${{ secrets.R2_ACCESS_KEY_ID }}/g" server/ecosystem.config.js
+          sed -i "s/R2_SECRET_ACCESS_KEY_VALUE/${{ secrets.R2_SECRET_ACCESS_KEY }}/g" server/ecosystem.config.js
+          sed -i "s/R2_PUBLIC_URL_VALUE/${{ secrets.R2_PUBLIC_URL }}/g" server/ecosystem.config.js
 
       - name: Deploy and Restart via SSH
         run: |
