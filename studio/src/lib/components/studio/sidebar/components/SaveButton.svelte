@@ -9,7 +9,9 @@
     let isSaving = false
 
     async function handleSave() {
-        if (!$moment) return
+        if (!$moment) {
+            return
+        }
 
         isSaving = true
         try {
