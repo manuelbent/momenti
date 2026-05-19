@@ -108,14 +108,14 @@ export default class MomentController {
     public resume = (req: Request, res: Response): void => {
         const user: User = res.locals.user
 
-        // No generation in progress for this user
+        // no generation in progress for this user
         if (!this.streamWorker.isGenerating(user.id)) {
             this.sendSseEvent(res, 'idle', {})
             res.end()
             return
         }
 
-        // Setup live listeners and replay history
+        // setup live listeners and replay history
         this.setupStreamListeners(req, res, user.id, { replayBuffer: true })
     }
 
@@ -168,6 +168,9 @@ export default class MomentController {
 
     /**
      * Formats and writes data conforming to the official EventStream specification.
+     * @param {Response} res
+     * @param {string} event
+     * @param {unknown} data
      */
     private sendSseEvent(res: Response, event: string, data: unknown): void {
         res.write(`event: ${event}\n`)
