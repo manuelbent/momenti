@@ -57,6 +57,7 @@ router.get('/moments/:slug/submissions',
 
 // invite keys routes
 router.post('/invite-keys/validate',
+    (req, res, next) => ioc.rateLimiterMiddleware.handle(req, res, next),
     (req, res, next) => ioc.validateInviteKeyRequestValidator.validate(req, res, next),
     (req, res) => ioc.inviteKeyController.validate(req, res)
 )

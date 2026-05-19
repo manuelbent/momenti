@@ -8,6 +8,7 @@ import UploadMiddleware from '../middlewares/UploadMiddleware'
 import PromptSafetyMiddleware from '../middlewares/PromptSafetyMiddleware'
 import PromptClassifierMiddleware from '../middlewares/PromptClassifierMiddleware'
 import GenerationGuardMiddleware from '../middlewares/GenerationGuardMiddleware'
+import RateLimiterMiddleware from '../middlewares/RateLimiterMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
@@ -58,6 +59,7 @@ class Container {
     private _promptSafetyMiddleware?: PromptSafetyMiddleware
     private _promptClassifierMiddleware?: PromptClassifierMiddleware
     private _generationGuardMiddleware?: GenerationGuardMiddleware
+    private _rateLimiterMiddleware?: RateLimiterMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -126,6 +128,10 @@ class Container {
 
     public get generationGuardMiddleware(): GenerationGuardMiddleware {
         return this._generationGuardMiddleware ??= new GenerationGuardMiddleware(this.streamWorker)
+    }
+
+    public get rateLimiterMiddleware(): RateLimiterMiddleware {
+        return this._rateLimiterMiddleware ??= new RateLimiterMiddleware()
     }
 
     public get userRepository(): UserRepositoryInterface {
