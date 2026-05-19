@@ -17,8 +17,8 @@ export default class RateLimiterMiddleware {
     /**
      * @constructor
      */
-    constructor() {
-        this.limiter = new RateLimiterRedis({
+    constructor(limiter?: RateLimiterRedis) {
+        this.limiter = limiter ?? new RateLimiterRedis({
             storeClient: redis,
             keyPrefix: 'rl:invite-keys:validate',
             points: Number(process.env.RATE_LIMIT_VALIDATE_MAX ?? 10),
