@@ -14,7 +14,8 @@ module.exports = {
                 MAX_MOMENTS_ALLOWED: 30,
                 REDIS_URL: 'redis://localhost:6379',
                 RATE_LIMIT_VALIDATE_MAX: 10,
-                RATE_LIMIT_VALIDATE_WINDOW_SEC: 60
+                RATE_LIMIT_VALIDATE_WINDOW_SEC: 60,
+                ADMIN_TOKEN: 'ADMIN_TOKEN_VALUE'
             }
         },
         {

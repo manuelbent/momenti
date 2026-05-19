@@ -191,7 +191,7 @@ class Container {
     }
 
     public get inviteKeyController(): InviteKeyController {
-        return this._inviteKeyController ??= new InviteKeyController(this.inviteKeyService)
+        return this._inviteKeyController ??= new InviteKeyController(this.inviteKeyService, this.userService)
     }
 
     public get userController(): UserController {
