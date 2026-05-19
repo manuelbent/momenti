@@ -40,7 +40,6 @@ import MomentRepository from '../repositories/MomentRepository'
 import InviteKeyRepository from '../repositories/InviteKeyRepository'
 import FormSubmissionRepository from '../repositories/FormSubmissionRepository'
 import UpdateMomentRequestValidator from '../validators/UpdateMomentRequestValidator'
-import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
 import SubmitFormDataRequestValidator from '../validators/SubmitFormDataRequestValidator'
 
 /**
@@ -86,7 +85,6 @@ class Container {
     private _promptValidator?: PromptValidator
     private _generateMomentRequestValidator?: GenerateMomentRequestValidator
     private _updateMomentRequestValidator?: UpdateMomentRequestValidator
-    private _checkSlugRequestValidator?: CheckSlugRequestValidator
     private _validateInviteKeyRequestValidator?: ValidateInviteKeyRequestValidator
     private _submitFormDataRequestValidator?: SubmitFormDataRequestValidator
 
@@ -208,10 +206,6 @@ class Container {
 
     public get updateMomentRequestValidator(): UpdateMomentRequestValidator {
         return this._updateMomentRequestValidator ??= new UpdateMomentRequestValidator(this.momentService)
-    }
-
-    public get checkSlugRequestValidator(): CheckSlugRequestValidator {
-        return this._checkSlugRequestValidator ??= new CheckSlugRequestValidator()
     }
 
     public get validateInviteKeyRequestValidator(): ValidateInviteKeyRequestValidator {
