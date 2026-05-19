@@ -16,6 +16,12 @@ module.exports = {
                 RATE_LIMIT_VALIDATE_MAX: 10,
                 RATE_LIMIT_VALIDATE_WINDOW_SEC: 60
             }
+        },
+        {
+            name: 'redis',
+            script: 'redis-server',
+            args: '--daemonize no',
+            autorestart: true,
         }
     ]
 }
