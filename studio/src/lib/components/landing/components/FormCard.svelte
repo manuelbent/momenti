@@ -8,12 +8,21 @@
         error?: string
         onCapture: () => void
     } = $props()
+
+    const placeholders: string[] = [
+        'A cozy coffee shop page in Zürich with warm beige tones and minimalist design...',
+        'A neon music festival page with bold typography, countdown timer, and sunset crowd photos...',
+        'I need a clean page for my bakery in paris. Pastel colors, cute vibe, lots of pastry photos...',
+        'A wedding in Lake Como, July 23th, address to confirm, with soft floral aesthetics, light palette and RSVP section...'
+    ]
+
+    const placeholder = placeholders[Math.floor(Math.random() * placeholders.length)]
 </script>
 
 <div class="bg-white/3 border border-white/10 rounded-2xl overflow-hidden flex flex-col">
     <textarea
             class="w-full bg-transparent border-none outline-none resize-none px-5.5 py-5 font-serif text-[17px] leading-[1.7] text-[#f0ede8] caret-[#f0ede8] placeholder-[#3a3a3a]"
-            placeholder="e.g. A wedding in the woods, May 2026. Earthy tones, lanterns, wildflowers..."
+            placeholder={placeholder}
             bind:value={prompt}
             rows={4}
             onkeydown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) onCapture() }}

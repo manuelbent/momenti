@@ -110,7 +110,7 @@
                         <Loader {streamText}/>
                     </div>
                 {:else}
-                    <div transition:fade={{ duration: 400 }}>
+                    <div class="[grid-area:1/1]" transition:fade={{ duration: 400 }}>
                         <FormCard bind:prompt {error} onCapture={handleCapture}/>
                     </div>
                 {/if}
