@@ -7,7 +7,7 @@ import { PROMPT_CLASSIFIER_PROMPT } from '../config/constants'
  * valid moment before generation begins.
  *
  * Assumes the prompt has already been validated for presence and length by
- * PromptValidator, and screened for harmful content by PromptSafetyMiddleware.
+ * PromptValidator, and screened for harmful content by PromptModerationMiddleware.
  *
  * @class PromptClassifierMiddleware
  */

@@ -2,13 +2,10 @@ import { NextFunction, Request, Response } from 'express'
 import OpenAI from 'openai'
 
 /**
- * Intercepts prompts that contain harmful content (hate speech, violence,
- * harassment, phishing, scams, etc) via the OpenAI Moderation API before
- * they reach PromptValidator.
- *
- * @class PromptSafetyMiddleware
+ * Moderates the editable content of a moment before an update is persisted.
+ * @class MomentContentModerationMiddleware
  */
-export default class PromptSafetyMiddleware {
+export default class MomentContentModerationMiddleware {
     /**
      * @private {OpenAI}
      */
@@ -26,26 +23,35 @@ export default class PromptSafetyMiddleware {
      * @param {Response} res
      * @param {NextFunction} next
      */
-    public async handle(req: Request, res: Response, next: NextFunction): Promise<void|Response> {
-        const { prompt } = req.body
+    public async handle(req: Request, res: Response, next: NextFunction): Promise<void | Response> {
+        const { slug, content } = req.body
+
+        // nothing to moderate
+        if (!content || !slug) {
+            return next()
+        }
 
         let flagged: boolean
 
         try {
             const moderation = await this.openai.moderations.create({
                 model: 'omni-moderation-latest',
-                input: prompt,
+                input: `slug: ${slug}, content: ${JSON.stringify(content)}`,
             })
 
             flagged = moderation.results[0].flagged
+
+            console.log(flagged)
         } catch (e) {
             // Fail open: if the moderation API is unavailable let the request
-            // continue so that PromptValidator can still run its own checks.
+            // continue so that the update can still be persisted.
             return next()
         }
 
         if (flagged) {
-            return res.status(422).json({ error: 'Your message contains harmful or prohibited content and cannot be processed.' })
+            return res.status(422).json({
+                error: 'The content contains harmful or prohibited material and cannot be saved.',
+            })
         }
 
         next()

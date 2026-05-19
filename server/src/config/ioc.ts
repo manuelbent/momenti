@@ -5,10 +5,11 @@ import InviteKeyMiddleware from '../middlewares/InviteKeyMiddleware'
 import MomentLimitMiddleware from '../middlewares/MomentLimitMiddleware'
 import DownloadFormSubmissionsMiddleware from '../middlewares/DownloadFormSubmissionsMiddleware'
 import UploadMiddleware from '../middlewares/UploadMiddleware'
-import PromptSafetyMiddleware from '../middlewares/PromptSafetyMiddleware'
+import PromptModerationMiddleware from '../middlewares/PromptModerationMiddleware'
 import PromptClassifierMiddleware from '../middlewares/PromptClassifierMiddleware'
 import GenerationGuardMiddleware from '../middlewares/GenerationGuardMiddleware'
 import RateLimiterMiddleware from '../middlewares/RateLimiterMiddleware'
+import MomentContentModerationMiddleware from '../middlewares/MomentContentModerationMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
@@ -55,10 +56,11 @@ class Container {
     private _momentLimitMiddleware?: MomentLimitMiddleware
     private _downloadFormSubmissionsMiddleware?: DownloadFormSubmissionsMiddleware
     private _uploadMiddleware?: UploadMiddleware
-    private _promptSafetyMiddleware?: PromptSafetyMiddleware
+    private _promptModerationMiddleware?: PromptModerationMiddleware
     private _promptClassifierMiddleware?: PromptClassifierMiddleware
     private _generationGuardMiddleware?: GenerationGuardMiddleware
     private _rateLimiterMiddleware?: RateLimiterMiddleware
+    private _momentContentModerationMiddleware?: MomentContentModerationMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -116,8 +118,8 @@ class Container {
         return this._uploadMiddleware ??= new UploadMiddleware()
     }
 
-    public get promptSafetyMiddleware(): PromptSafetyMiddleware {
-        return this._promptSafetyMiddleware ??= new PromptSafetyMiddleware()
+    public get promptModerationMiddleware(): PromptModerationMiddleware {
+        return this._promptModerationMiddleware ??= new PromptModerationMiddleware()
     }
 
     public get promptClassifierMiddleware(): PromptClassifierMiddleware {
@@ -130,6 +132,10 @@ class Container {
 
     public get rateLimiterMiddleware(): RateLimiterMiddleware {
         return this._rateLimiterMiddleware ??= new RateLimiterMiddleware()
+    }
+
+    public get momentContentModerationMiddleware(): MomentContentModerationMiddleware {
+        return this._momentContentModerationMiddleware ??= new MomentContentModerationMiddleware()
     }
 
     public get userRepository(): UserRepositoryInterface {

@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { Request, Response, NextFunction } from 'express'
-import PromptSafetyMiddleware from './PromptSafetyMiddleware'
+import PromptModerationMiddleware from './PromptModerationMiddleware'
 
 function makeReq(prompt: unknown): Partial<Request> {
     return { body: { prompt } }
@@ -13,12 +13,12 @@ function makeRes() {
     return res
 }
 
-describe('PromptSafetyMiddleware (real OpenAI Moderation API)', () => {
-    let middleware: PromptSafetyMiddleware
+describe('PromptModerationMiddleware (real OpenAI Moderation API)', () => {
+    let middleware: PromptModerationMiddleware
     let next: NextFunction
 
     beforeEach(() => {
-        middleware = new PromptSafetyMiddleware()
+        middleware = new PromptModerationMiddleware()
         next = vi.fn()
     })
 

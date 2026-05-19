@@ -14,7 +14,6 @@ export default class UpdateMomentRequestValidator {
             .max(50, 'Slug must be 50 characters or fewer.')
             .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Slug may only contain lowercase letters, numbers, and hyphens, and cannot start or end with a hyphen.')
             .optional(),
-        prompt: z.string().optional(),
         content: z.record(z.unknown()).optional(),
         is_published: z.boolean().optional(),
     }).strict()
