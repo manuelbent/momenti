@@ -1,7 +1,7 @@
 type FormField =
-    | { type: 'subject'; text: string }
-    | { type: 'radio';   name: string; label?: string; options: { label: string; value: string }[] }
-    | { type: 'input';   name: string; label?: string; placeholder?: string }
+    |{ type: 'subject'; text: string }
+    |{ type: 'radio'; name: string; label?: string; options: { label: string; value: string }[] }
+    |{ type: 'input'; name: string; label?: string; placeholder?: string }
 
 interface MomentNode {
     id: string;
@@ -48,8 +48,15 @@ interface CaptureCallbacks {
 
 interface CssComputedVals {
     color: string
-    fontSizePx: number | ''
+    fontSizePx: number|''
     isBold: boolean
     isItalic: boolean
     isUnderline: boolean
+}
+
+type FeedbackType = 'suggestion'|'bug'|'other'
+
+interface FeedbackBody {
+    type: FeedbackType
+    message: string
 }

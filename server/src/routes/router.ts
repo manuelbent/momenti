@@ -69,6 +69,13 @@ router.post('/images',
     (req, res) => ioc.imageController.upload(req, res)
 )
 
+// feedbacks routes
+router.post('/feedbacks',
+    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.submitFeedbackRequestValidator.validate(req, res, next),
+    (req, res) => ioc.feedbackController.store(req, res),
+)
+
 // healthcheck
 router.get('/healthcheck', ioc.systemController.healthcheck)
 

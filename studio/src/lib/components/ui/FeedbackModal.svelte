@@ -1,14 +1,13 @@
 <script lang="ts">
+    import { X } from 'lucide-svelte'
     import { fade, fly } from 'svelte/transition'
     import { showToast } from '$lib/stores/toast'
-    import { X } from 'lucide-svelte'
+    import { submitFeedback } from '$lib/api/feedbacks'
 
     export let open = false
 
-    type FeedbackType = 'bug'|'suggestion'|'other'
-
     let type: FeedbackType = 'suggestion'
-    let message = ''
+    let message: string = ''
 
     const types: { value: FeedbackType; label: string }[] = [
         { value: 'suggestion', label: 'Suggestion' },
@@ -16,16 +15,20 @@
         { value: 'other', label: 'Other' },
     ]
 
-    function close() {
+    const close = () => {
         open = false
         type = 'suggestion'
         message = ''
     }
 
-    function submit() {
-        // no-op for now — backend not implemented
-        showToast('Thank you for your feedback!')
-        close()
+    const submit = async () => {
+        try {
+            await submitFeedback({ type, message })
+            showToast('Thank you for your feedback!')
+            close()
+        } catch {
+            showToast('Something went wrong.', 'error')
+        }
     }
 </script>
 
@@ -70,19 +73,26 @@
         </div>
 
         <!-- textarea -->
-        <textarea
-                bind:value={message}
-                placeholder="What’s working? What’s broken? How do we make this better?"
-                rows="5"
-                class="w-full resize-none rounded-xl border border-[#0d0d0d]/12 bg-white/50
+        <div>
+            <textarea
+                    bind:value={message}
+                    maxlength="500"
+                    placeholder="What's working? What's broken? How do we make this better?"
+                    rows="5"
+                    class="w-full resize-none rounded-xl border border-[#0d0d0d]/12 bg-white/50
                    px-4 py-3 text-[12px] tracking-[0.04em] text-[#0d0d0d] placeholder-[#0d0d0d]/30
                    focus:outline-none focus:border-[#0d0d0d]/30 transition-colors duration-150"
-        ></textarea>
+            ></textarea>
+            <span class="text-[11px] font-sans ml-auto flex justify-end -mt-1
+                {message.length >= 500 ? 'text-red-400' : 'text-[#acaaa7]'}">
+                {message.length}/500
+            </span>
+        </div>
 
         <!-- submit -->
         <button
                 on:click={submit}
-                disabled={!message.trim()}
+                disabled={message.trim().length < 10}
                 class="w-full py-2.5 rounded-md border bg-[#0d0d0d] text-[#f0ede8] text-[11px]
                    tracking-[0.08em] cursor-pointer hover:bg-[#0d0d0d]/85 transition-colors
                    duration-150 disabled:opacity-30 disabled:cursor-not-allowed font-sans"
