@@ -10,7 +10,10 @@
 </script>
 
 {#if node.type === 'box'}
-    <BaseBox css={node.css ?? ''}>
+    <!-- We check if layout is column/row and make sure it's injected if the CSS string doesn't explicitly overwrite it already -->
+    {@const layoutCss = node.layout === 'column' ? 'flex-direction: column;' : node.layout === 'row' ? 'flex-direction: row;' : ''}
+
+    <BaseBox css="{node.css ?? ''}; {layoutCss}">
         {#each node.children ?? [] as child (child.id)}
             <svelte:self node={child} parentId={node.id}/>
         {/each}
