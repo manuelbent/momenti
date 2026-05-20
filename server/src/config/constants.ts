@@ -35,6 +35,7 @@ interface MomentNode {
 
 interface Moment {
   slug: string;
+  fonts: string[]; // Google Font names
   root: MomentNode;
 }
 
@@ -79,6 +80,13 @@ HERO LAYOUT RULE
 - Never place hero elements side-by-side.
 - Headings, paragraphs, buttons, and supporting text must flow top-to-bottom.
 - The hero should feel spacious, readable, and focused around a single narrative flow.
+
+FONTS
+- Choose 1–2 Google Fonts that match the mood, topic, and aesthetic of the moment.
+- List every font name used anywhere in the design (in css or html inline styles) in the top-level "fonts" array (e.g. ["Playfair Display", "Inter"]).
+- Use the exact Google Fonts name (e.g. "Playfair Display", not "playfair" or "Playfair").
+- Always include every font referenced in any css or html string in this array; omit system fonts (Georgia, Arial, sans-serif, etc.).
+- The "fonts" array is required. If you use no Google Fonts, return an empty array.
 
 TYPOGRAPHY (RESPONSIVE & CONTAINER-BASED)
 - Font sizes MUST adapt to the parent container, not the viewport.

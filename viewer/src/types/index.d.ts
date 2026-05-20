@@ -26,6 +26,7 @@ interface MomentNode {
 
 interface Content {
     slug: string
+    fonts?: string[]
     root: MomentNode
 }
 

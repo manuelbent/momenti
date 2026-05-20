@@ -17,6 +17,7 @@ interface MomentNode {
 
 interface RawMoment {
     slug: string
+    fonts?: string[]
     root: MomentNode
 }
 
