@@ -20,7 +20,7 @@
 </script>
 
 <!-- landing layout -->
-<div class="h-screen text-[#0d0d0d] bg-[#f0ede8] font-serif flex flex-col overflow-hidden">
+<div class="h-screen text-[#0d0d0d] bg-[#f0ede8] flex flex-col overflow-hidden">
 
     <Navbar/>
 

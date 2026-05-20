@@ -1,17 +1,14 @@
 <script lang="ts">
-    import { onMount } from 'svelte'
     import { loadFonts } from '$shared/loadFonts'
     import { moment } from '$lib/stores/moment'
     import Renderer from '$lib/engine/Renderer.svelte'
     import BrowserChrome from './components/BrowserChrome.svelte'
 
+    $: loadFonts($moment?.content.fonts)
+
     const DESKTOP_WIDTH = 1280
     let containerWidth = 0
     $: scale = containerWidth > 0 ? containerWidth / DESKTOP_WIDTH : 1
-
-    onMount(() => {
-        loadFonts($moment?.content.fonts)
-    })
 </script>
 
 <div class="flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden shadow-2xl shadow-[#0d0d0d]/8 border border-[#0d0d0d]/8">
