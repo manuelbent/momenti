@@ -36,7 +36,6 @@
         // The "Conversational / Rambling" user
         'Can you make a cool landing page for a underground techno party in Berlin? Needs to feel dark, mysterious, with a countdown timer and ticket link.',
         'I want a website for my matcha brand. Super clean, soft green tones, peaceful vibe, showing off the ingredients and a "Shop Now" button.',
-        'Help me build a page for a local charity drive. Needs a progress bar for donations, a heart warming hero image, and a big button to donate.'
     ]
 
     const placeholder = placeholders[Math.floor(Math.random() * placeholders.length)]
