@@ -1,8 +1,5 @@
 {
   "compilerOptions": {
-    "types": [
-      "vite/client"
-    ],
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -10,10 +7,5 @@
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "baseUrl": ".",
-    "paths": {
-      "$lib/*": ["src/lib/*"],
-      "$shared/*": ["../shared/*"]
-    }
-  },
-  "include": ["src", "../shared"]
+  }
 }

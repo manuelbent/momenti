@@ -1,17 +1,25 @@
 <script lang="ts">
+    import { onMount } from 'svelte'
     import { fade } from 'svelte/transition'
+    import { loadFonts } from '$shared/loadFonts'
     import { moment } from '$lib/stores/moment'
     import Renderer from '$lib/engine/Renderer.svelte'
 
-    try {
-        const m: Moment = JSON.parse(localStorage.getItem('moment__preview')!)
-        moment.set(m)
-    } catch (err) {
-        console.error('[Preview] Could not parse moment for preview.', err)
-    }
+    let ready = false
+
+    onMount(async () => {
+        try {
+            const m: Moment = JSON.parse(localStorage.getItem('moment__preview')!)
+            moment.set(m)
+            await loadFonts(m.content.fonts ?? [])
+        } catch (err) {
+            console.error('[Preview] Could not parse moment for preview.', err)
+        }
+        ready = true
+    })
 </script>
 
-{#if $moment}
+{#if ready && $moment}
     <div in:fade={{ duration: 400 }} style="position: relative">
         <Renderer node={$moment.content.root} viewOnly={true}/>
     </div>

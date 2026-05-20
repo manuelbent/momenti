@@ -1,7 +1,13 @@
 <script lang="ts">
+    import { onMount } from 'svelte'
     import { moment } from '$lib/stores/moment'
+    import { loadFonts } from '$shared/loadFonts'
     import Renderer from '$lib/engine/Renderer.svelte'
     import StatusBar from './components/StatusBar.svelte'
+
+    onMount(async () => {
+        await loadFonts($moment?.content?.fonts)
+    })
 </script>
 
 <div class="justify-center overflow-auto">
