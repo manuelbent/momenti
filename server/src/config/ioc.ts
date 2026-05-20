@@ -15,10 +15,12 @@ import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
 import UserController from '../controllers/UserController'
 import FormSubmissionController from '../controllers/FormSubmissionController'
+import FeedbackController from '../controllers/FeedbackController'
 import MomentService from '../services/MomentService'
 import InviteKeyService from '../services/InviteKeyService'
 import UserService from '../services/UserService'
 import FormSubmissionService from '../services/FormSubmissionService'
+import FeedbackService from '../services/FeedbackService'
 import R2Service from '../services/R2Service'
 import StreamCacheService from '../services/StreamCacheService'
 import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
@@ -29,6 +31,8 @@ import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
 import UserServiceInterface from '../interfaces/UserServiceInterface'
 import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
+import FeedbackServiceInterface from '../interfaces/FeedbackServiceInterface'
+import FeedbackRepositoryInterface from '../interfaces/FeedbackRepositoryInterface'
 import PromptValidator from '../validators/PromptValidator'
 import GenerateMomentRequestValidator from '../validators/GenerateMomentRequestValidator'
 import ValidateInviteKeyRequestValidator from '../validators/ValidateInviteKeyRequestValidator'
@@ -40,6 +44,7 @@ import UserRepository from '../repositories/UserRepository'
 import MomentRepository from '../repositories/MomentRepository'
 import InviteKeyRepository from '../repositories/InviteKeyRepository'
 import FormSubmissionRepository from '../repositories/FormSubmissionRepository'
+import FeedbackRepository from '../repositories/FeedbackRepository'
 import UpdateMomentRequestValidator from '../validators/UpdateMomentRequestValidator'
 import SubmitFormDataRequestValidator from '../validators/SubmitFormDataRequestValidator'
 
@@ -66,11 +71,13 @@ class Container {
     private _momentRepository?: MomentRepositoryInterface
     private _inviteKeyRepository?: InviteKeyRepositoryInterface
     private _formSubmissionRepository?: FormSubmissionRepositoryInterface
+    private _feedbackRepository?: FeedbackRepositoryInterface
     // services
     private _momentService?: MomentServiceInterface
     private _inviteKeyService?: InviteKeyServiceInterface
     private _userService?: UserServiceInterface
     private _formSubmissionService?: FormSubmissionServiceInterface
+    private _feedbackService?: FeedbackServiceInterface
     private _streamCacheService?: StreamCacheServiceInterface
     // services (non-interface)
     private _r2Service?: R2Service
@@ -82,6 +89,7 @@ class Container {
     private _inviteKeyController?: InviteKeyController
     private _userController?: UserController
     private _formSubmissionController?: FormSubmissionController
+    private _feedbackController?: FeedbackController
     private _imageController?: ImageController
     // validators
     private _promptValidator?: PromptValidator
@@ -154,6 +162,10 @@ class Container {
         return this._formSubmissionRepository ??= new FormSubmissionRepository()
     }
 
+    public get feedbackRepository(): FeedbackRepositoryInterface {
+        return this._feedbackRepository ??= new FeedbackRepository()
+    }
+
     public get momentService(): MomentServiceInterface {
         return this._momentService ??= new MomentService(this.momentRepository)
     }
@@ -168,6 +180,10 @@ class Container {
 
     public get formSubmissionService(): FormSubmissionServiceInterface {
         return this._formSubmissionService ??= new FormSubmissionService(this.formSubmissionRepository)
+    }
+
+    public get feedbackService(): FeedbackServiceInterface {
+        return this._feedbackService ??= new FeedbackService(this.feedbackRepository)
     }
 
     public get r2Service(): R2Service {
@@ -200,6 +216,10 @@ class Container {
 
     public get formSubmissionController(): FormSubmissionController {
         return this._formSubmissionController ??= new FormSubmissionController(this.formSubmissionService)
+    }
+
+    public get feedbackController(): FeedbackController {
+        return this._feedbackController ??= new FeedbackController(this.feedbackService)
     }
 
     public get promptValidator(): PromptValidator {
