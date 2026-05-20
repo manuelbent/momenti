@@ -1,11 +1,13 @@
 interface MomentNode {
     id: string
-    type: 'box'|'text'|'image'|'form'
+    type: 'box'|'text'|'image'|'form'|'map'|'countdown'
     css?: string
     tag?: string
     html?: string
     src?: string
     alt?: string
+    address?: string
+    targetDate?: string
     placeholder?: string
     buttonLabel?: string
     inputCss?: string

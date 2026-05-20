@@ -4,6 +4,7 @@
     import BaseImage from '$lib/components/primitives/BaseImage.svelte'
     import FormElement from '$lib/components/primitives/FormElement.svelte'
     import BaseMap from '$lib/components/primitives/BaseMap.svelte'
+    import BaseCountdown from '$lib/components/primitives/BaseCountdown.svelte'
 
     export let node: MomentNode
 </script>
@@ -39,5 +40,10 @@
     <BaseMap
             address={node.address}
             css={node.css}
+    />
+{:else if node.type === 'countdown'}
+    <BaseCountdown
+            targetDate={node.targetDate ?? ''}
+            css={node.css ?? ''}
     />
 {/if}

@@ -6,6 +6,7 @@
     import BaseImage from '$lib/components/primitives/BaseImage.svelte'
     import FormElement from '$lib/components/primitives/FormElement.svelte'
     import BaseMap from '$lib/components/primitives/BaseMap.svelte'
+    import BaseCountdown from '$lib/components/primitives/BaseCountdown.svelte'
 
     export let node: MomentNode
     export let viewOnly: boolean = false
@@ -58,6 +59,14 @@
             id={node.id}
             address={node.address}
             css={node.css}
+            isSelected={!viewOnly && $selectedNodeId === node.id}
+            onSelect={() => selectNode({ id: node.id, type: node.type, deleteId: node.id })}
+    />
+{:else if node.type === 'countdown'}
+    <BaseCountdown
+            id={node.id}
+            targetDate={node.targetDate ?? ''}
+            css={node.css ?? ''}
             isSelected={!viewOnly && $selectedNodeId === node.id}
             onSelect={() => selectNode({ id: node.id, type: node.type, deleteId: node.id })}
     />

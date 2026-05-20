@@ -14,7 +14,7 @@ type FormField =
 
 interface MomentNode {
   id: string;
-  type: 'box' | 'text' | 'image' | 'form' | 'map'; 
+  type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown';
   variant?: 'hero' | 'section' | 'card' | 'overlay';
   layout?: 'row' | 'column';
   columns?: number;
@@ -24,6 +24,7 @@ interface MomentNode {
   src?: string;
   alt?: string;
   address?: string;
+  targetDate?: string; // ISO 8601, e.g. "2026-08-14T23:00:00"
   // form node
   fields?: FormField[];
   buttonLabel?: string;
@@ -120,6 +121,15 @@ COMPONENT: IMAGE
 - FIELDS REQUIRED: 'src' (use a high-quality placeholder URL or descriptive placeholder string) and 'alt' (a descriptive alt text).
 - QUANTITY LIMIT: Maximum of 1 to 2 images per entire landing page. Only include an image if it significantly enriches the visual storytelling. If the typography and spacing already feel complete, omit images entirely.
 - STYLING: Always use fluid widths (e.g., \`width: 100%; object-fit: cover;\`) and an explicit \`aspect-ratio\` (like \`16/9\` or \`21/9\` for cinematic rows, or \`4/3\` for cards) to prevent layout shifts. Never use fixed pixel widths.
+
+COMPONENT: COUNTDOWN
+- TYPE: 'countdown'
+- PURPOSE: A live, JavaScript-driven countdown to a specific date and time.
+- FIELD REQUIRED: 'targetDate' — an ISO 8601 string extracted from the prompt (e.g. "2026-08-14T23:00:00"). Infer the year from context; if not specified, use the nearest future occurrence.
+- FIELD REQUIRED: 'css' — style the countdown container (background, text color, padding, font, etc.) to match the page aesthetic.
+- WHEN TO USE: Any time the prompt mentions a specific event date or time. Always prefer this over a fake static countdown built from text nodes.
+- NEVER fake a countdown using 'text' nodes with static numbers.
+- LAYOUT: The component renders four labelled blocks (DAYS / HOURS / MINUTES / SECONDS) in a horizontal row automatically. Do NOT wrap it in a layout: 'row' box.
 
 TECHNICAL CONSTRAINTS
 - NO MARKDOWN: Output raw JSON only.

@@ -5,7 +5,7 @@ type FormField =
 
 interface MomentNode {
     id: string;
-    type: 'box'|'text'|'image'|'form'|'map';
+    type: 'box'|'text'|'image'|'form'|'map'|'countdown';
     variant?: 'hero'|'section'|'grid'|'card'|'overlay';
     layout?: 'row'|'column'|'grid';
     columns?: number;
@@ -15,6 +15,7 @@ interface MomentNode {
     src?: string;
     alt?: string;
     address?: string; // The AI will populate this
+    targetDate?: string; // ISO 8601 date string for countdown nodes
     // form node
     fields?: FormField[];
     buttonLabel?: string;
