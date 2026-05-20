@@ -12,7 +12,7 @@
         const [slug] = window.location.hostname.split('.')
         moment = await getMomentBySlug(slug)
         document.title = moment?.content.slug || document.title
-        await loadFonts(moment?.content.fonts)
+        loadFonts(moment?.content.fonts)
         loading = false
     })
 </script>

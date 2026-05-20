@@ -5,8 +5,8 @@
     import Renderer from '$lib/engine/Renderer.svelte'
     import StatusBar from './components/StatusBar.svelte'
 
-    onMount(async () => {
-        await loadFonts($moment?.content?.fonts)
+    onMount(() => {
+        loadFonts($moment?.content.fonts)
     })
 </script>
 

@@ -9,8 +9,8 @@
     let containerWidth = 0
     $: scale = containerWidth > 0 ? containerWidth / DESKTOP_WIDTH : 1
 
-    onMount(async () => {
-        await loadFonts($moment?.content?.fonts)
+    onMount(() => {
+        loadFonts($moment?.content.fonts)
     })
 </script>
 

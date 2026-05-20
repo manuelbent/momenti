@@ -11,7 +11,7 @@
         try {
             const m: Moment = JSON.parse(localStorage.getItem('moment__preview')!)
             moment.set(m)
-            await loadFonts(m.content.fonts ?? [])
+            loadFonts(m.content.fonts)
         } catch (err) {
             console.error('[Preview] Could not parse moment for preview.', err)
         }
