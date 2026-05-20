@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'server/**'
+      - 'database/**'
   workflow_dispatch:
 
 jobs:
@@ -56,7 +57,12 @@ jobs:
           --exclude 'node_modules/' \
           ./server/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/server/
 
-          # 2. Refresh the server
+          # 2. Sync the database folder (migrations, seeders, config) — excluding the data directory
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
+          --exclude 'data/' \
+          ./database/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/database/
+
+          # 3. Refresh the server
           ssh -o StrictHostKeyChecking=no ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }} << 'EOF'
             set -e
             export NVM_DIR="$HOME/.nvm"
