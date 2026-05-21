@@ -68,6 +68,11 @@
         updateNode($selectedNodeId, { href: (e.target as HTMLInputElement).value })
     }
 
+    const handleLinkHtmlInput = (e: Event) => {
+        if (!$selectedNodeId || !selectedLinkNode) return
+        updateNode($selectedNodeId, { html: (e.target as HTMLInputElement).value })
+    }
+
     $: selectedTextNode = (isTextSelected && $selectedNodeId && $moment)
         ? findNode($moment.content.root, $selectedNodeId)
         : null
@@ -268,29 +273,38 @@
     {#if $selectedNodeType === 'link'}
         <div class="relative flex flex-col items-center">
             <button
-                class="py-1 px-2.5 border rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
+                    class="py-1 px-2.5 border rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
                        transition-colors flex items-center justify-center hover:border-black/20
                        {linkInputOpen ? 'border-black/20' : 'border-[#e4e0dc]'}"
-                onclick={() => linkInputOpen = !linkInputOpen}
-                title="Edit link URL"
+                    onclick={() => linkInputOpen = !linkInputOpen}
+                    title="Edit link URL"
             >
                 <Link class="w-3"/>
             </button>
 
             {#if linkInputOpen}
                 <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <div class="absolute left-full ml-2 top-1/2 -translate-y-1/2 flex items-center gap-1
-                            bg-[#f0ede8] border border-[#0D0D0D14] rounded-lg px-2 py-1.5 shadow-md z-10"
+                <div class="absolute left-full ml-2 top-1/2 -translate-y-1/2 flex flex-col gap-1.5
+                            bg-[#f0ede8] border border-[#0D0D0D14] rounded-lg px-2 py-2 shadow-md z-10"
                      onmousedown={e => e.stopPropagation()}>
-                    <input
-                        type="url"
-                        value={selectedLinkNode?.href ?? ''}
-                        placeholder="https://"
-                        onmousedown={e => e.stopPropagation()}
-                        oninput={handleHrefInput}
-                        class="bg-white border border-black/10 rounded-md outline-none text-[#0d0d0d]
+                    <input type="url"
+                           value={selectedLinkNode?.href ?? ''}
+                           placeholder="https://"
+                           onmousedown={e => e.stopPropagation()}
+                           oninput={handleHrefInput}
+                           class="bg-white border border-black/10 rounded-md outline-none text-[#0d0d0d]
                                text-[11px] font-[inherit] px-2 py-1 w-48"
                     />
+                    {#if !selectedLinkNode?.platform}
+                        <input type="text"
+                               value={selectedLinkNode?.html ?? ''}
+                               placeholder="Label (optional)"
+                               onmousedown={e => e.stopPropagation()}
+                               oninput={handleLinkHtmlInput}
+                               class="bg-white border border-black/10 rounded-md outline-none text-[#0d0d0d]
+                               text-[11px] font-[inherit] px-2 py-1 w-48"
+                        />
+                    {/if}
                 </div>
             {/if}
         </div>
