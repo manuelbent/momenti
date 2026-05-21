@@ -10,7 +10,7 @@
     import Toast from '$lib/components/ui/Toast.svelte'
     import LoadingOverlay from '$lib/components/ui/LoadingOverlay.svelte'
 
-    let view: 'desktop'|'mobile' = 'desktop'
+    let view: 'desktop'|'mobile'|'code' = 'desktop'
 
     onMount(() => {
         if (!$inviteKey) {
