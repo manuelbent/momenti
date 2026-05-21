@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte'
-    import { Bold, Italic, Minus, Plus, Trash2, Underline, Upload } from 'lucide-svelte'
+    import { Bold, Italic, Link, Minus, Plus, Trash2, Underline, Upload } from 'lucide-svelte'
     import {
         selectedNodeId, selectedNodeType, selectedNodeDeleteId,
         moment, updateNode, deleteNode, clearSelection
@@ -55,6 +55,18 @@
     }
 
     $: isTextSelected = $selectedNodeType === 'text'
+
+    $: selectedLinkNode = ($selectedNodeType === 'link' && $selectedNodeId && $moment)
+        ? findNode($moment.content.root, $selectedNodeId)
+        : null
+
+    let linkInputOpen = false
+    $: if ($selectedNodeType !== 'link') linkInputOpen = false
+
+    const handleHrefInput = (e: Event) => {
+        if (!$selectedNodeId || !selectedLinkNode) return
+        updateNode($selectedNodeId, { href: (e.target as HTMLInputElement).value })
+    }
 
     $: selectedTextNode = (isTextSelected && $selectedNodeId && $moment)
         ? findNode($moment.content.root, $selectedNodeId)
@@ -249,6 +261,39 @@
             <Upload class="w-3"/>
         </button>
         <input bind:this={fileInput} type="file" accept="image/*" onchange={handleFileSelected} hidden/>
+
+        <div class="h-px bg-black/8 -mx-1.5 my-2"></div>
+    {/if}
+
+    {#if $selectedNodeType === 'link'}
+        <div class="relative flex flex-col items-center">
+            <button
+                class="py-1 px-2.5 border rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
+                       transition-colors flex items-center justify-center hover:border-black/20
+                       {linkInputOpen ? 'border-black/20' : 'border-[#e4e0dc]'}"
+                onclick={() => linkInputOpen = !linkInputOpen}
+                title="Edit link URL"
+            >
+                <Link class="w-3"/>
+            </button>
+
+            {#if linkInputOpen}
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <div class="absolute left-full ml-2 top-1/2 -translate-y-1/2 flex items-center gap-1
+                            bg-[#f0ede8] border border-[#0D0D0D14] rounded-lg px-2 py-1.5 shadow-md z-10"
+                     onmousedown={e => e.stopPropagation()}>
+                    <input
+                        type="url"
+                        value={selectedLinkNode?.href ?? ''}
+                        placeholder="https://"
+                        onmousedown={e => e.stopPropagation()}
+                        oninput={handleHrefInput}
+                        class="bg-white border border-black/10 rounded-md outline-none text-[#0d0d0d]
+                               text-[11px] font-[inherit] px-2 py-1 w-48"
+                    />
+                </div>
+            {/if}
+        </div>
 
         <div class="h-px bg-black/8 -mx-1.5 my-2"></div>
     {/if}
