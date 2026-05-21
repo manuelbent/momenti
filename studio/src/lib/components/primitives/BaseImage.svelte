@@ -1,14 +1,14 @@
 <script lang="ts">
     import { getContext } from 'svelte'
+    import { selectNode, selectedNodeId } from '$lib/stores/moment'
 
     export let id: string = ''
     export let src: string = ''
     export let alt: string = ''
     export let css: string = ''
-    export let isSelected: boolean = false
-    export let onSelect: (() => void) | undefined = undefined
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
+    $: isSelected = !viewOnly && $selectedNodeId === id
 </script>
 
 <div class="momenti-img-container"
@@ -17,7 +17,7 @@
      data-nid={id}
      role="presentation"
      style={css}
-     onclick={() => !viewOnly && onSelect?.()}
+     onclick={() => !viewOnly && selectNode({ id, type: 'image', deleteId: id })}
      onkeydown={() => {}}
 >
     <img {src} {alt} class="main-img" />

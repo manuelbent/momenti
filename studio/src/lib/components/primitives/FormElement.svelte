@@ -1,5 +1,6 @@
 <script lang="ts">
     import { getContext } from 'svelte'
+    import { selectNode, selectedNodeId } from '$lib/stores/moment'
 
     export let id: string = ''
     export let css: string = ''
@@ -7,10 +8,10 @@
     export let buttonCss: string = ''
     export let buttonLabel: string = 'Send'
     export let fields: FormField[] = []
-    export let isSelected: boolean = false
-    export let onSelect: (() => void) | undefined = undefined
+    export let deleteId: string = ''
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
+    $: isSelected = !viewOnly && $selectedNodeId === id
 
     let values: Record<string, string> = {}
     let submitted = false
@@ -28,7 +29,7 @@
       class:momenti-selected={isSelected}
       style={css}
       onsubmit={handleSubmit}
-      onclick={() => !viewOnly && onSelect?.()}
+      onclick={() => !viewOnly && selectNode({ id, type: 'form', deleteId: deleteId || id })}
 >
     {#each fields as field}
         {#if field.type === 'subject'}

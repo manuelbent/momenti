@@ -1,16 +1,15 @@
 <script lang="ts">
     import { onMount, getContext } from 'svelte'
-    import { updateNode, selectedNodeRect } from '$lib/stores/moment'
+    import { updateNode, selectedNodeRect, selectNode, selectedNodeId } from '$lib/stores/moment'
 
     export let id: string
     export let tag: string = 'p'
     export let html: string = ''
     export let css: string = ''
-    export let isSelected: boolean = false
-    export let onSelect: (() => void) | undefined = undefined
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
     $: isEditable = !viewOnly
+    $: isSelected = !viewOnly && $selectedNodeId === id
 
     let element: HTMLElement
 
@@ -28,7 +27,7 @@
     }
 
     function handleFocus() {
-        onSelect?.()
+        selectNode({ id, type: 'text', deleteId: id })
         selectedNodeRect.set(element.getBoundingClientRect())
     }
 </script>
@@ -49,7 +48,6 @@
     /* Add a subtle hint that it's editable when hovered */
     [contenteditable="true"]:hover {
         outline: 1px dashed #ccc;
-        cursor: text;
     }
 
     /* Remove default focus outline if you prefer a custom look */

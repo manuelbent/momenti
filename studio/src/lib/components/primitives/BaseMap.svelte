@@ -1,13 +1,13 @@
 <script lang="ts">
     import { getContext } from 'svelte'
+    import { selectNode, selectedNodeId } from '$lib/stores/moment'
 
     export let id: string = ''
     export let address: string = '';
     export let css: string = '';
-    export let isSelected: boolean = false
-    export let onSelect: (() => void) | undefined = undefined
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
+    $: isSelected = !viewOnly && $selectedNodeId === id
 
     // We use the public embed URL which only needs a q (query) parameter
     $: encodedAddress = encodeURIComponent(address);
@@ -20,13 +20,13 @@
      id={id}
      data-nid={id}
      style={css ?? ''}
-     onclick={() => !viewOnly && onSelect?.()}
+     onclick={() => !viewOnly && selectNode({ id, type: 'map', deleteId: id })}
 >
     {#if address}
         <!-- click-shield so the iframe doesn't capture builder clicks -->
         {#if !viewOnly}
             <!-- svelte-ignore a11y_no_static_element_interactions -->
-            <div class="map-click-shield" onpointerdown={(e) => { e.stopPropagation(); onSelect?.() }}></div>
+            <div class="map-click-shield" onpointerdown={(e) => { e.stopPropagation(); selectNode({ id, type: 'map', deleteId: id }) }}></div>
         {/if}
         <iframe
                 title="Map for {address}"

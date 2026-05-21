@@ -1,11 +1,13 @@
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte'
+    import { onMount, onDestroy, getContext } from 'svelte'
+    import { selectNode, selectedNodeId } from '$lib/stores/moment'
 
     export let id: string = ''
     export let targetDate: string = ''
     export let css: string = ''
-    export let isSelected: boolean = false
-    export let onSelect: (() => void) | undefined = undefined
+
+    const viewOnly = getContext<boolean>('viewOnly') ?? false
+    $: isSelected = !viewOnly && $selectedNodeId === id
 
     interface TimeLeft {
         days: number
@@ -54,7 +56,7 @@
     {id}
     data-nid={id}
     style={css}
-    onclick={() => onSelect?.()}
+    onclick={() => !viewOnly && selectNode({ id, type: 'countdown', deleteId: id })}
 >
     {#if timeLeft.expired}
         <span class="opacity-40 text-2xl">—</span>

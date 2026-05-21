@@ -54,9 +54,10 @@ LAYOUT ARCHITECTURE (CRITICAL)
 - Never use rem for padding, prefer percentage.
 - Never use max-width.
 
-VARIANT: HERO
-- Hero content must be centered.
-- Use layout: 'column' for the main hero container.
+HERO
+- Use layout: 'column' for the hero.
+- Content of the hero must be centered.
+- The picture chosen for the hero must cover the full width of the screen.
 - The hero should feel spacious, readable, and focused around a single narrative flow.
 - Prefer fluid or no constraint for cinematic hero sections.
 

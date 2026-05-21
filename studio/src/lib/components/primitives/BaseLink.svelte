@@ -1,5 +1,6 @@
 <script lang="ts">
     import { getContext } from 'svelte'
+    import { selectNode, selectedNodeId } from '$lib/stores/moment'
     import Icon from '@iconify/svelte'
 
     export let id: string = ''
@@ -7,10 +8,9 @@
     export let html: string = ''
     export let css: string = ''
     export let platform: 'instagram' | 'tiktok' | undefined = undefined
-    export let isSelected: boolean = false
-    export let onSelect: (() => void) | undefined = undefined
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
+    $: isSelected = !viewOnly && $selectedNodeId === id
 
     const SOCIAL_ICONS: Record<'instagram' | 'tiktok', string> = {
         instagram: 'mdi:instagram',
@@ -29,7 +29,7 @@
     rel="noopener noreferrer"
     style={css}
     class:momenti-selected={isSelected}
-    onclick={(e) => { if (!viewOnly) { e.preventDefault(); onSelect?.() } }}
+    onclick={(e) => { if (!viewOnly) { e.preventDefault(); selectNode({ id, type: 'link', deleteId: id }) } }}
 >
     {#if icon}
         <Icon {icon} width="1.4em" height="1.4em" />
