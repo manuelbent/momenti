@@ -14,7 +14,7 @@ type FormField =
 
 interface MomentNode {
   id: string;
-  type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown';
+  type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown' | 'link';
   variant?: 'hero' | 'section' | 'card' | 'overlay';
   layout?: 'row' | 'column';
   columns?: number;
@@ -30,6 +30,8 @@ interface MomentNode {
   buttonLabel?: string;
   inputCss?: string;
   buttonCss?: string;
+  // link node
+  href?: string;
   children?: MomentNode[];
 }
 
@@ -135,9 +137,16 @@ COMPONENT: COUNTDOWN
 - PURPOSE: A live, JavaScript-driven countdown to a specific date and time.
 - FIELD REQUIRED: 'targetDate' — an ISO 8601 string extracted from the prompt (e.g. "2026-08-14T23:00:00"). Infer the year from context; if not specified, use the nearest future occurrence.
 - FIELD REQUIRED: 'css' — style the countdown container (background, text color, padding, font, etc.) to match the page aesthetic.
-- WHEN TO USE: Any time the prompt mentions a specific event date or time. Always prefer this over a fake static countdown built from text nodes.
-- NEVER fake a countdown using 'text' nodes with static numbers.
+- WHEN TO USE: When the prompt asks for one.
 - LAYOUT: The component renders four labelled blocks (DAYS / HOURS / MINUTES / SECONDS) in a horizontal row automatically. Do NOT wrap it in a layout: 'row' box.
+
+COMPONENT: LINK
+- TYPE: 'link'
+- PURPOSE: A clickable call-to-action anchor that opens in a new tab.
+- FIELD REQUIRED: 'href' — the destination URL (e.g. "https://example.com" if not provided yet, "mailto:hello@example.com").
+- FIELD OPTIONAL: 'css' — style the link as a button or inline anchor to match the page aesthetic.
+- BEHAVIOR: Always rendered with target="_blank" and rel="noopener noreferrer".
+- WHEN TO USE: Any time the prompt invites users to read more, follow, buy tickets, visit etc.
 
 TECHNICAL CONSTRAINTS
 - NO MARKDOWN: Output raw JSON only.

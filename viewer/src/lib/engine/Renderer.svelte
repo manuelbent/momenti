@@ -5,6 +5,7 @@
     import FormElement from '$lib/components/primitives/FormElement.svelte'
     import BaseMap from '$lib/components/primitives/BaseMap.svelte'
     import BaseCountdown from '$lib/components/primitives/BaseCountdown.svelte'
+    import BaseLink from '$lib/components/primitives/BaseLink.svelte'
 
     export let node: MomentNode
 </script>
@@ -47,6 +48,12 @@
 {:else if node.type === 'countdown'}
     <BaseCountdown
             targetDate={node.targetDate ?? ''}
+            css={node.css ?? ''}
+    />
+{:else if node.type === 'link'}
+    <BaseLink
+            href={node.href ?? ''}
+            html={node.html ?? ''}
             css={node.css ?? ''}
     />
 {/if}

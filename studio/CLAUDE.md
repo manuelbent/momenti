@@ -10,6 +10,7 @@ The human (Manuel) is the reviewer and decision-maker.
 - DO NOT introduce new dependencies unless explicitly approved
 - DO NOT restructure folders unless explicitly asked
 - ALWAYS prefer the smallest possible diff
+- ALWAYS suggest what the changes would be before implementing
 - KEEP solutions simple and pragmatic (MVP mindset)
 
 ## Code Style

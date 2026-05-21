@@ -1,25 +1,8 @@
-interface MomentNode {
-    id: string
-    type: 'box'|'text'|'image'|'form'|'map'|'countdown'
-    css?: string
-    tag?: string
-    html?: string
-    src?: string
-    alt?: string
-    address?: string
-    targetDate?: string
-    placeholder?: string
-    buttonLabel?: string
-    inputCss?: string
-    buttonCss?: string
-    children?: MomentNode[]
-}
+// Shared types (FormField, MomentNode, Content, Moment, CssComputedVals)
+// are defined in shared/types.d.ts and included via tsconfig.
 
-interface RawMoment {
-    slug: string
-    fonts?: string[]
-    root: MomentNode
-}
+// RawMoment is kept as an alias for server-side code that references it.
+type RawMoment = Content
 
 interface StreamEvent {
     event: 'chunk' | 'done' | 'error'
