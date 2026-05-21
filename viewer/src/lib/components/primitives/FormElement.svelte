@@ -59,6 +59,7 @@
             <label>
                 {#if field.label}<span>{field.label}</span>{/if}
                 <input style={inputCss}
+                       class="my-2"
                        type="text"
                        name={field.name}
                        placeholder={field.placeholder ?? ''}

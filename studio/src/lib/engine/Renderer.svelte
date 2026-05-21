@@ -81,6 +81,7 @@
             id={node.id}
             href={node.href ?? ''}
             html={node.html ?? ''}
+            platform={node.platform}
             css={node.css ?? ''}
             isSelected={!viewOnly && $selectedNodeId === node.id}
             onSelect={() => selectNode({ id: node.id, type: node.type, deleteId: node.id })}

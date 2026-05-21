@@ -54,6 +54,7 @@
     <BaseLink
             href={node.href ?? ''}
             html={node.html ?? ''}
+            platform={node.platform}
             css={node.css ?? ''}
     />
 {/if}

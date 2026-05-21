@@ -23,6 +23,7 @@ interface MomentNode {
     buttonCss?: string;
     // link node
     href?: string;
+    platform?: 'instagram' | 'tiktok';
     children?: MomentNode[];
 }
 

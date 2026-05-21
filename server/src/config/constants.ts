@@ -32,6 +32,7 @@ interface MomentNode {
   buttonCss?: string;
   // link node
   href?: string;
+  platform?: 'instagram' | 'tiktok';
   children?: MomentNode[];
 }
 
@@ -41,100 +42,63 @@ interface Moment {
   root: MomentNode;
 }
 
-LAYOUT ARCHITECTURE
-- THE CONTAINER (CENTERED): Text-heavy sections MUST be contained. 
-- Every type: 'box' with layout: 'row' MUST include flex-wrap: wrap; in its CSS.
-- Never use fixed pixels.
-
-LAYOUT BEHAVIOR
-- Prefer vertical stacking for most content.
-- Use layout: 'column' by default.
-- Use layout: 'row' only for small supporting UI elements such as cards, icons, tags, or compact metadata.
-- Avoid placing large text or major content blocks side-by-side.
-- When in doubt, stack vertically.
-
-LAYOUT PHILOSOPHY
-- The experience should feel vertically immersive and editorial.
-- Stack major content vertically.
-- Prefer single-column compositions.
-- Use horizontal layouts sparingly and only for tiny supporting elements.
-- Avoid card-heavy or dashboard-like sections.
-- Structure should emerge from spacing, typography, and imagery.
-- Use imagery with extreme restraint. A single, powerful image can elevate the editorial feel; too many will clutter it.
-- Images should only be included if they directly anchor the narrative or visually ground a section.
-- Never use rem for padding, prefer percentage.
-
-VERTICAL FLOW (CRITICAL)
-- The page should read as a vertical sequence of sections.
+LAYOUT ARCHITECTURE (CRITICAL)
+- The container (CENTERED): Text-heavy sections MUST be contained.
+- The page should read as a vertical sequence of sections (layout: 'column' by default).
 - Major content blocks must stack vertically from top to bottom.
-- Avoid dashboard-like compositions, card walls, or multi-column storytelling.
 - Prefer one strong element per horizontal row.
 - Sections should feel sequential, immersive, and scroll-driven.
-- Horizontal layouts should be rare and minimal.
+- Use horizontal layouts sparingly and only for tiny supporting elements.
+- When in doubt, prefer stacking sections vertically.
+- Keep some vertical margin between container elements.
+- Never use rem for padding, prefer percentage.
+- Never use max-width.
 
-COMPOSITION RULES
-- If a section contains more than one paragraph or heading, it must be stacked vertically.
-- When in doubt, prefer stacking vertically.
-
-HERO LAYOUT RULE
-- Hero content must be vertically stacked.
+VARIANT: HERO
+- Hero content must be centered.
 - Use layout: 'column' for the main hero container.
-- Never place hero elements side-by-side.
-- Headings, paragraphs, buttons, and supporting text must flow top-to-bottom.
 - The hero should feel spacious, readable, and focused around a single narrative flow.
+- Prefer fluid or no constraint for cinematic hero sections.
 
 FONTS
 - Choose 1–2 Google Fonts that match the mood, topic, and aesthetic of the moment.
-- List every font name used anywhere in the design (in css or html inline styles) in the top-level "fonts" array (e.g. ["Playfair Display", "Inter"]).
-- Use the exact Google Fonts name (e.g. "Playfair Display", not "playfair" or "Playfair").
-- Always include every font referenced in any css or html string in this array; omit system fonts (Georgia, Arial, sans-serif, etc.).
+- List every font name in the top-level "fonts" array using the exact Google Fonts name (e.g. "Playfair Display", not "playfair" or "Playfair").
 - The "fonts" array is required. If you use no Google Fonts, return an empty array.
 
-TYPOGRAPHY (RESPONSIVE & CONTAINER-BASED)
+TYPOGRAPHY
 - Font sizes MUST adapt to the parent container, not the viewport.
-- NEVER use 'vw' or 'vh' for font-size.
-- Prefer container-based scaling using clamp() with relative units.
+- For size, use container-based scaling using clamp() with relative units.
 - Use patterns like: 'font-size: clamp(1.5rem, 5cqw, 3rem);'
 - Text inside constrained containers should scale proportionally with container width.
 - Ensure headings shrink gracefully on smaller containers.
 
-TYPOGRAPHY RULE:
-- Avoid restrictive 'ch' widths if the layout is wide and not asymmetrical.
-- Prefer fluid or no constraint for cinematic hero sections.
-- Do not use max-width.
-
 RESPONSIVENESS
 - On mobile, children should default to flex: 1 1 100% (full width).
 - Every box with layout: 'row' MUST include flex-wrap: wrap; in its CSS.
-- Avoid absolute centering.
 
 COMPONENT: MAP
 - TYPE: 'map'
 - FIELD REQUIRED: 'address' (The provided address, if present).
 - STYLING: Use 'width: 100%; aspect-ratio: 16/9;' for responsiveness. 
-- NEVER use 'vw' units for width as they break container boundaries.
 - LOGIC: When a user mentions a location, restaurant, or city, always include a 'map' node.
 
 COMPONENT: FORM
 - TYPE: 'form'
-- Use only when clearly needed
-- Do not expand the scope of the form beyond the user’s intent
-- If prompt is unclear, prefer fewer fields
-- Avoid redundant labels when the meaning is already clear
-- Prefer placeholders over labels for text inputs
-- Do not add helper text like 'Select an option' or similar instructions
-- Radio groups should be self-explanatory (e.g. 'Yes', 'No')
-- Keep wording extremely concise
+- FIELD REQUIRED: 'fields' — an array of input objects (e.g., text, password, radio, submit).
+- FIELD REQUIRED: 'css' — style the form container (layout, spacing, max-width, etc.) directly.
+- RESTRICTION: No labels, titles, or helper text allowed.
+- TEXT INPUTS: Must use 'placeholder' instead of labels for identification.
+- RADIO GROUPS: Must use an array of self-explanatory strings (e.g., ["Yes", "No"]). 
 
 COMPONENT: IMAGE
 - TYPE: 'image'
 - FIELDS REQUIRED: 'src' (use a high-quality placeholder URL or descriptive placeholder string) and 'alt' (a descriptive alt text).
-- QUANTITY LIMIT: Maximum of 1 to 2 images per entire landing page. Only include an image if it significantly enriches the visual storytelling. If the typography and spacing already feel complete, omit images entirely.
-- STYLING: Always use fluid widths (e.g., \`width: 100%; object-fit: cover;\`) and an explicit \`aspect-ratio\` (like \`16/9\` or \`21/9\` for cinematic rows, or \`4/3\` for cards) to prevent layout shifts. Never use fixed pixel widths.
+- QUANTITY LIMIT: Up to 3 images per entire landing page.
+- STYLING: Always use fluid widths (e.g., width: 100%; object-fit: cover;) and an explicit aspect-ratio (like 16/9 or 21/9 for cinematic rows, or 4/3 for cards) to prevent layout shifts. Never use fixed pixel widths.
 
 COMPONENT: COUNTDOWN
 - TYPE: 'countdown'
-- PURPOSE: A live, JavaScript-driven countdown to a specific date and time.
+- PURPOSE: A live, JavaScript-driven countdown.
 - FIELD REQUIRED: 'targetDate' — an ISO 8601 string extracted from the prompt (e.g. "2026-08-14T23:00:00"). Infer the year from context; if not specified, use the nearest future occurrence.
 - FIELD REQUIRED: 'css' — style the countdown container (background, text color, padding, font, etc.) to match the page aesthetic.
 - WHEN TO USE: When the prompt asks for one.
@@ -142,11 +106,15 @@ COMPONENT: COUNTDOWN
 
 COMPONENT: LINK
 - TYPE: 'link'
-- PURPOSE: A clickable call-to-action anchor that opens in a new tab.
-- FIELD REQUIRED: 'href' — the destination URL (e.g. "https://example.com" if not provided yet, "mailto:hello@example.com").
+- FIELD REQUIRED: 'href' — the destination URL (e.g. "https://example.com", "mailto:hello@example.com").
+- FIELD OPTIONAL: 'html' — visible label text for non-social CTAs (e.g. "Read More", "Book Now"). Omit for social links.
+- FIELD OPTIONAL: 'platform' — set to 'instagram', 'tiktok' for social follow CTAs. The renderer will display only the platform icon.
 - FIELD OPTIONAL: 'css' — style the link as a button or inline anchor to match the page aesthetic.
 - BEHAVIOR: Always rendered with target="_blank" and rel="noopener noreferrer".
-- WHEN TO USE: Any time the prompt invites users to read more, follow, buy tickets, visit etc.
+- WHEN TO USE: Any time the prompt mentions a CTA such as "read more", "follow us", "book now", "visit", or any similar action phrase.
+- SOCIAL LINKS: When a prompt mentions "follow us" or references Instagram, TikTok:
+  - Create one 'link' node per platform, set 'platform' to the matching value, set 'href' to the platform root URL (e.g. "https://instagram.com"), and omit 'html'.
+  - Wrap multiple social link nodes in a layout: 'row' box with flex-wrap: wrap; and a gap.
 
 TECHNICAL CONSTRAINTS
 - NO MARKDOWN: Output raw JSON only.
