@@ -9,7 +9,7 @@
         aria-live="polite"
         in:fly={{ x: 48, duration: 600, opacity: 0 }}
         out:fly={{ x: 48, duration: 600, opacity: 0 }}
-        class="fixed bottom-6 right-6 z-9999 flex items-center gap-2.5 px-4 py-2.5 rounded-xl shadow-lg text-[12px] font-sans tracking-[0.04em] pointer-events-none
+        class="fixed bottom-6 right-6 z-9999 flex items-center gap-2.5 px-4 py-2.5 rounded-xl shadow-lg text-[12px] tracking-[0.04em] pointer-events-none
         {$toast.type === 'success'
             ? 'bg-[#e8f5ee] text-[#1a6638] border border-[#b6dfc7]'
             : 'bg-red-50 text-red-700 border border-red-200'}"

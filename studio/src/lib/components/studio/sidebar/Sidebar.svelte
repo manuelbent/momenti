@@ -12,7 +12,7 @@
     import DownloadFormSubmissionsButton from './components/DownloadFormSubmissionsButton.svelte'
 </script>
 
-<div class="flex flex-col h-full overflow-y-auto p-6 gap-6 font-sans">
+<div class="flex flex-col h-full overflow-y-auto p-6 gap-6">
 
     <PromptCounter used={$moments.length}/>
 

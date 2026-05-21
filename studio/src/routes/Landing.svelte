@@ -92,7 +92,7 @@
     }
 </script>
 
-<div class="min-h-screen bg-[#0d0d0d] text-[#f0ede8] font-serif flex flex-col transition-opacity duration-400"
+<div class="min-h-screen bg-[#0d0d0d] text-[#f0ede8] flex flex-col transition-opacity duration-400"
      class:opacity-0={isLeaving}>
 
     <Navbar/>
@@ -116,7 +116,7 @@
                 {/if}
             </div>
 
-            <p class="font-sans text-[11px] text-[#2e2e2e] mt-4 tracking-[0.02em] text-center">
+            <p class="text-[11px] text-[#2e2e2e] mt-4 tracking-[0.02em] text-center">
                 © 2026 momenti. All rights reserved.
                 <br>
                 <span class="text-[9px]">v0.0.1-alpha</span>

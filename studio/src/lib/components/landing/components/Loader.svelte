@@ -95,7 +95,7 @@
     <div class="h-4 overflow-hidden">
         {#key displayedStatus}
             <p
-                    class="font-sans text-[11px] tracking-[0.24em] uppercase"
+                    class="text-[11px] tracking-[0.24em] uppercase"
                     style="color: {textColor}"
                     in:fade={{ duration: 500, delay: 80 }}
                     out:fade={{ duration: 250 }}
