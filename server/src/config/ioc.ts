@@ -33,7 +33,6 @@ import UserServiceInterface from '../interfaces/UserServiceInterface'
 import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
 import FeedbackServiceInterface from '../interfaces/FeedbackServiceInterface'
 import FeedbackRepositoryInterface from '../interfaces/FeedbackRepositoryInterface'
-import PromptValidator from '../validators/PromptValidator'
 import GenerateMomentRequestValidator from '../validators/GenerateMomentRequestValidator'
 import ValidateInviteKeyRequestValidator from '../validators/ValidateInviteKeyRequestValidator'
 import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
@@ -93,7 +92,6 @@ class Container {
     private _feedbackController?: FeedbackController
     private _imageController?: ImageController
     // validators
-    private _promptValidator?: PromptValidator
     private _generateMomentRequestValidator?: GenerateMomentRequestValidator
     private _updateMomentRequestValidator?: UpdateMomentRequestValidator
     private _validateInviteKeyRequestValidator?: ValidateInviteKeyRequestValidator
@@ -222,10 +220,6 @@ class Container {
 
     public get feedbackController(): FeedbackController {
         return this._feedbackController ??= new FeedbackController(this.feedbackService)
-    }
-
-    public get promptValidator(): PromptValidator {
-        return this._promptValidator ??= new PromptValidator()
     }
 
     public get generateMomentRequestValidator(): GenerateMomentRequestValidator {

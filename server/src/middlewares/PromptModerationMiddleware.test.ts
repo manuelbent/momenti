@@ -58,7 +58,7 @@ describe('PromptModerationMiddleware (real OpenAI Moderation API)', () => {
         })
     }, 15_000)
 
-    it('calls next() when prompt is missing (defers presence check to PromptValidator)', async () => {
+    it('calls next() when prompt is missing', async () => {
         const req = makeReq(undefined)
         const res = makeRes()
 

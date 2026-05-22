@@ -5,10 +5,8 @@ import { PROMPT_CLASSIFIER_PROMPT } from '../config/constants'
 /**
  * Runs the prompt through an OpenAI classifier to verify it describes a
  * valid moment before generation begins.
- *
- * Assumes the prompt has already been validated for presence and length by
- * PromptValidator, and screened for harmful content by PromptModerationMiddleware.
- *
+ * Assumes the prompt has already been validated for presence and length,
+ * and screened for harmful content by PromptModerationMiddleware.
  * @class PromptClassifierMiddleware
  */
 export default class PromptClassifierMiddleware {

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { z } from 'zod'
+import { MAX_PROMPT_LENGTH, MIN_PROMPT_LENGTH } from '../config/constants'
 
 /**
  * @class GenerateMomentRequestValidator
@@ -9,7 +10,7 @@ export default class GenerateMomentRequestValidator {
      * @private {ZodObject}
      */
     schema = z.object({
-        prompt: z.string(),
+        prompt: z.string().min(MIN_PROMPT_LENGTH).max(MAX_PROMPT_LENGTH),
     }).strict()
 
     /**

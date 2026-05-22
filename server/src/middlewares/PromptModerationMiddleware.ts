@@ -3,9 +3,7 @@ import OpenAI from 'openai'
 
 /**
  * Intercepts prompts that contain harmful content (hate speech, violence,
- * harassment, phishing, scams, etc) via the OpenAI Moderation API before
- * they reach PromptValidator.
- *
+ * harassment, phishing, scams, etc) via the OpenAI Moderation API.
  * @class PromptModerationMiddleware
  */
 export default class PromptModerationMiddleware {
@@ -39,8 +37,7 @@ export default class PromptModerationMiddleware {
 
             flagged = moderation.results[0].flagged
         } catch (e) {
-            // Fail open: if the moderation API is unavailable let the request
-            // continue so that PromptValidator can still run its own checks.
+            // fail open: continue if the moderation API is unavailable
             return next()
         }
 
