@@ -107,7 +107,7 @@ export default class MomentService implements MomentServiceInterface {
                 { role: 'user', content: `<PROMPT>${prompt}</PROMPT>` },
             ],
             response_format: { type: 'json_object' },
-            temperature: 2.0,
+            temperature: 0.8,
             stream: true,
         })
 
