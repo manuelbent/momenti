@@ -25,7 +25,6 @@
         position: relative;
         display: block;
         overflow: hidden;
-        cursor: pointer;
     }
 
     .main-img {
