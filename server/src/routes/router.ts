@@ -33,7 +33,6 @@ router.get('/moments/:slug',
 
 router.put('/moments/:id',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
-    (req, res, next) => ioc.momentContentModerationMiddleware.handle(req, res, next),
     (req, res, next) => ioc.updateMomentRequestValidator.validate(req, res, next),
     (req, res) => ioc.momentController.update(req, res)
 )

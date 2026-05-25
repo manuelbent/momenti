@@ -1,12 +1,12 @@
 <script lang="ts">
     import { setContext, hasContext } from 'svelte'
-    import Box from '$lib/components/primitives/Box.svelte'
-    import Text from '$lib/components/primitives/Text.svelte'
-    import Image from '$lib/components/primitives/Image.svelte'
-    import Form from '$lib/components/primitives/Form.svelte'
-    import Map from '$lib/components/primitives/Map.svelte'
-    import Countdown from '$lib/components/primitives/Countdown.svelte'
-    import Link from '$lib/components/primitives/Link.svelte'
+    import Box from '$lib/engine/primitives/Box.svelte'
+    import Text from '$lib/engine/primitives/Text.svelte'
+    import Image from '$lib/engine/primitives/Image.svelte'
+    import Form from '$lib/engine/primitives/Form.svelte'
+    import Map from '$lib/engine/primitives/Map.svelte'
+    import Countdown from '$lib/engine/primitives/Countdown.svelte'
+    import Link from '$lib/engine/primitives/Link.svelte'
 
     export let node: MomentNode
     export let viewOnly: boolean = false

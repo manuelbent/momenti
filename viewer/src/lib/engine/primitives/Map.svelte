@@ -1,18 +1,14 @@
 <script lang="ts">
-    export let address: string = '';
-    export let css: string = '';
+    export let node: MomentNode
 
-    // We use the public embed URL which only needs a q (query) parameter
-    $: encodedAddress = encodeURIComponent(address);
-    $: mapUrl = `https://www.google.com/maps?q=${encodedAddress}&output=embed`;
+    $: encodedAddress = encodeURIComponent(node.address ?? '')
+    $: mapUrl = `https://www.google.com/maps?q=${encodedAddress}&output=embed`
 </script>
 
-<div class="momenti-map-container"
-     style={css ?? ''}
->
-    {#if address}
+<div class="momenti-map-container" style={node.css ?? ''}>
+    {#if node.address}
         <iframe
-                title="Map for {address}"
+                title="Map for {node.address}"
                 width="100%"
                 height="100%"
                 style="border:0;"
@@ -32,10 +28,8 @@
         position: relative;
         overflow: hidden;
         background: #f8f8f8;
-        /* Ensure the map has a default height if the AI forgets to provide it */
         min-height: 300px;
     }
-
 
     .map-placeholder {
         display: flex;

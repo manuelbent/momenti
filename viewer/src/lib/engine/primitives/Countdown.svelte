@@ -1,8 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte'
 
-    export let targetDate: string = ''
-    export let css: string = ''
+    export let node: MomentNode
 
     interface TimeLeft {
         days: number
@@ -13,8 +12,8 @@
     }
 
     function calculate(): TimeLeft {
-        const diff = new Date(targetDate).getTime() - Date.now()
-        if (!targetDate || diff <= 0) {
+        const diff = new Date(node.targetDate ?? '').getTime() - Date.now()
+        if (!node.targetDate || diff <= 0) {
             return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true }
         }
         const totalSeconds = Math.floor(diff / 1000)
@@ -44,7 +43,7 @@
     }
 </script>
 
-<div class="flex items-center justify-center gap-1 [font-variant-numeric:tabular-nums]" style={css}>
+<div class="flex items-center justify-center gap-1 [font-variant-numeric:tabular-nums]" style={node.css ?? ''}>
     {#if timeLeft.expired}
         <span class="opacity-40 text-2xl">—</span>
     {:else}

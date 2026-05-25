@@ -31,7 +31,7 @@ interface MomentNode {
   buttonCss?: string;
   // link node
   href?: string;
-  platform?: 'instagram' | 'tiktok';
+  platform?: 'instagram' | 'tiktok' | 'facebook' | 'twitter' | 'linkedin' | 'youtube';
   children?: MomentNode[];
 }
 
@@ -108,11 +108,11 @@ COMPONENT: LINK
 - TYPE: 'link'
 - FIELD REQUIRED: 'href' — the destination URL (e.g. "https://example.com", "mailto:hello@example.com").
 - FIELD OPTIONAL: 'html' — visible label text for non-social CTAs (e.g. "Read More", "Book Now"). Omit for social links.
-- FIELD OPTIONAL: 'platform' — set to 'instagram', 'tiktok' for social follow CTAs. The renderer will display only the platform icon.
+- FIELD OPTIONAL: 'platform' — (i.g. set to 'instagram', 'tiktok', 'pinterest') for social follow CTAs. The renderer will display only the platform icon.
 - FIELD OPTIONAL: 'css' — style the link as a button or inline anchor to match the page aesthetic.
 - BEHAVIOR: Always rendered with target="_blank" and rel="noopener noreferrer".
 - WHEN TO USE: Any time the prompt mentions a CTA such as "read more", "follow us", "book now", "visit", or any similar action phrase.
-- SOCIAL LINKS: When a prompt mentions "follow us" or references Instagram, TikTok:
+- SOCIAL LINKS: When a prompt mentions "follow us":
   - Create one 'link' node per platform, set 'platform' to the matching value, set 'href' to the platform root URL (e.g. "https://instagram.com"), and omit 'html'.
   - Wrap multiple social link nodes in a layout: 'row' box with flex-wrap: wrap; and a gap.
 

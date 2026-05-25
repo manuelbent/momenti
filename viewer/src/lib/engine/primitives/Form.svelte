@@ -2,12 +2,7 @@
     import { getContext } from 'svelte'
     import { submitForm } from '$lib/api/moments'
 
-    export let id: string
-    export let css: string = ''
-    export let inputCss: string = ''
-    export let buttonCss: string = ''
-    export let buttonLabel: string = 'Send'
-    export let fields: FormField[] = []
+    export let node: MomentNode
 
     const moment = getContext<Moment>('moment')
     const momentSlug = moment?.slug ?? ''
@@ -19,21 +14,18 @@
     const handleSubmit = async (e: Event) => {
         e.preventDefault()
         try {
-            await submitForm(momentSlug, id, values)
+            await submitForm(momentSlug, node.id, values)
             submitted = true
         } catch (err) {
-            console.error('[FormElement] submit error:', err)
+            console.error('[Form] submit error:', err)
             error = true
         }
     }
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
-<form
-        style={css}
-        onsubmit={handleSubmit}
->
-    {#each fields as field}
+<form style={node.css ?? ''} onsubmit={handleSubmit}>
+    {#each node.fields ?? [] as field}
         {#if field.type === 'subject'}
             <p>{field.text}</p>
 
@@ -58,7 +50,7 @@
         {:else if field.type === 'input'}
             <label>
                 {#if field.label}<span>{field.label}</span>{/if}
-                <input style={inputCss}
+                <input style={node.inputCss ?? ''}
                        class="my-2"
                        type="text"
                        name={field.name}
@@ -70,14 +62,12 @@
         {/if}
     {/each}
 
-    <button type="submit" style="cursor: pointer; {buttonCss}">{buttonLabel}</button>
-    <div style={css}>
-        {#if submitted}
-            <p style="font-style: italic;">✓</p>
-        {:else if error}
-            <p style="font-style: italic;">Something went wrong. Please try again.</p>
-        {/if}
-    </div>
+    <button type="submit" style="cursor: pointer; {node.buttonCss ?? ''}">{node.buttonLabel ?? 'Send'}</button>
+    {#if submitted}
+        <p style="font-style: italic;">✓</p>
+    {:else if error}
+        <p style="font-style: italic;">Something went wrong. Please try again.</p>
+    {/if}
 </form>
 
 <style>

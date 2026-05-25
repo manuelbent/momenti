@@ -1,13 +1,9 @@
 <script lang="ts">
-    export let src: string = ''
-    export let alt: string = ''
-    export let css: string = ''
+    export let node: MomentNode
 </script>
 
-<div class="momenti-img-container"
-     style={css}
->
-    <img {src} {alt} class="main-img" />
+<div class="momenti-img-container" style={node.css ?? ''}>
+    <img src={node.src ?? ''} alt={node.alt ?? ''} class="main-img" />
 </div>
 
 <style>

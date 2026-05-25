@@ -1,60 +1,31 @@
 <script lang="ts">
-    import BaseBox from '$lib/components/primitives/BaseBox.svelte'
-    import BaseText from '$lib/components/primitives/BaseText.svelte'
-    import BaseImage from '$lib/components/primitives/BaseImage.svelte'
-    import FormElement from '$lib/components/primitives/FormElement.svelte'
-    import BaseMap from '$lib/components/primitives/BaseMap.svelte'
-    import BaseCountdown from '$lib/components/primitives/BaseCountdown.svelte'
-    import BaseLink from '$lib/components/primitives/BaseLink.svelte'
+    import Box from '$lib/engine/primitives/Box.svelte'
+    import Text from '$lib/engine/primitives/Text.svelte'
+    import Image from '$lib/engine/primitives/Image.svelte'
+    import Form from '$lib/engine/primitives/Form.svelte'
+    import Map from '$lib/engine/primitives/Map.svelte'
+    import Countdown from '$lib/engine/primitives/Countdown.svelte'
+    import Link from '$lib/engine/primitives/Link.svelte'
 
     export let node: MomentNode
 </script>
 
 {#if node.type === 'box'}
-    <!-- We check if layout is column/row and make sure it's injected if the CSS string doesn't explicitly overwrite it already -->
-    {@const layoutCss = node.layout === 'column' ? 'flex-direction: column;' : node.layout === 'row' ? 'flex-direction: row;' : ''}
-
-    <BaseBox css="{node.css ?? ''}; {layoutCss}">
+    <Box {node}>
         {#each node.children ?? [] as child (child.id)}
-            <svelte:self node={child} parentId={node.id}/>
+            <svelte:self node={child} />
         {/each}
-    </BaseBox>
+    </Box>
 {:else if node.type === 'text'}
-    <BaseText
-            tag={node.tag ?? 'p'}
-            html={node.html ?? ''}
-            css={node.css ?? ''}
-    />
+    <Text {node} />
 {:else if node.type === 'image'}
-    <BaseImage
-            src={node.src ?? ''}
-            alt={node.alt ?? ''}
-            css={node.css ?? ''}
-    />
+    <Image {node} />
 {:else if node.type === 'form'}
-    <FormElement
-            id={node.id}
-            css={node.css ?? ''}
-            inputCss={node.inputCss ?? ''}
-            buttonCss={node.buttonCss ?? ''}
-            buttonLabel={node.buttonLabel ?? 'Send'}
-            fields={node.fields ?? []}
-    />
+    <Form {node} />
 {:else if node.type === 'map'}
-    <BaseMap
-            address={node.address}
-            css={node.css}
-    />
+    <Map {node} />
 {:else if node.type === 'countdown'}
-    <BaseCountdown
-            targetDate={node.targetDate ?? ''}
-            css={node.css ?? ''}
-    />
+    <Countdown {node} />
 {:else if node.type === 'link'}
-    <BaseLink
-            href={node.href ?? ''}
-            html={node.html ?? ''}
-            platform={node.platform}
-            css={node.css ?? ''}
-    />
+    <Link {node} />
 {/if}
