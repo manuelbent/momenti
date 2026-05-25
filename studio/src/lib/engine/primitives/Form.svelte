@@ -30,7 +30,7 @@
             <p>{field.text}</p>
 
         {:else if field.type === 'radio'}
-            <fieldset>
+            <fieldset style="display: flex; gap: 1rem;">
                 {#if field.label}
                     <legend>{field.label}</legend>
                 {/if}
