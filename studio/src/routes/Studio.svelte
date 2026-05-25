@@ -3,8 +3,8 @@
     import { replace } from 'svelte-spa-router'
     import { inviteKey } from '$lib/stores/auth'
     import Navbar from '$lib/components/studio/components/Navbar.svelte'
-    import ViewToggle from '$lib/components/studio/ViewToggle.svelte'
-    import DeviceView from '$lib/components/studio/DeviceView.svelte'
+    import FrameSelector from '$lib/components/studio/FrameSelector.svelte'
+    import FrameView from '$lib/components/studio/FrameView.svelte'
     import Sidebar from '$lib/components/studio/sidebar/Sidebar.svelte'
     import ElementToolbar from '$lib/components/builder/ElementToolbar.svelte'
     import Toast from '$lib/components/ui/Toast.svelte'
@@ -29,13 +29,11 @@
 
         <!-- preview -->
         <div class="flex-1 min-h-0 bg-[#f0ede8] flex flex-col overflow-hidden">
-            <!-- toggle -->
             <div class="mt-8 flex justify-center shrink-0">
-                <ViewToggle bind:view/>
+                <FrameSelector bind:view/>
             </div>
 
-            <!-- device view -->
-            <DeviceView {view}/>
+            <FrameView {view}/>
         </div>
 
         <!-- right sidebar -->
