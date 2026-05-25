@@ -21,7 +21,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
 <form data-nid={node.id}
       class:momenti-selected={isSelected}
-      style={node.css ?? ''}
+      style={`${node.css}; display: flex; gap: 1rem;`}
       onsubmit={handleSubmit}
       onclick={() => !viewOnly && selectNode({ id: node.id, type: 'form', deleteId: parentId || node.id })}
 >
@@ -50,11 +50,10 @@
         {:else if field.type === 'input'}
             <label>
                 {#if field.label}<span>{field.label}</span>{/if}
-                <input style={node.inputCss ?? ''}
-                       class="my-2"
+                <input style={node.inputCss}
                        type="text"
                        name={field.name}
-                       placeholder={field.placeholder ?? ''}
+                       placeholder={field.placeholder}
                        bind:value={values[field.name]}
                        required
                 />
@@ -62,17 +61,10 @@
         {/if}
     {/each}
 
-    <button type="submit" style="cursor: pointer; {node.buttonCss ?? ''}">{node.buttonLabel ?? 'Send'}</button>
+    <button type="submit" style="cursor: pointer; {node.buttonCss}">{node.buttonLabel ?? 'Send'}</button>
     {#if submitted}
         <p style="font-style: italic;">✓</p>
     {:else if error}
         <p style="font-style: italic;">Something went wrong. Please try again.</p>
     {/if}
 </form>
-
-<style>
-    fieldset {
-        display: flex;
-        gap: 2rem;
-    }
-</style>
