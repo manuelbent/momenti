@@ -94,7 +94,7 @@ export default class LLMService implements LLMServiceInterface {
                 { role: 'user', content: `<PROMPT>${prompt.trim()}</PROMPT>` },
             ],
             response_format: { type: 'json_object' },
-            temperature: 0.8,
+            temperature: 1.2,
             stream: true,
         })
 

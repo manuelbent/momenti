@@ -5,4 +5,3 @@
 <div style={node.css}>
     <slot/>
 </div>
-

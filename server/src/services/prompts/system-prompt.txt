@@ -55,10 +55,9 @@ LAYOUT ARCHITECTURE (CRITICAL)
 
 HERO
 - Use layout: 'column' for the hero.
-- Content of the hero must be centered.
 - The picture chosen for the hero must cover the full width of the screen.
+- If the hero includes a picture, the text should be overlaid on top of the image, not placed above or below it.
 - The hero should feel spacious, readable, and focused around a single narrative flow.
-- Prefer fluid or no constraint for cinematic hero sections.
 
 FONTS
 - Choose 1–2 Google Fonts that match the mood, topic, and aesthetic of the moment.
