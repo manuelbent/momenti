@@ -2,25 +2,22 @@
     import { getContext } from 'svelte'
     import { selectNode, selectedNodeId } from '$lib/stores/moment'
 
-    export let id: string = ''
-    export let src: string = ''
-    export let alt: string = ''
-    export let css: string = ''
+    export let node: MomentNode
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
-    $: isSelected = !viewOnly && $selectedNodeId === id
+    $: isSelected = !viewOnly && $selectedNodeId === node.id
 </script>
 
 <div class="momenti-img-container"
      class:momenti-selected={isSelected}
-     id={id}
-     data-nid={id}
+     id={node.id}
+     data-nid={node.id}
      role="presentation"
-     style={css}
-     onclick={() => !viewOnly && selectNode({ id, type: 'image', deleteId: id })}
+     style={node.css ?? ''}
+     onclick={() => !viewOnly && selectNode({ id: node.id, type: 'image', deleteId: node.id })}
      onkeydown={() => {}}
 >
-    <img {src} {alt} class="main-img" />
+    <img src={node.src ?? ''} alt={node.alt ?? ''} class="main-img" />
 </div>
 
 <style>
@@ -38,3 +35,4 @@
         object-fit: cover;
     }
 </style>
+

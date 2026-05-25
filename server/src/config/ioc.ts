@@ -9,7 +9,6 @@ import PromptModerationMiddleware from '../middlewares/PromptModerationMiddlewar
 import PromptClassifierMiddleware from '../middlewares/PromptClassifierMiddleware'
 import GenerationGuardMiddleware from '../middlewares/GenerationGuardMiddleware'
 import RateLimiterMiddleware from '../middlewares/RateLimiterMiddleware'
-import MomentContentModerationMiddleware from '../middlewares/MomentContentModerationMiddleware'
 import SystemController from '../controllers/SystemController'
 import MomentController from '../controllers/MomentController'
 import InviteKeyController from '../controllers/InviteKeyController'
@@ -47,6 +46,8 @@ import FeedbackRepository from '../repositories/FeedbackRepository'
 import UpdateMomentRequestValidator from '../validators/UpdateMomentRequestValidator'
 import SubmitFormDataRequestValidator from '../validators/SubmitFormDataRequestValidator'
 import SubmitFeedbackRequestValidator from '../validators/SubmitFeedbackRequestValidator'
+import LLMService from '../services/LLMService'
+import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 
 /**
  * Dependency injection container.
@@ -65,7 +66,6 @@ class Container {
     private _promptClassifierMiddleware?: PromptClassifierMiddleware
     private _generationGuardMiddleware?: GenerationGuardMiddleware
     private _rateLimiterMiddleware?: RateLimiterMiddleware
-    private _momentContentModerationMiddleware?: MomentContentModerationMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -79,8 +79,9 @@ class Container {
     private _formSubmissionService?: FormSubmissionServiceInterface
     private _feedbackService?: FeedbackServiceInterface
     private _streamCacheService?: StreamCacheServiceInterface
-    // services (non-interface)
+    // services (non-orm)
     private _r2Service?: R2Service
+    private _llmService?: LLMServiceInterface
     // workers
     private _streamWorker?: StreamWorkerInterface
     // controllers
@@ -127,11 +128,11 @@ class Container {
     }
 
     public get promptModerationMiddleware(): PromptModerationMiddleware {
-        return this._promptModerationMiddleware ??= new PromptModerationMiddleware()
+        return this._promptModerationMiddleware ??= new PromptModerationMiddleware(this.llmService)
     }
 
     public get promptClassifierMiddleware(): PromptClassifierMiddleware {
-        return this._promptClassifierMiddleware ??= new PromptClassifierMiddleware()
+        return this._promptClassifierMiddleware ??= new PromptClassifierMiddleware(this.llmService)
     }
 
     public get generationGuardMiddleware(): GenerationGuardMiddleware {
@@ -140,10 +141,6 @@ class Container {
 
     public get rateLimiterMiddleware(): RateLimiterMiddleware {
         return this._rateLimiterMiddleware ??= new RateLimiterMiddleware()
-    }
-
-    public get momentContentModerationMiddleware(): MomentContentModerationMiddleware {
-        return this._momentContentModerationMiddleware ??= new MomentContentModerationMiddleware()
     }
 
     public get userRepository(): UserRepositoryInterface {
@@ -190,12 +187,16 @@ class Container {
         return this._r2Service ??= new R2Service()
     }
 
+    public get llmService(): LLMServiceInterface {
+        return this._llmService ??= new LLMService()
+    }
+
     public get streamCacheService(): StreamCacheServiceInterface {
         return this._streamCacheService ??= new StreamCacheService()
     }
 
     public get streamWorker(): StreamWorkerInterface {
-        return this._streamWorker ??= new StreamWorker(this.momentService, this.streamCacheService)
+        return this._streamWorker ??= new StreamWorker(this.llmService, this.streamCacheService)
     }
 
     public get momentController(): MomentController {

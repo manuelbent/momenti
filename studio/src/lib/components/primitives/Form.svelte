@@ -2,16 +2,11 @@
     import { getContext } from 'svelte'
     import { selectNode, selectedNodeId } from '$lib/stores/moment'
 
-    export let id: string = ''
-    export let css: string = ''
-    export let inputCss: string = ''
-    export let buttonCss: string = ''
-    export let buttonLabel: string = 'Send'
-    export let fields: FormField[] = []
-    export let deleteId: string = ''
+    export let node: MomentNode
+    export let parentId: string = ''
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
-    $: isSelected = !viewOnly && $selectedNodeId === id
+    $: isSelected = !viewOnly && $selectedNodeId === node.id
 
     let values: Record<string, string> = {}
     let submitted = false
@@ -19,19 +14,18 @@
 
     const handleSubmit = async (e: Event) => {
         e.preventDefault()
-        // do nothing
         submitted = true
     }
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
-<form data-nid={id}
+<form data-nid={node.id}
       class:momenti-selected={isSelected}
-      style={css}
+      style={node.css ?? ''}
       onsubmit={handleSubmit}
-      onclick={() => !viewOnly && selectNode({ id, type: 'form', deleteId: deleteId || id })}
+      onclick={() => !viewOnly && selectNode({ id: node.id, type: 'form', deleteId: parentId || node.id })}
 >
-    {#each fields as field}
+    {#each node.fields ?? [] as field}
         {#if field.type === 'subject'}
             <p>{field.text}</p>
 
@@ -56,7 +50,7 @@
         {:else if field.type === 'input'}
             <label>
                 {#if field.label}<span>{field.label}</span>{/if}
-                <input style={inputCss}
+                <input style={node.inputCss ?? ''}
                        class="my-2"
                        type="text"
                        name={field.name}
@@ -68,14 +62,12 @@
         {/if}
     {/each}
 
-    <button type="submit" style="cursor: pointer; {buttonCss}">{buttonLabel}</button>
-    <div style={css}>
-        {#if submitted}
-            <p style="font-style: italic;">✓</p>
-        {:else if error}
-            <p style="font-style: italic;">Something went wrong. Please try again.</p>
-        {/if}
-    </div>
+    <button type="submit" style="cursor: pointer; {node.buttonCss ?? ''}">{node.buttonLabel ?? 'Send'}</button>
+    {#if submitted}
+        <p style="font-style: italic;">✓</p>
+    {:else if error}
+        <p style="font-style: italic;">Something went wrong. Please try again.</p>
+    {/if}
 </form>
 
 <style>

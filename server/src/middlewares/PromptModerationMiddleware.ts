@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import OpenAI from 'openai'
+import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 
 /**
  * Intercepts prompts that contain harmful content (hate speech, violence,
@@ -8,16 +8,10 @@ import OpenAI from 'openai'
  */
 export default class PromptModerationMiddleware {
     /**
-     * @private {OpenAI}
-     */
-    private openai: OpenAI
-
-    /**
      * @constructor
+     * @param {LLMServiceInterface} llmService
      */
-    constructor() {
-        this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-    }
+    constructor(private llmService: LLMServiceInterface) {}
 
     /**
      * @param {Request} req
@@ -27,19 +21,7 @@ export default class PromptModerationMiddleware {
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void|Response> {
         const { prompt } = req.body
 
-        let flagged: boolean
-
-        try {
-            const moderation = await this.openai.moderations.create({
-                model: 'omni-moderation-latest',
-                input: prompt,
-            })
-
-            flagged = moderation.results[0].flagged
-        } catch (e) {
-            // fail open: continue if the moderation API is unavailable
-            return next()
-        }
+        const flagged = await this.llmService.moderatePrompt(prompt)
 
         if (flagged) {
             return res.status(422).json({ error: 'Your message contains harmful or prohibited content and cannot be processed.' })

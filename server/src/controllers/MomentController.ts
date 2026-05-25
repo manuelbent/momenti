@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
-import Moment from '../models/Moment'
 import User from '../models/User'
 
 /**
@@ -76,10 +75,10 @@ export default class MomentController {
         const user: User = res.locals.user
         const { prompt } = req.body
 
-        // Start the worker, detached
-        this.streamWorker.start(user.id, prompt.trim())
+        // start the worker, detached
+        this.streamWorker.start(user.id, prompt)
 
-        // Subscribe to events
+        // subscribe to events
         this.setupStreamListeners(req, res, user.id)
     }
 
@@ -107,7 +106,7 @@ export default class MomentController {
      * @param {Request} req
      * @param {Response} res
      * @param {number} userId
-     * @param {{replayBuffer: boolean}} options
+     * @param {{replayBuffer: boolean, prompt: string}} options
      */
     private setupStreamListeners(
         req: Request,
@@ -120,9 +119,21 @@ export default class MomentController {
         const onChunk = (data: { chunk: string }) => {
             this.sendSseEvent(res, 'chunk', data)
         }
-        const onDone = (moment: Moment) => {
-            this.sendSseEvent(res, 'done', moment)
-            res.end()
+        const onDone = async (data: { prompt: string, rawMoment: RawMoment }) => {
+            try {
+                const stored = await this.momentService.store({
+                    user_id: userId,
+                    slug: data.rawMoment.slug,
+                    prompt: data.prompt,
+                    content: data.rawMoment,
+                })
+                this.sendSseEvent(res, 'done', stored)
+            } catch (err) {
+                console.error('[MomentController] store moment error:', err)
+                this.sendSseEvent(res, 'error', { error: 'Failed to save the Moment.' })
+            } finally {
+                res.end()
+            }
         }
         const onError = (data: { error: string }) => {
             this.sendSseEvent(res, 'error', data)

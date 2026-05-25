@@ -1,12 +1,12 @@
 <script lang="ts">
     import { setContext, hasContext } from 'svelte'
-    import BaseBox from '$lib/components/primitives/BaseBox.svelte'
-    import BaseText from '$lib/components/primitives/BaseText.svelte'
-    import BaseImage from '$lib/components/primitives/BaseImage.svelte'
-    import FormElement from '$lib/components/primitives/FormElement.svelte'
-    import BaseMap from '$lib/components/primitives/BaseMap.svelte'
-    import BaseCountdown from '$lib/components/primitives/BaseCountdown.svelte'
-    import BaseLink from '$lib/components/primitives/BaseLink.svelte'
+    import Box from '$lib/components/primitives/Box.svelte'
+    import Text from '$lib/components/primitives/Text.svelte'
+    import Image from '$lib/components/primitives/Image.svelte'
+    import Form from '$lib/components/primitives/Form.svelte'
+    import Map from '$lib/components/primitives/Map.svelte'
+    import Countdown from '$lib/components/primitives/Countdown.svelte'
+    import Link from '$lib/components/primitives/Link.svelte'
 
     export let node: MomentNode
     export let viewOnly: boolean = false
@@ -20,53 +20,21 @@
 </script>
 
 {#if node.type === 'box'}
-    <BaseBox css={node.css}>
+    <Box {node}>
         {#each node.children ?? [] as child (child.id)}
             <svelte:self node={child} parentId={node.id}/>
         {/each}
-    </BaseBox>
+    </Box>
 {:else if node.type === 'text'}
-    <BaseText
-            id={node.id}
-            tag={node.tag ?? 'p'}
-            html={node.html ?? ''}
-            css={node.css ?? ''}
-    />
+    <Text {node} />
 {:else if node.type === 'image'}
-    <BaseImage
-            id={node.id ?? ''}
-            src={node.src ?? ''}
-            alt={node.alt ?? ''}
-            css={node.css ?? ''}
-    />
+    <Image {node} />
 {:else if node.type === 'form'}
-    <FormElement
-            id={node.id}
-            css={node.css ?? ''}
-            inputCss={node.inputCss ?? ''}
-            buttonCss={node.buttonCss ?? ''}
-            buttonLabel={node.buttonLabel ?? 'Send'}
-            fields={node.fields ?? []}
-            deleteId={parentId || node.id}
-    />
+    <Form {node} {parentId} />
 {:else if node.type === 'map'}
-    <BaseMap
-            id={node.id}
-            address={node.address}
-            css={node.css}
-    />
+    <Map {node} />
 {:else if node.type === 'countdown'}
-    <BaseCountdown
-            id={node.id}
-            targetDate={node.targetDate ?? ''}
-            css={node.css ?? ''}
-    />
+    <Countdown {node} />
 {:else if node.type === 'link'}
-    <BaseLink
-            id={node.id}
-            href={node.href ?? ''}
-            html={node.html ?? ''}
-            platform={node.platform}
-            css={node.css ?? ''}
-    />
+    <Link {node} />
 {/if}

@@ -1,21 +1,9 @@
 import { EventEmitter } from 'events'
-import MomentServiceInterface from '../interfaces/MomentServiceInterface'
-import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
 import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
+import LLMServiceInterface from '../interfaces/LLMServiceInterface'
+import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
 
 /**
- * Owns the OpenAI generation loop for a given user.
- * Emits typed stream events on a per-user EventEmitter and
- * mirrors every event into StreamCacheService.
- *
- * The controller subscribes to the emitter
- * instead of driving the loop themselves.
- *
- * Emitted events on each EventEmitter:
- *   'chunk': { chunk: string }
- *   'done': Moment (fully persisted)
- *   'error': { error: string }
- *
  * @class StreamWorker
  */
 export default class StreamWorker implements StreamWorkerInterface {
@@ -23,11 +11,11 @@ export default class StreamWorker implements StreamWorkerInterface {
 
     /**
      * @constructor
-     * @param {MomentServiceInterface} momentService
+     * @param {LLMServiceInterface} llmService
      * @param {StreamCacheServiceInterface} streamCacheService
      */
     constructor(
-        private momentService: MomentServiceInterface,
+        private llmService: LLMServiceInterface,
         private streamCacheService: StreamCacheServiceInterface,
     ) {}
 
@@ -79,25 +67,19 @@ export default class StreamWorker implements StreamWorkerInterface {
      */
     private async run(userId: number, prompt: string, emitter: EventEmitter): Promise<void> {
         try {
-            for await (const payload of this.momentService.generateStream(prompt)) {
+            for await (const payload of this.llmService.streamMoment(prompt)) {
                 if (payload.error) {
                     this.emit(userId, emitter, 'error', { error: payload.error })
                     break
                 }
 
-                if (payload.done && payload.slug && payload.rawMoment) {
-                    const moment = await this.momentService.store({
-                        user_id: userId,
-                        slug: payload.slug,
-                        prompt,
-                        content: payload.rawMoment,
-                    })
-                    this.emit(userId, emitter, 'done', moment)
-                    break
-                }
-
                 if (payload.chunk) {
                     this.emit(userId, emitter, 'chunk', { chunk: payload.chunk })
+                }
+
+                if (payload.done) {
+                    this.emit(userId, emitter, 'done', { prompt, rawMoment: payload.rawMoment })
+                    break
                 }
             }
         } catch (err) {

@@ -2,34 +2,31 @@
     import { getContext } from 'svelte'
     import { selectNode, selectedNodeId } from '$lib/stores/moment'
 
-    export let id: string = ''
-    export let address: string = '';
-    export let css: string = '';
+    export let node: MomentNode
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
-    $: isSelected = !viewOnly && $selectedNodeId === id
+    $: isSelected = !viewOnly && $selectedNodeId === node.id
 
-    // We use the public embed URL which only needs a q (query) parameter
-    $: encodedAddress = encodeURIComponent(address);
-    $: mapUrl = `https://www.google.com/maps?q=${encodedAddress}&output=embed`;
+    $: encodedAddress = encodeURIComponent(node.address ?? '')
+    $: mapUrl = `https://www.google.com/maps?q=${encodedAddress}&output=embed`
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 <div class="momenti-map-container"
      class:momenti-selected={isSelected}
-     id={id}
-     data-nid={id}
-     style={css ?? ''}
-     onclick={() => !viewOnly && selectNode({ id, type: 'map', deleteId: id })}
+     id={node.id}
+     data-nid={node.id}
+     style={node.css ?? ''}
+     onclick={() => !viewOnly && selectNode({ id: node.id, type: 'map', deleteId: node.id })}
 >
-    {#if address}
+    {#if node.address}
         <!-- click-shield so the iframe doesn't capture builder clicks -->
         {#if !viewOnly}
             <!-- svelte-ignore a11y_no_static_element_interactions -->
-            <div class="map-click-shield" onpointerdown={(e) => { e.stopPropagation(); selectNode({ id, type: 'map', deleteId: id }) }}></div>
+            <div class="map-click-shield" onpointerdown={(e) => { e.stopPropagation(); selectNode({ id: node.id, type: 'map', deleteId: node.id }) }}></div>
         {/if}
         <iframe
-                title="Map for {address}"
+                title="Map for {node.address}"
                 width="100%"
                 height="100%"
                 style="border:0;"
@@ -49,7 +46,6 @@
         position: relative;
         overflow: hidden;
         background: #f8f8f8;
-        /* Ensure the map has a default height if the AI forgets to provide it */
         min-height: 300px;
     }
 
@@ -70,3 +66,4 @@
         font-style: italic;
     }
 </style>
+

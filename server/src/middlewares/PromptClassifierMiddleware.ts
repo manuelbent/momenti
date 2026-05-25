@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import OpenAI from 'openai'
-import { PROMPT_CLASSIFIER_PROMPT } from '../config/constants'
+import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 
 /**
  * Runs the prompt through an OpenAI classifier to verify it describes a
@@ -11,16 +10,10 @@ import { PROMPT_CLASSIFIER_PROMPT } from '../config/constants'
  */
 export default class PromptClassifierMiddleware {
     /**
-     * @private {OpenAI}
-     */
-    private openai: OpenAI
-
-    /**
      * @constructor
+     * @param {LLMServiceInterface} llmService
      */
-    constructor() {
-        this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-    }
+    constructor(private llmService: LLMServiceInterface) {}
 
     /**
      * @param {Request} req
@@ -30,25 +23,7 @@ export default class PromptClassifierMiddleware {
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void | Response> {
         const { prompt } = req.body
 
-        let classification: { valid: boolean; reason?: string }
-        try {
-            const response = await this.openai.chat.completions.create({
-                model: 'gpt-4o-mini',
-                messages: [
-                    { role: 'system', content: PROMPT_CLASSIFIER_PROMPT },
-                    { role: 'user', content: prompt },
-                ],
-                response_format: { type: 'json_object' },
-                temperature: 0,
-                max_completion_tokens: 80,
-            })
-
-            classification = JSON.parse(response.choices[0]?.message?.content ?? '{}')
-        } catch (e) {
-            console.error('[PromptClassifierMiddleware] Classifier call failed:', e)
-            res.status(500).json({ error: 'Internal server error' })
-            return
-        }
+        const classification = await this.llmService.classifyPrompt(prompt)
 
         if (!classification.valid) {
             return res.status(422).json({

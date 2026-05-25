@@ -10,12 +10,4 @@ export default interface MomentServiceInterface {
     getPublishedBySlug(slug: string): Promise<Moment|null>
     getAll(userId: number): Promise<Moment[]>
     slugExists(slug: string, excludeId?: number): Promise<boolean>
-    generateStream(prompt: string): AsyncGenerator<{
-        chunk?: string;
-        done?: boolean;
-        slug?: string;
-        rawMoment?: RawMoment;
-        error?: string
-    }>
 }
-

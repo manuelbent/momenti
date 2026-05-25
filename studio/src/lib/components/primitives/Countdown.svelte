@@ -2,12 +2,10 @@
     import { onMount, onDestroy, getContext } from 'svelte'
     import { selectNode, selectedNodeId } from '$lib/stores/moment'
 
-    export let id: string = ''
-    export let targetDate: string = ''
-    export let css: string = ''
+    export let node: MomentNode
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
-    $: isSelected = !viewOnly && $selectedNodeId === id
+    $: isSelected = !viewOnly && $selectedNodeId === node.id
 
     interface TimeLeft {
         days: number
@@ -18,8 +16,8 @@
     }
 
     function calculate(): TimeLeft {
-        const diff = new Date(targetDate).getTime() - Date.now()
-        if (!targetDate || diff <= 0) {
+        const diff = new Date(node.targetDate ?? '').getTime() - Date.now()
+        if (!node.targetDate || diff <= 0) {
             return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true }
         }
         const totalSeconds = Math.floor(diff / 1000)
@@ -53,10 +51,10 @@
 <div
     class="flex items-center justify-center gap-1 [font-variant-numeric:tabular-nums]"
     class:momenti-selected={isSelected}
-    {id}
-    data-nid={id}
-    style={css}
-    onclick={() => !viewOnly && selectNode({ id, type: 'countdown', deleteId: id })}
+    id={node.id}
+    data-nid={node.id}
+    style={node.css ?? ''}
+    onclick={() => !viewOnly && selectNode({ id: node.id, type: 'countdown', deleteId: node.id })}
 >
     {#if timeLeft.expired}
         <span class="opacity-40 text-2xl">—</span>
@@ -77,3 +75,4 @@
         {/each}
     {/if}
 </div>
+

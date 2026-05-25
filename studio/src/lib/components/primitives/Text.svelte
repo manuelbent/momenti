@@ -2,43 +2,40 @@
     import { onMount, getContext } from 'svelte'
     import { updateNode, selectedNodeRect, selectNode, selectedNodeId } from '$lib/stores/moment'
 
-    export let id: string
-    export let tag: string = 'p'
-    export let html: string = ''
-    export let css: string = ''
+    export let node: MomentNode
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
     $: isEditable = !viewOnly
-    $: isSelected = !viewOnly && $selectedNodeId === id
+    $: isSelected = !viewOnly && $selectedNodeId === node.id
 
     let element: HTMLElement
 
     onMount(() => {
-        element.innerHTML = html
+        element.innerHTML = node.html ?? ''
     })
 
-    $: if (element && element.innerHTML !== html) {
-        element.innerHTML = html
+    $: if (element && element.innerHTML !== (node.html ?? '')) {
+        element.innerHTML = node.html ?? ''
     }
 
     function handleInput(e: Event) {
         const target = e.target as HTMLElement
-        updateNode(id, { html: target.innerHTML })
+        updateNode(node.id, { html: target.innerHTML })
     }
 
     function handleFocus() {
-        selectNode({ id, type: 'text', deleteId: id })
+        selectNode({ id: node.id, type: 'text', deleteId: node.id })
         selectedNodeRect.set(element.getBoundingClientRect())
     }
 </script>
 
 <svelte:element
-        this={tag}
-        id={id}
-        data-nid={id}
+        this={node.tag ?? 'p'}
+        id={node.id}
+        data-nid={node.id}
         class:momenti-selected={isSelected}
         bind:this={element}
-        style={css}
+        style={node.css ?? ''}
         contenteditable={isEditable}
         onfocus={handleFocus}
         oninput={handleInput}
@@ -55,3 +52,4 @@
         outline: 2px dashed #ccc;
     }
 </style>
+
