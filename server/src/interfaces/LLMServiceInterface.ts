@@ -7,7 +7,7 @@ export default interface LLMServiceInterface {
     streamMoment(markdownCopy: string): AsyncGenerator<{
         chunk?: string;
         done?: boolean;
-        rawMoment?: RawMoment;
+        momentContent?: MomentContent;
         error?: string;
     }>
 }

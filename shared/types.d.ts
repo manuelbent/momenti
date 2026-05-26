@@ -2,6 +2,9 @@ interface Moment {
     id: number
     prompt: string
     content: MomentContent
+    is_published: boolean
+    created_at: string
+    updated_at: string
 }
 
 interface MomentContent {

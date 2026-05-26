@@ -13,14 +13,9 @@ export default class MomentService implements MomentServiceInterface {
 
     /**
      * Persist moment to DB.
-     * If the slug exists, append a timestamp.
-     * @param {Partial<RawMoment>} data
+     * @param {Partial<Moment>} data
      */
     public async store(data: Partial<Moment>): Promise<Moment> {
-        if (await this.slugExists(data.slug!)) {
-            data.slug += `-${Date.now()}`
-        }
-
         return this.momentRepository.create(data)
     }
 

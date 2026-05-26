@@ -119,13 +119,13 @@ export default class MomentController {
         const onChunk = (data: { chunk: string }) => {
             this.sendSseEvent(res, 'chunk', data)
         }
-        const onDone = async (data: { prompt: string, rawMoment: RawMoment }) => {
+        const onDone = async (data: { prompt: string, momentContent: MomentContent }) => {
             try {
                 const stored = await this.momentService.store({
                     user_id: userId,
-                    slug: data.rawMoment.slug,
+                    slug: `${data.momentContent.meta.momentId}-${Date.now()}`,
                     prompt: data.prompt,
-                    content: data.rawMoment,
+                    content: data.momentContent,
                 })
                 this.sendSseEvent(res, 'done', stored)
             } catch (err) {
