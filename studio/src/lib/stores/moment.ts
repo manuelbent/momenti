@@ -6,7 +6,7 @@ const useMomentStore = () => {
     return {
         update,
         subscribe,
-        set: (moment: Moment)=> {
+        set: (moment: Moment) => {
             try {
                 localStorage.setItem('moment__preview', JSON.stringify(moment))
             } catch (err) {

@@ -123,7 +123,7 @@ export default class MomentController {
             try {
                 const stored = await this.momentService.store({
                     user_id: userId,
-                    slug: `${data.momentContent.meta.momentId}-${Date.now()}`,
+                    slug: data.momentContent.meta.momentId,
                     prompt: data.prompt,
                     content: data.momentContent,
                 })

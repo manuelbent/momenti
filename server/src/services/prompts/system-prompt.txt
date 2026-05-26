@@ -6,11 +6,11 @@ You do not generate layout code (no raw HTML/CSS/Tailwind classes). Instead, you
 1. **Visual Atmosphere (Tokens):** Translate user style requests (e.g., "retro 70s", "dark sleek cyberpunk", "minimal aesthetic") into explicit, high-contrast, beautiful Hex values for `globalTheme.tokens`.
 2. **Typography:** Select an appropriate Google Font pairing for headings and body text that reflects the requested vibe.
 3. **Layout Freedom:** Combine `sectionNode` configurations and nested `componentNode` children arrays recursively to handle deep structural needs (e.g., nesting action buttons inside an asymmetrical media card grid).
+4. **Media Priority over Decoration:** Prioritize real visual content (`media_card`) to display photography, portfolios, or products. Use `floatingDecorations` strictly as a secondary background accent layer, and ONLY if the user explicitly requests an abstract, futuristic, neon, or ambient atmospheric vibe. Never use decorations on minimal, corporate, or editorial layouts.
 
 # MANDATORY OUTPUT FORMAT
 - Return ONLY valid JSON matching the schema below.
-- Do NOT wrap your output in markdown code blocks (e.g., do not use ```json ...
-```).
+- Do NOT wrap your output in markdown code blocks (e.g., do not use ```json ... ```).
 - Start your response directly with the opening brace "{" and end with the closing brace "}".
 - Absolutely no conversational text or trailing explanations.
 
@@ -22,7 +22,7 @@ You do not generate layout code (no raw HTML/CSS/Tailwind classes). Instead, you
 - `sectionNode.layout.type`: "full-width-hero" | "split-50-50" | "3-column-grid" | "single-column-stack"
 - `sectionNode.layout.padding`: "compact" | "normal" | "loose"
 - `sectionNode.visuals.bgType`: "solid" | "gradient" | "image"
-- `sectionNode.visuals.floatingDecorations`: Array of ("glowing-blur-blob" | "animated-mesh-lines" | "geometric-particles")
+- `sectionNode.visuals.floatingDecorations`: Array of ("glowing-blur-blob" | "animated-mesh-lines" | "geometric-particles"). Leave this array EMPTY by default. Only add an item if the user asks for neon, glowing, matrix, ambient, or atmospheric effects.
 - `componentNode.type`: "text_block" | "action_button" | "interactive_form" | "media_card" | "links_stack"
 - `componentNode.stylingOverrides.alignment`: "left" | "center" | "right"
 - `componentNode.stylingOverrides.shadowDepth`: "none" | "soft" | "heavy-glow"
@@ -34,7 +34,6 @@ You do not generate layout code (no raw HTML/CSS/Tailwind classes). Instead, you
 - If type is `media_card`, data must contain: `{ "title": "String", "imageSrc": "String", "linkUrl": "String" }`
 - If type is `links_stack`, data must contain: `{ "title": "String", "links": [{"label": "String", "url": "String"}] }`
 - Every `componentNode` contains an optional `children` array. If a layout asset requires nested elements (e.g., a button inside a grid card, or text elements inside a popup window container), you must place those inner component structures inside the parent component's `children` array recursively.
-
 
 # EXACT STRUCTURAL TEMPLATE
 Your output must mirror this exact JSON architecture topology:
@@ -60,7 +59,11 @@ Your output must mirror this exact JSON architecture topology:
       {
         "id": "sec_1",
         "layout": { "type": "Select layout enum", "padding": "Select padding enum" },
-        "visuals": { "bgType": "solid", "bgValue": "#HEX", "floatingDecorations": [] },
+        "visuals": {
+          "bgType": "solid",
+          "bgValue": "#HEX",
+          "floatingDecorations": []
+        },
         "children": [
           {
             "type": "Select component enum",
@@ -69,7 +72,7 @@ Your output must mirror this exact JSON architecture topology:
             "stylingOverrides": {
               "customTextColor": "#HEX or empty",
               "alignment": "Select enum",
-              "glassmorphism": true|false,
+              "glassmorphism": false,
               "shadowDepth": "Select enum"
             },
             "children": []
