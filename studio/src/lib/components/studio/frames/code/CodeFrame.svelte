@@ -1,7 +1,14 @@
 <script lang="ts">
     import { JsonView } from '@zerodevx/svelte-json-view'
-    import { Braces } from 'lucide-svelte'
+    import { Braces, Clipboard } from 'lucide-svelte'
     import { moment } from '$lib/stores/moment'
+    import { showToast } from '$lib/stores/toast'
+
+    const copyToClipboard = () => {
+        const jsonStr = JSON.stringify($moment?.content, null, 2)
+        navigator.clipboard.writeText(jsonStr)
+        showToast('JSON copied to clipboard', 'success')
+    }
 </script>
 
 <!-- outer shell matches DesktopFrame -->
@@ -13,6 +20,13 @@
             <Braces size={13} strokeWidth={1.6}/>
             <span class="text-[10px] font-mono tracking-wide">{$moment.slug}.json</span>
         </div>
+
+        <button
+            class="text-[#0d0d0d]/40 text-[10px] font-mono tracking-wide cursor-pointer"
+            on:click={copyToClipboard}
+        >
+            <Clipboard size={13} strokeWidth={1.6}/>
+        </button>
     </div>
 
     <!-- code body -->
