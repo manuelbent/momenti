@@ -78,7 +78,7 @@ export default class StreamWorker implements StreamWorkerInterface {
                 }
 
                 if (payload.done) {
-                    this.emit(userId, emitter, 'done', { prompt, rawMoment: payload.rawMoment })
+                    this.emit(userId, emitter, 'done', { prompt, momentContent: payload.momentContent })
                     break
                 }
             }

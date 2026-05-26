@@ -98,4 +98,3 @@ const hasFormNodeRecursive = (node: MomentNode): boolean =>
 export const hasForms = derived(moment, $m =>
     $m ? hasFormNodeRecursive($m.content.root) : false
 )
-

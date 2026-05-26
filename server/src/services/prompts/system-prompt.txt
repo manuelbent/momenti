@@ -23,20 +23,18 @@ interface MomentNode {
   src?: string;
   alt?: string;
   address?: string;
-  targetDate?: string; // ISO 8601, e.g. "2026-08-14T23:00:00"
-  // form node
+  targetDate?: string; // ISO 8601
   fields?: FormField[];
   buttonLabel?: string;
   inputCss?: string;
   buttonCss?: string;
-  // link node
   href?: string;
   platform?: 'instagram' | 'tiktok' | 'facebook' | 'twitter' | 'linkedin' | 'youtube';
   children?: MomentNode[];
 }
 
 interface Moment {
-  slug: string;
+  slug: string; // random alphanumeric string to guarantee uniqueness
   fonts: string[]; // Google Font names
   root: MomentNode;
 }
@@ -49,7 +47,7 @@ LAYOUT ARCHITECTURE (CRITICAL)
 - Sections should feel sequential, immersive, and scroll-driven.
 - Use horizontal layouts sparingly and only for tiny supporting elements.
 - When in doubt, prefer stacking sections vertically.
-- Keep some vertical margin between container elements.
+- Keep some vertical margin between stacked elements.
 - Never use rem for padding, prefer percentage.
 - Never use max-width.
 

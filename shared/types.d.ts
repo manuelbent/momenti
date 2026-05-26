@@ -1,7 +1,13 @@
 type FormField =
-    | { type: 'subject'; text: string }
-    | { type: 'radio';   name: string; label?: string; options: { label: string; value: string }[] }
-    | { type: 'input';   name: string; label?: string; placeholder?: string }
+    |{ type: 'subject'; text: string }
+    |{ type: 'radio'; name: string; label?: string; options: { label: string; value: string }[] }
+    |{ type: 'input'; name: string; label?: string; placeholder?: string }
+
+interface MomentContent {
+    slug: string;
+    fonts?: string[];
+    root: MomentNode;
+}
 
 interface MomentNode {
     id: string;
@@ -15,22 +21,14 @@ interface MomentNode {
     src?: string;
     alt?: string;
     address?: string;
-    targetDate?: string; // ISO 8601 date string for countdown nodes
-    // form node
+    targetDate?: string;
     fields?: FormField[];
     buttonLabel?: string;
     inputCss?: string;
     buttonCss?: string;
-    // link node
     href?: string;
     platform?: string;
     children?: MomentNode[];
-}
-
-interface Content {
-    slug: string;
-    fonts?: string[];
-    root: MomentNode;
 }
 
 interface Moment {
@@ -38,7 +36,7 @@ interface Moment {
     user_id: number|null;
     slug: string;
     prompt: string;
-    content: Content;
+    content: MomentContent;
     is_published: boolean;
     created_at: Date;
     updated_at: Date|null;
@@ -51,4 +49,3 @@ interface CssComputedVals {
     isItalic: boolean;
     isUnderline: boolean;
 }
-

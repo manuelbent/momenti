@@ -59,7 +59,6 @@ export default class LLMService implements LLMServiceInterface {
         }
     }
 
-
     public async classifyPrompt(prompt: string): Promise<{ valid: boolean; reason?: string }> {
         const response = await this.openai.chat.completions.create({
             model: 'gpt-4.1-mini',
@@ -79,12 +78,10 @@ export default class LLMService implements LLMServiceInterface {
         }
     }
 
-
-
     public async* streamMoment(prompt: string): AsyncGenerator<{
         chunk?: string;
         done?: boolean;
-        rawMoment?: RawMoment;
+        momentContent?: MomentContent;
         error?: string;
     }> {
         const stream = await this.openai.chat.completions.create({
@@ -109,14 +106,14 @@ export default class LLMService implements LLMServiceInterface {
         }
 
         try {
-            const rawMoment: RawMoment = JSON.parse(accumulated)
-            if (!rawMoment.slug || !rawMoment.root) {
-                console.error('[LLMService] streamMoment: invalid moment structure:', rawMoment)
+            const momentContent: MomentContent = JSON.parse(accumulated)
+            if (!momentContent.slug || !momentContent.root) {
+                console.error('[LLMService] streamMoment: invalid moment structure:', momentContent)
                 yield { error: 'Invalid Moment structure.' }
                 return
             }
 
-            yield { done: true, rawMoment }
+            yield { done: true, momentContent }
         } catch {
             console.error('[LLMService] streamMoment: malformed JSON:', accumulated)
             yield { error: 'Failed to generate a valid Moment.' }
