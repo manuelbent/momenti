@@ -4,8 +4,6 @@
     import { moment } from '$lib/stores/moment'
     import CanvasRenderer from '$lib/engine/CanvasRenderer.svelte'
 
-    let ready = false
-
     onMount(async () => {
         try {
             const m: Moment = JSON.parse(localStorage.getItem('moment__preview')!)
@@ -13,7 +11,6 @@
         } catch (err) {
             console.error('[Preview] Could not parse moment for preview.', err)
         }
-        ready = true
     })
 </script>
 
@@ -24,7 +21,7 @@
     {/if}
 </svelte:head>
 
-{#if ready && $moment}
+{#if $moment}
     <div in:fade={{ duration: 400 }} style="position: relative">
         <div style="
                 --color-primary: {$moment.content.globalTheme.tokens.brandPrimary};
