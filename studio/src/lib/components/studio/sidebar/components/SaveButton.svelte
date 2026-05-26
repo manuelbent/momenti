@@ -14,6 +14,11 @@
 
         isSaving = true
         try {
+            const updated: Moment = await updateMoment($moment.id, {
+                slug: $moment.slug,
+                // content: $moment.content,
+            })
+            moment.set(updated)
             showToast('Moment updated.')
         } catch {
             showToast('Something went wrong.', 'error')

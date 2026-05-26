@@ -10,15 +10,24 @@
             .replace(/[^a-z0-9-]/g, '')
             .replace(/-{2,}/g, '-')
             .slice(0, 50)
-        if (trim) s = s.replace(/^-+|-+$/g, '')
+
+        if (trim) {
+            s = s.replace(/^-+|-+$/g, '')
+        }
+
         return s
     }
 
     function oninput(e: Event) {
         const input = e.target as HTMLInputElement
         const sanitized = sanitize(input.value)
-        $moment.slug = sanitized
+        slug = sanitized
         input.value = sanitized
+    }
+
+    async function onblur() {
+        slug = sanitize(slug, true)
+        moment.update(m => ({ ...m, slug }))
     }
 </script>
 
@@ -32,6 +41,7 @@
                type="text"
                bind:value={slug}
                {oninput}
+               {onblur}
                maxlength={50}
                placeholder="your-slug"
                class="flex-1 text-[12px] text-[#0d0d0d] bg-transparent outline-none placeholder:text-[#0d0d0d]/25"

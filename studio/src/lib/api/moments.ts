@@ -85,7 +85,10 @@ export const getMomentBySlug = async (slug: string): Promise<Moment|null> => {
             'Content-Type': 'application/json',
         },
     })
-    if (!res.ok) throw new Error(`Failed to fetch moment: ${res.status}`)
+    if (!res.ok) {
+        throw new Error(`Failed to fetch moment: ${res.status}`)
+    }
+
     return res.json()
 }
 
@@ -93,7 +96,10 @@ export const getMoments = async (): Promise<Moment[]> => {
     const res = await fetch(`${API_URL}/moments`, {
         headers: authHeaders(),
     })
-    if (!res.ok) throw new Error(`Failed to fetch moments: ${res.status}`)
+    if (!res.ok) {
+        throw new Error(`Failed to fetch moments: ${res.status}`)
+    }
+
     return res.json()
 }
 
@@ -103,6 +109,11 @@ export const updateMoment = async (id: number, data: Partial<Moment>): Promise<M
         headers: authHeaders(),
         body: JSON.stringify(data),
     })
-    if (!res.ok) throw new Error(`Failed to update moment: ${res.status}`)
+    if (!res.ok) {
+        const err = new Error(`Failed to update moment: ${res.status}`) as any
+        err.status = res.status
+        throw err
+    }
+
     return res.json()
 }
