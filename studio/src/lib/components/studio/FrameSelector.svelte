@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Monitor, Smartphone, Braces } from 'lucide-svelte'
+    import { Monitor, Braces } from 'lucide-svelte'
 
     export let view: 'desktop' | 'mobile' | 'code' = 'desktop';
 </script>
@@ -13,14 +13,14 @@
     </button>
 
     <!-- divider -->
-    <span class="w-px h-3.5 bg-[#0d0d0d]/15"></span>
+    <!--<span class="w-px h-3.5 bg-[#0d0d0d]/15"></span>
 
     <button onclick={() => view = 'mobile'}
             class="cursor-pointer transition-opacity duration-150 {view === 'mobile' ? 'opacity-100' : 'opacity-25 hover:opacity-50'}"
             title="Mobile"
     >
         <Smartphone size={14} strokeWidth={1.6}/>
-    </button>
+    </button>-->
 
     <!-- divider -->
     <span class="w-px h-3.5 bg-[#0d0d0d]/15"></span>

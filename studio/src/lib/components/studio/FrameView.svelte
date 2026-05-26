@@ -1,6 +1,6 @@
 <script lang="ts">
     import DesktopFrame from './frames/desktop/DesktopFrame.svelte'
-    import MobileFrame from './frames/mobile/MobileFrame.svelte'
+    // import MobileFrame from './frames/mobile/MobileFrame.svelte'
     import CodeFrame from '$lib/components/studio/frames/code/CodeFrame.svelte'
 
     export let view: 'desktop'|'mobile'|'code' = 'desktop'
@@ -11,9 +11,9 @@
         <DesktopFrame/>
     {/if}
 
-    {#if view === 'mobile'}
+    <!-- {#if view === 'mobile'}
         <MobileFrame/>
-    {/if}
+    {/if} -->
 
     {#if view === 'code'}
         <CodeFrame/>

@@ -8,6 +8,13 @@
     $: scale = containerWidth > 0 ? containerWidth / DESKTOP_WIDTH : 1
 </script>
 
+<svelte:head>
+    {#if $moment}
+        <link rel="stylesheet"
+              href="https://fonts.googleapis.com/css2?family={$moment.content.globalTheme.fonts.heading}:wght@400;600;700&family={$moment.content.globalTheme.fonts.body}:wght@400;500&display=swap">
+    {/if}
+</svelte:head>
+
 <div class="flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden shadow-2xl shadow-[#0d0d0d]/8 border border-[#0d0d0d]/8">
 
     <BrowserChrome slug={$moment?.slug}/>
@@ -25,7 +32,7 @@
                         --font-body: '{$moment.content.globalTheme.fonts.body}', sans-serif;
                         --borderRadiusGlobal: var(--radius-{$moment.content.globalTheme.tokens.borderRadiusGlobal || 'md'});
                     "
-                     class="min-h-full font-body bg-(--bg-global) text-(--text-global)"
+                     class="min-h-full bg-(--bg-global) text-(--text-global) font-(family-name:--font-body)"
                 >
                     <CanvasRenderer canvas={$moment.content.canvas}/>
                 </div>

@@ -5,8 +5,8 @@
 
     const paddingMap = {
         compact: 'py-8 px-4',
-        normal: 'py-16 px-6 max-w-7xl mx-auto',
-        loose: 'py-24 px-8 max-w-7xl mx-auto'
+        normal: 'py-16 px-6 mx-auto',
+        loose: 'py-24 px-8 mx-auto'
     }
 </script>
 
