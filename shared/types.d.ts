@@ -1,5 +1,6 @@
 interface Moment {
     id: number
+    slug: string
     prompt: string
     content: MomentContent
     is_published: boolean

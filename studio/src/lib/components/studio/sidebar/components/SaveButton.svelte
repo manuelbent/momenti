@@ -1,10 +1,9 @@
 <script lang="ts">
     import { CloudUpload, LoaderCircle } from 'lucide-svelte'
-    import Button from '$lib/components/ui/Button.svelte'
-    import { moment } from '$lib/stores/moment'
     import { showToast } from '$lib/stores/toast'
+    import { moment } from '$lib/stores/moment'
     import { updateMoment } from '$lib/api'
-    import { resolvePendingImages } from '$lib/utils/resolvePendingImages'
+    import Button from '$lib/components/ui/Button.svelte'
 
     let isSaving = false
 
@@ -15,12 +14,6 @@
 
         isSaving = true
         try {
-            const content = await resolvePendingImages($moment.content)
-            const updated: Moment = await updateMoment($moment.id, {
-                slug: $moment.slug,
-                content,
-            })
-            moment.set(updated)
             showToast('Moment updated.')
         } catch {
             showToast('Something went wrong.', 'error')
