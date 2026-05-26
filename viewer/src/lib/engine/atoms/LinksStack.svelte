@@ -20,7 +20,7 @@
         <p class="text-xs font-semibold uppercase tracking-widest opacity-60 mb-1">{data.title}</p>
     {/if}
 
-    {#each data.links as link (link.url)}
+    {#each data.links as link, i (`${i}:${link.url}`)}
         <a
             href={link.url}
             target="_blank"

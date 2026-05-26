@@ -20,12 +20,16 @@
     const TargetComponent = $derived(componentRegistry[node.type])
 </script>
 
+{#snippet childrenSnippet()}
+    {#each node.children ?? [] as childNode (childNode.id)}
+        <Self node={childNode}/>
+    {/each}
+{/snippet}
+
 {#if TargetComponent}
-    <TargetComponent data={node.data} overrides={node.stylingOverrides}>
-        {#if node.children && node.children.length > 0}
-            {#each node.children as childNode (childNode.id)}
-                <Self node={childNode}/>
-            {/each}
-        {/if}
-    </TargetComponent>
+    <TargetComponent
+        data={node.data}
+        overrides={node.stylingOverrides}
+        children={node.children?.length ? childrenSnippet : undefined}
+    />
 {/if}

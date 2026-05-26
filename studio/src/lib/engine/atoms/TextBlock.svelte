@@ -1,7 +1,10 @@
 <script lang="ts">
-    let { data, overrides }: {
+    import type { Snippet } from 'svelte'
+
+    let { data, overrides, children }: {
         data: { text: string; headingSize?: 'sm'|'md'|'lg' };
         overrides?: StylingOverrides
+        children?: Snippet
     } = $props()
 
     // Map alignments safely to Tailwind classes
@@ -38,5 +41,11 @@
         <p class={sizeMap.sm}>
             {data.text}
         </p>
+    {/if}
+
+    {#if children}
+        <div class="mt-4">
+            {@render children()}
+        </div>
     {/if}
 </div>
