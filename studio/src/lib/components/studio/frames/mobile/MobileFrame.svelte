@@ -1,7 +1,6 @@
 <script lang="ts">
     import { moment } from '$lib/stores/moment'
     import { loadFonts } from '$shared/loadFonts'
-    import Renderer from '$lib/engine/Renderer.svelte'
     import StatusBar from './components/StatusBar.svelte'
 
     $: loadFonts($moment?.content.fonts)
@@ -16,7 +15,7 @@
         <div class="overflow-y-auto h-126 bg-white overflow-x-hidden">
             <div style="width: 390px; zoom: {288 / 390};">
                 {#if $moment}
-                    <Renderer node={$moment.content.root}/>
+
                 {:else}
                     <div class="flex items-center justify-center h-64 text-[#0d0d0d]/20 text-sm tracking-wide">
                         no moment yet

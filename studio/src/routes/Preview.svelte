@@ -3,7 +3,6 @@
     import { fade } from 'svelte/transition'
     import { loadFonts } from '$shared/loadFonts'
     import { moment } from '$lib/stores/moment'
-    import Renderer from '$lib/engine/Renderer.svelte'
 
     let ready = false
 
@@ -21,6 +20,6 @@
 
 {#if ready && $moment}
     <div in:fade={{ duration: 400 }} style="position: relative">
-        <Renderer node={$moment.content.root} viewOnly={true}/>
+
     </div>
 {/if}
