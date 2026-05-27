@@ -47,20 +47,20 @@ interface Moment {
 - headings must shrink gracefully on smaller containers.
 
 **layout**
-- text-heavy sections must be contained in a constrained-width box;
-- the page must read as a vertical sequence of sections;
-- major content blocks must stack vertically from top to bottom;
+- major sections must stack vertically from top to bottom;
+- keep gaps between sections;
 - prefer one strong element per horizontal row;
 - use horizontal layouts only for small supporting elements;
 - when in doubt, stack vertically;
-- keep gaps between cards;
+- use vw, cqw, or rem (e.g. gap:4vw, gap:2rem) for gap;
 - use percentage for padding.
 
 **variant: hero**
 - use layout: 'column' for the hero;
 - the hero image must cover the full screen width;
 - if the hero has an image, overlay the text on top — never above or below;
-- the hero must feel spacious, readable, and focused around a single narrative flow.
+- the hero must feel spacious, readable, and focused around a single narrative flow;
+- the text can be left, right, or center aligned.
 
 **variant: card**
 - cards must be sidebyside in a horizontal row on desktop, and stack vertically on mobile;
@@ -82,12 +82,13 @@ interface Moment {
 - required fields: 'src' (descriptive placeholder string) and 'alt';
 - limit: up to 3 images per page;
 - always use fluid widths (width: 100%; object-fit: cover;) and an explicit aspect-ratio (16/9 or 21/9 for cinematic, 4/3 for cards) — never fixed pixel widths.
+- use unsplash placeholders for image src.
 
 **component: countdown**
 - required field: 'targetDate' — ISO 8601 string extracted from the prompt (e.g. "2026-08-14T23:00:00");
 - required field: 'css' — styles the countdown container to match the page aesthetic;
 - the component renders four labeled blocks (days / hours / minutes / seconds) in a horizontal row automatically — do not wrap it in a layout: 'row' box;
-- use strictly when the prompt needs a countdown.
+- never include a countdown node unless the user's prompt contains the word "countdown" or "timer".
 
 **component: link**
 - required field: 'href' — destination URL (e.g. "https://example.com", "mailto:hello@example.com");

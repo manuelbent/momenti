@@ -2,6 +2,7 @@
     import { JsonView } from '@zerodevx/svelte-json-view'
     import { Braces } from 'lucide-svelte'
     import { moment } from '$lib/stores/moment'
+    import CopyButton from './components/CopyButton.svelte'
 </script>
 
 <!-- outer shell matches DesktopFrame -->
@@ -13,6 +14,8 @@
             <Braces size={13} strokeWidth={1.6}/>
             <span class="text-[10px] font-mono tracking-wide">{$moment.slug}.json</span>
         </div>
+
+        <CopyButton/>
     </div>
 
     <!-- code body -->
