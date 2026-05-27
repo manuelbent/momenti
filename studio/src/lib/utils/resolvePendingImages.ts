@@ -1,6 +1,6 @@
 import { uploadImage } from '$lib/api/images'
 import { pendingImages } from '$lib/stores/pendingImages'
-import { updateNode } from '$lib/stores/moment'
+import { updateNode } from '$lib/stores/momentContent'
 
 /**
  * Walks the node tree, finds any image node whose src is a local blob URL,
@@ -10,7 +10,7 @@ import { updateNode } from '$lib/stores/moment'
  * Returns a deep copy of the content with all blob URLs replaced so it is
  * safe to pass directly to updateMoment().
  */
-export const resolvePendingImages = async (content: Content): Promise<Content> => {
+export const resolvePendingImages = async (content: MomentContent): Promise<MomentContent> => {
     const resolveNode = async (node: MomentNode): Promise<MomentNode> => {
         let resolved = { ...node }
 

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte'
-    import { selectedNodeId, moment, updateNode } from '$lib/stores/moment'
+    import { moment } from '$lib/stores/moment'
+    import { selectedNode, updateNode, clearSelection } from '$lib/stores/momentContent'
 
     let toolbarEl: HTMLElement
 
@@ -56,15 +57,15 @@
         return stringifyCss(map)
     }
 
-    $: selectedNode = ($selectedNodeId && $moment)
-        ? findNode($moment.content.root, $selectedNodeId)
+    $: activeNode = ($selectedNode?.id && $moment)
+        ? findNode($moment.content.root, $selectedNode.id)
         : null
 
     let computedVals: CssComputedVals = {} as CssComputedVals
 
-    $: if ($selectedNodeId && selectedNode) {
+    $: if ($selectedNode?.id && activeNode) {
         Promise.resolve().then(() => {
-            const el = document.getElementById($selectedNodeId!)
+            const el = document.getElementById($selectedNode!.id)
             if (!el) {
                 return
             }
@@ -83,48 +84,48 @@
     $: ({ color: currentColor, fontSizePx, isBold, isItalic, isUnderline } = computedVals)
 
     const handleColorInput = (e: Event) => {
-        if (!$selectedNodeId || !selectedNode) return
-        updateNode($selectedNodeId, {
-            css: setCssProp(selectedNode.css ?? '', 'color', (e.target as HTMLInputElement).value)
+        if (!$selectedNode?.id || !activeNode) return
+        updateNode($selectedNode.id, {
+            css: setCssProp(activeNode.css ?? '', 'color', (e.target as HTMLInputElement).value)
         })
     }
 
     const handleFontSizeInput = (e: Event) => {
-        if (!$selectedNodeId || !selectedNode) return
+        if (!$selectedNode?.id || !activeNode) return
         const raw = (e.target as HTMLInputElement).value.trim()
         const px = raw ? `${parseInt(raw)}px` : ''
-        updateNode($selectedNodeId, {
-            css: setCssProp(selectedNode.css ?? '', 'font-size', px)
+        updateNode($selectedNode.id, {
+            css: setCssProp(activeNode.css ?? '', 'font-size', px)
         })
     }
 
     const toggleBold = () => {
-        if (!$selectedNodeId || !selectedNode) return
-        updateNode($selectedNodeId, {
-            css: setCssProp(selectedNode.css ?? '', 'font-weight', isBold ? '' : 'bold')
+        if (!$selectedNode?.id || !activeNode) return
+        updateNode($selectedNode.id, {
+            css: setCssProp(activeNode.css ?? '', 'font-weight', isBold ? '' : 'bold')
         })
     }
 
     const toggleItalic = () => {
-        if (!$selectedNodeId || !selectedNode) return
-        updateNode($selectedNodeId, {
-            css: setCssProp(selectedNode.css ?? '', 'font-style', isItalic ? '' : 'italic')
+        if (!$selectedNode?.id || !activeNode) return
+        updateNode($selectedNode.id, {
+            css: setCssProp(activeNode.css ?? '', 'font-style', isItalic ? '' : 'italic')
         })
     }
 
     const toggleUnderline = () => {
-        if (!$selectedNodeId || !selectedNode) return
-        updateNode($selectedNodeId, {
-            css: setCssProp(selectedNode.css ?? '', 'text-decoration', isUnderline ? '' : 'underline')
+        if (!$selectedNode?.id || !activeNode) return
+        updateNode($selectedNode.id, {
+            css: setCssProp(activeNode.css ?? '', 'text-decoration', isUnderline ? '' : 'underline')
         })
     }
 
     const handleWindowPointerDown = (e: PointerEvent) => {
-        if (!$selectedNodeId) return
+        if (!$selectedNode) return
         const target = e.target as HTMLElement
         if (toolbarEl?.contains(target)) return
         if (target.isContentEditable) return
-        selectedNodeId.set(null)
+        clearSelection()
     }
 
     onMount(() => window.addEventListener('pointerdown', handleWindowPointerDown))
@@ -139,7 +140,7 @@
            rounded-r-xl p-2.5 font-[Inter,sans-serif] text-xs
            transition-transform duration-220 ease-in-out
            -translate-y-1/2
-           {selectedNode ? 'translate-x-0' : '-translate-x-[calc(100%+12px)]'}"
+           {activeNode ? 'translate-x-0' : '-translate-x-[calc(100%+12px)]'}"
      role="toolbar"
      aria-label="Text formatting"
 >

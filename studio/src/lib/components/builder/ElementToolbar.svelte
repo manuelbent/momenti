@@ -1,24 +1,25 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte'
     import { Bold, Italic, Link, Minus, Plus, Trash2, Underline, Upload } from 'lucide-svelte'
+    import { moment } from '$lib/stores/moment'
     import {
-        selectedNodeId, selectedNodeType, selectedNodeDeleteId,
-        moment, updateNode, deleteNode, clearSelection
-    } from '$lib/stores/moment'
+        selectedNode,
+        updateNode, deleteNode, clearSelection
+    } from '$lib/stores/momentContent'
     import { pendingImages } from '$lib/stores/pendingImages'
 
     let toolbarEl: HTMLElement
     let fileInput: HTMLInputElement
 
     const handleFileSelected = (e: Event) => {
-        if (!$selectedNodeId) return
+        if (!$selectedNode?.id) return
         const target = e.target as HTMLInputElement
         const file = target.files?.[0]
         if (!file) return
 
         const blobUrl = URL.createObjectURL(file)
         pendingImages.add(blobUrl, file)
-        updateNode($selectedNodeId, { src: blobUrl })
+        updateNode($selectedNode.id, { src: blobUrl })
         target.value = ''
     }
 
@@ -54,34 +55,34 @@
         return stringifyCss(map)
     }
 
-    $: isTextSelected = $selectedNodeType === 'text'
+    $: isTextSelected = $selectedNode?.type === 'text'
 
-    $: selectedLinkNode = ($selectedNodeType === 'link' && $selectedNodeId && $moment)
-        ? findNode($moment.content.root, $selectedNodeId)
+    $: selectedLinkNode = ($selectedNode?.type === 'link' && $selectedNode?.id && $moment)
+        ? findNode($moment.content.root, $selectedNode.id)
         : null
 
     let linkInputOpen = false
-    $: if ($selectedNodeType !== 'link') linkInputOpen = false
+    $: if ($selectedNode?.type !== 'link') linkInputOpen = false
 
     const handleHrefInput = (e: Event) => {
-        if (!$selectedNodeId || !selectedLinkNode) return
-        updateNode($selectedNodeId, { href: (e.target as HTMLInputElement).value })
+        if (!$selectedNode?.id || !selectedLinkNode) return
+        updateNode($selectedNode.id, { href: (e.target as HTMLInputElement).value })
     }
 
     const handleLinkHtmlInput = (e: Event) => {
-        if (!$selectedNodeId || !selectedLinkNode) return
-        updateNode($selectedNodeId, { html: (e.target as HTMLInputElement).value })
+        if (!$selectedNode?.id || !selectedLinkNode) return
+        updateNode($selectedNode.id, { html: (e.target as HTMLInputElement).value })
     }
 
-    $: selectedTextNode = (isTextSelected && $selectedNodeId && $moment)
-        ? findNode($moment.content.root, $selectedNodeId)
+    $: selectedTextNode = (isTextSelected && $selectedNode?.id && $moment)
+        ? findNode($moment.content.root, $selectedNode.id)
         : null
 
     let computedVals: CssComputedVals = {} as CssComputedVals
 
-    $: if (isTextSelected && $selectedNodeId && selectedTextNode) {
+    $: if (isTextSelected && $selectedNode?.id && selectedTextNode) {
         (() => {
-            const el = document.getElementById($selectedNodeId!)
+            const el = document.getElementById($selectedNode.id!)
             if (!el) {
                 return
             }
@@ -100,32 +101,32 @@
     $: ({ color: currentColor, fontSizePx, isBold, isItalic, isUnderline } = computedVals)
 
     const handleColorInput = (e: Event) => {
-        if (!$selectedNodeId || !selectedTextNode) return
-        updateNode($selectedNodeId, {
+        if (!$selectedNode?.id || !selectedTextNode) return
+        updateNode($selectedNode.id, {
             css: setCssProp(selectedTextNode.css ?? '', 'color', (e.target as HTMLInputElement).value)
         })
     }
 
     const handleFontSizeInput = (e: Event) => {
-        if (!$selectedNodeId || !selectedTextNode) return
+        if (!$selectedNode?.id || !selectedTextNode) return
         const raw = (e.target as HTMLInputElement).value.trim()
         const px = raw ? `${parseInt(raw)}px` : ''
-        updateNode($selectedNodeId, { css: setCssProp(selectedTextNode.css ?? '', 'font-size', px) })
+        updateNode($selectedNode.id, { css: setCssProp(selectedTextNode.css ?? '', 'font-size', px) })
     }
 
     const toggleBold = () => {
-        if (!$selectedNodeId || !selectedTextNode) return
-        updateNode($selectedNodeId, { css: setCssProp(selectedTextNode.css ?? '', 'font-weight', isBold ? '' : 'bold') })
+        if (!$selectedNode?.id || !selectedTextNode) return
+        updateNode($selectedNode.id, { css: setCssProp(selectedTextNode.css ?? '', 'font-weight', isBold ? '' : 'bold') })
     }
 
     const toggleItalic = () => {
-        if (!$selectedNodeId || !selectedTextNode) return
-        updateNode($selectedNodeId, { css: setCssProp(selectedTextNode.css ?? '', 'font-style', isItalic ? '' : 'italic') })
+        if (!$selectedNode?.id || !selectedTextNode) return
+        updateNode($selectedNode.id, { css: setCssProp(selectedTextNode.css ?? '', 'font-style', isItalic ? '' : 'italic') })
     }
 
     const toggleUnderline = () => {
-        if (!$selectedNodeId || !selectedTextNode) return
-        updateNode($selectedNodeId, { css: setCssProp(selectedTextNode.css ?? '', 'text-decoration', isUnderline ? '' : 'underline') })
+        if (!$selectedNode?.id || !selectedTextNode) return
+        updateNode($selectedNode.id, { css: setCssProp(selectedTextNode.css ?? '', 'text-decoration', isUnderline ? '' : 'underline') })
     }
 
     // --- margin helpers (available for every node type) ---
@@ -133,15 +134,15 @@
         $moment ? findNode($moment.content.root, id) : null
 
     const getMarginPx = (): number => {
-        if (!$selectedNodeId) return 0
-        const node = findAnyNode($selectedNodeId)
+        if (!$selectedNode?.id) return 0
+        const node = findAnyNode($selectedNode.id)
         const raw = parseCss(node?.css ?? '')['margin']
         return raw ? parseInt(raw) || 0 : 0
     }
 
     $: currentMarginPx = (() => {
-        if (!$selectedNodeId || !$moment) return 0
-        const node = findNode($moment.content.root, $selectedNodeId)
+        if (!$selectedNode?.id || !$moment) return 0
+        const node = findNode($moment.content.root, $selectedNode.id)
         const raw = parseCss(node?.css ?? '')['margin']
         return raw ? parseInt(raw) || 0 : 0
     })()
@@ -149,28 +150,28 @@
     const MARGIN_STEP = 1
 
     const increaseMargin = () => {
-        if (!$selectedNodeId) return
-        const node = findAnyNode($selectedNodeId)
+        if (!$selectedNode?.id) return
+        const node = findAnyNode($selectedNode.id)
         const next = getMarginPx() + MARGIN_STEP
-        updateNode($selectedNodeId, { css: setCssProp(node?.css ?? '', 'margin', `${next}px 0`) })
+        updateNode($selectedNode.id, { css: setCssProp(node?.css ?? '', 'margin', `${next}px 0`) })
     }
 
     const decreaseMargin = () => {
-        if (!$selectedNodeId) return
-        const node = findAnyNode($selectedNodeId)
+        if (!$selectedNode?.id) return
+        const node = findAnyNode($selectedNode.id)
         const next = Math.max(0, getMarginPx() - MARGIN_STEP)
         const val = next === 0 ? '' : `${next}px 0`
-        updateNode($selectedNodeId, { css: setCssProp(node?.css ?? '', 'margin', val) })
+        updateNode($selectedNode.id, { css: setCssProp(node?.css ?? '', 'margin', val) })
     }
 
     const handleDelete = () => {
-        if (!$selectedNodeDeleteId) return
-        deleteNode($selectedNodeDeleteId)
+        if (!$selectedNode?.deleteId) return
+        deleteNode($selectedNode.deleteId)
         clearSelection()
     }
 
     const handleWindowPointerDown = (e: PointerEvent) => {
-        if (!$selectedNodeId) return
+        if (!$selectedNode) return
         const target = e.target as HTMLElement
         if (toolbarEl?.contains(target)) return
         if (target.isContentEditable) return
@@ -191,7 +192,7 @@
            rounded-r-xl py-2 px-1.5 font-[Inter,sans-serif] text-xs
            transition-transform duration-220 ease-in-out
            -translate-y-1/2
-           {$selectedNodeId ? 'translate-x-0' : '-translate-x-[calc(100%+12px)]'}"
+           {$selectedNode ? 'translate-x-0' : '-translate-x-[calc(100%+12px)]'}"
      role="toolbar"
      aria-label="Element controls"
 >
@@ -257,7 +258,7 @@
         <div class="h-px bg-black/8 -mx-1.5 my-2"></div>
     {/if}
 
-    {#if $selectedNodeType === 'image'}
+    {#if $selectedNode?.type === 'image'}
         <button class="py-1 px-2.5 border border-[#e4e0dc] hover:border-black/20 rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
                            transition-colors flex items-center justify-center"
                 onclick={() => fileInput.click()}
@@ -270,7 +271,7 @@
         <div class="h-px bg-black/8 -mx-1.5 my-2"></div>
     {/if}
 
-    {#if $selectedNodeType === 'link'}
+    {#if $selectedNode?.type === 'link'}
         <div class="relative flex flex-col items-center">
             <button
                     class="py-1 px-2.5 border rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer

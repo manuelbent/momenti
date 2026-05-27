@@ -1,12 +1,12 @@
 <script lang="ts">
     import { onMount, getContext } from 'svelte'
-    import { updateNode, selectedNodeRect, selectNode, selectedNodeId } from '$lib/stores/moment'
+    import { updateNode, selectNode, selectedNode } from '$lib/stores/momentContent'
 
     export let node: MomentNode
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
     $: isEditable = !viewOnly
-    $: isSelected = !viewOnly && $selectedNodeId === node.id
+    $: isSelected = !viewOnly && $selectedNode?.id === node.id
 
     let element: HTMLElement
 
@@ -24,18 +24,17 @@
     }
 
     function handleFocus() {
-        selectNode({ id: node.id, type: 'text', deleteId: node.id })
-        selectedNodeRect.set(element.getBoundingClientRect())
+        selectNode({ id: node.id, type: 'text', deleteId: node.id, rect: element.getBoundingClientRect() })
     }
 </script>
 
 <svelte:element
-        this={node.tag ?? 'p'}
+        this={node.tag}
         id={node.id}
         data-nid={node.id}
         class:momenti-selected={isSelected}
         bind:this={element}
-        style={node.css ?? ''}
+        style={node.css}
         contenteditable={isEditable}
         onfocus={handleFocus}
         oninput={handleInput}

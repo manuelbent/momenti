@@ -42,55 +42,6 @@ moment.subscribe(updated => {
     })
 })
 
-export const updateNode = (id: string, newData: Partial<MomentNode>) => {
-    moment.update(m => {
-        const updateRecursive = (node: MomentNode): MomentNode => {
-            if (node.id === id) {
-                return { ...node, ...newData }
-            }
-            if (node.children) {
-                return { ...node, children: node.children.map(updateRecursive) }
-            }
-            return node
-        }
-        return { ...m, content: { ...m.content, root: updateRecursive(m.content.root) } }
-    })
-}
-
-export const deleteNode = (id: string) => {
-    moment.update(m => {
-        const deleteRecursive = (node: MomentNode): MomentNode => {
-            if (!node.children) return node
-            return {
-                ...node,
-                children: node.children
-                    .filter(c => c.id !== id)
-                    .map(deleteRecursive)
-            }
-        }
-        return { ...m, content: { ...m.content, root: deleteRecursive(m.content.root) } }
-    })
-}
-
-// tracks the currently-selected node in the builder
-export const selectedNodeId     = writable<string|null>(null)
-export const selectedNodeType   = writable<MomentNode['type']|null>(null)
-export const selectedNodeDeleteId = writable<string|null>(null)
-export const selectedNodeRect   = writable<DOMRect|null>(null)
-
-/** Select any node. Pass deleteId = parentId when the whole parent section should be removed (e.g. form). */
-export const selectNode = ({ id, type, deleteId }: { id: string, type: MomentNode['type'], deleteId: string }) => {
-    selectedNodeId.set(id)
-    selectedNodeType.set(type)
-    selectedNodeDeleteId.set(deleteId)
-}
-
-export const clearSelection = () => {
-    selectedNodeId.set(null)
-    selectedNodeType.set(null)
-    selectedNodeDeleteId.set(null)
-}
-
 // true when the active moment contains at least one form node
 const hasFormNodeRecursive = (node: MomentNode): boolean =>
     node.type === 'form' || (node.children?.some(hasFormNodeRecursive) ?? false)

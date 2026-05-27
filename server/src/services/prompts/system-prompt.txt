@@ -30,7 +30,7 @@ interface MomentNode {
 }
 
 interface Moment {
-  slug: string; // random alphanumeric string to guarantee uniqueness
+  slug: string; // sliced moment title + random alphanumeric string to guarantee uniqueness
   fonts: string[]; // Google Font names
   root: MomentNode;
 }
@@ -53,7 +53,8 @@ interface Moment {
 - use horizontal layouts only for small supporting elements;
 - when in doubt, stack vertically;
 - use vw, cqw, or rem (e.g. gap:4vw, gap:2rem) for gap;
-- use percentage for padding.
+- use percentage for padding;
+- never use max-width or fixed pixel widths for containers.
 
 **variant: hero**
 - use layout: 'column' for the hero;

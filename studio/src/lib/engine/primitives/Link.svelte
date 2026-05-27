@@ -1,12 +1,12 @@
 <script lang="ts">
     import { getContext } from 'svelte'
     import Icon from '@iconify/svelte'
-    import { selectNode, selectedNodeId } from '$lib/stores/moment'
+    import { selectNode, selectedNode } from '$lib/stores/momentContent'
 
     export let node: MomentNode
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
-    $: isSelected = !viewOnly && $selectedNodeId === node.id
+    $: isSelected = !viewOnly && $selectedNode?.id === node.id
 
     const SOCIAL_ICONS: Record<string, string> = {
         instagram: 'mdi:instagram',

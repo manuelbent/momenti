@@ -1,12 +1,12 @@
 <script lang="ts">
     import { getContext } from 'svelte'
-    import { selectNode, selectedNodeId } from '$lib/stores/moment'
+    import { selectNode, selectedNode } from '$lib/stores/momentContent'
 
     export let node: MomentNode
     export let parentId: string = ''
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
-    $: isSelected = !viewOnly && $selectedNodeId === node.id
+    $: isSelected = !viewOnly && $selectedNode?.id === node.id
 
     let values: Record<string, string> = {}
     let submitted = false
