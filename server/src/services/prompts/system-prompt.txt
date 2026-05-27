@@ -60,12 +60,12 @@ interface Moment {
 - use layout: 'column' for the hero;
 - the hero image must cover the full screen width;
 - if the hero has an image, overlay the text on top — never above or below;
-- the hero must feel spacious, readable, and focused around a single narrative flow;
-- the text can be left, right, or center aligned.
+- the hero must feel spacious, readable, and focused around a single narrative flow.
 
 **variant: card**
-- cards must be sidebyside in a horizontal row on desktop, and stack vertically on mobile;
+- cards must be side-by-side in a horizontal row on desktop, and stack vertically on mobile;
 - use layout: 'row' with flex-wrap: wrap; and a gap for the card container;
+- each card must use a fixed-unit flex-basis (e.g. flex: 1 1 20rem) — never a percentage (e.g. 40%);
 - card text must be concise and focused on a single idea.
 
 **component: map**
