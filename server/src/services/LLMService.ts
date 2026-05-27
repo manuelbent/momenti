@@ -59,6 +59,9 @@ export default class LLMService implements LLMServiceInterface {
         }
     }
 
+    /**
+     * @param {string} prompt
+     */
     public async classifyPrompt(prompt: string): Promise<{ valid: boolean; reason?: string }> {
         const response = await this.openai.chat.completions.create({
             model: 'gpt-4.1-mini',
@@ -78,6 +81,9 @@ export default class LLMService implements LLMServiceInterface {
         }
     }
 
+    /**
+     * @param {string} prompt
+     */
     public async* streamMoment(prompt: string): AsyncGenerator<{
         chunk?: string;
         done?: boolean;

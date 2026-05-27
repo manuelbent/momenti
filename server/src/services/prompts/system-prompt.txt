@@ -9,7 +9,7 @@ type FormField =
 
 interface MomentNode {
   id: string;
-  type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown' | 'link';
+  type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown' | 'link' | 'navbar';
   variant?: 'hero' | 'section' | 'card' | 'overlay';
   layout?: 'row' | 'column';
   columns?: number;
@@ -26,6 +26,7 @@ interface MomentNode {
   buttonCss?: string;
   href?: string;
   platform?: 'instagram' | 'tiktok' | 'facebook' | 'twitter' | 'linkedin' | 'youtube';
+  links?: { label: string; anchor: string }[]; // navbar anchor links
   children?: MomentNode[];
 }
 
@@ -99,6 +100,13 @@ interface Moment {
 - always rendered with target="_blank" and rel="noopener noreferrer";
 - use whenever the prompt mentions a CTA: "read more", "follow us", "book now", "visit", or similar;
 - for social links: one 'link' node per platform, set 'platform', set 'href' to the platform root URL, omit 'html'; wrap multiple social links in a layout: 'row' box with flex-wrap: wrap; and a gap.
+
+**component: navbar**
+- required field: 'links' — array of { label, anchor } objects; 'anchor' must match the 'id' of the target section node; every named section must have a corresponding link;
+- required field: 'css' — must include: position: sticky; top: 0; left: 0; width: 100%; z-index: 1000; height: 3rem; display: flex; align-items: center;
+- keep the navbar compact: height must not exceed 3rem; use small, lightweight typography;
+- the navbar must be the first child of the root node;
+- style anchor links to match the page color scheme.
 
 **technical constraints**
 - output raw JSON only — no markdown;

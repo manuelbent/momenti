@@ -11,7 +11,7 @@ interface MomentContent {
 
 interface MomentNode {
     id: string;
-    type: 'box'|'text'|'image'|'form'|'map'|'countdown'|'link';
+    type: 'box'|'text'|'image'|'form'|'map'|'countdown'|'link'|'navbar';
     variant?: 'hero'|'section'|'grid'|'card'|'overlay';
     layout?: 'row'|'column'|'grid';
     columns?: number;
@@ -28,6 +28,7 @@ interface MomentNode {
     buttonCss?: string;
     href?: string;
     platform?: string;
+    links?: { label: string; anchor: string }[];
     children?: MomentNode[];
 }
 
