@@ -5,6 +5,9 @@ import { resolve } from 'path'
 
 export default defineConfig({
     plugins: [tailwindcss(), svelte()],
+    server: {
+        port: 5173,
+    },
     resolve: {
         alias: {
             '$lib': resolve('./src/lib'),
