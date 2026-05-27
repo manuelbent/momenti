@@ -21,7 +21,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
 <form data-nid={node.id}
       class:momenti-selected={isSelected}
-      style={`${node.css}; display: flex; gap: 1rem;`}
+      style={node.css}
       onsubmit={handleSubmit}
       onclick={() => !viewOnly && selectNode({ id: node.id, type: 'form', deleteId: parentId || node.id })}
 >
@@ -61,10 +61,13 @@
         {/if}
     {/each}
 
-    <button type="submit" style="cursor: pointer; {node.buttonCss}">{node.buttonLabel ?? 'Send'}</button>
-    {#if submitted}
-        <p style="font-style: italic;">✓</p>
-    {:else if error}
+    <button type="submit"
+            style="cursor: pointer; {node.buttonCss}"
+            disabled={submitted}>
+        {submitted ? '✓' : node.buttonLabel}
+    </button>
+
+    {#if error}
         <p style="font-style: italic;">Something went wrong. Please try again.</p>
     {/if}
 </form>
