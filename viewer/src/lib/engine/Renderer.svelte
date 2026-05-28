@@ -8,24 +8,26 @@
     import Link from '$lib/engine/primitives/Link.svelte'
 
     export let node: MomentNode
+
+    const components: Record<string, any> = {
+        box: Box,
+        text: Text,
+        image: Image,
+        form: Form,
+        map: Map,
+        countdown: Countdown,
+        link: Link,
+    }
+
+    $: component = components[node.type]
 </script>
 
 {#if node.type === 'box'}
-    <Box {node}>
+    <svelte:component this={component} {node}>
         {#each node.children ?? [] as child (child.id)}
-            <svelte:self node={child} />
+            <svelte:self node={child} parentId={node.id}/>
         {/each}
-    </Box>
-{:else if node.type === 'text'}
-    <Text {node} />
-{:else if node.type === 'image'}
-    <Image {node} />
-{:else if node.type === 'form'}
-    <Form {node} />
-{:else if node.type === 'map'}
-    <Map {node} />
-{:else if node.type === 'countdown'}
-    <Countdown {node} />
-{:else if node.type === 'link'}
-    <Link {node} />
+    </svelte:component>
+{:else}
+    <svelte:component this={component} {node}/>
 {/if}
