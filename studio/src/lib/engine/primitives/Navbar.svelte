@@ -137,16 +137,19 @@
             left: 0;
             width: 100%;
             background: inherit;
-            border-top: 1px solid rgba(128,128,128,0.15);
-            padding: 0.5rem 0;
+            /* keep style+color constant so only width animates → no flash */
+            border-top: 0 solid rgba(128,128,128,0.15);
+            padding: 0;
             /* hidden state */
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease;
+            transition: max-height 0.3s ease, padding 0.3s ease, border-top-width 0.3s ease;
         }
 
         .nav-toggle:checked ~ .nav-drawer {
             max-height: 20rem;
+            padding: 0.5rem 0;
+            border-top-width: 1px;
         }
 
         .nav-drawer a {

@@ -107,8 +107,7 @@ interface Moment {
 - required field: 'css' — must include: position: sticky; top: 0; left: 0; width: 100%; z-index: 1000; height: 3rem; display: flex; align-items: center;
 - keep the navbar compact: height must not exceed 3rem; use small, lightweight typography;
 - the navbar must be the first child of the root node;
-- style anchor links to match the page color scheme;
-- the navbar must be fully responsive: on mobile (max-width: 768px) hide the link list and show a hamburger icon button; tapping the hamburger toggles a dropdown/drawer that displays the links vertically; the hamburger icon and the dropdown must use the same colors as the rest of the navbar to match the page color scheme.
+- style anchor links to match the page color scheme.
 
 **technical constraints**
 - output raw JSON only — no markdown;
