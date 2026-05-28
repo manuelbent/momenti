@@ -1,5 +1,11 @@
 <script lang="ts">
+    import { getContext } from 'svelte'
+    import { selectNode, selectedNode } from '$lib/stores/momentContent'
+
     export let node: MomentNode
+
+    const viewOnly = getContext<boolean>('viewOnly') ?? false
+    $: isSelected = !viewOnly && $selectedNode?.id === node.id
 
     $: links = (node as any).links as { label: string; anchor: string }[] ?? []
 
@@ -15,7 +21,14 @@
     }
 </script>
 
-<nav id={node.id} data-nid={node.id} style={node.css ?? ''}>
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<nav id={node.id}
+     data-nid={node.id}
+     style={node.css ?? ''}
+     class:momenti-selected={isSelected}
+     onclick={() => !viewOnly && selectNode({ id: node.id, type: 'navbar', deleteId: node.id })}
+     onkeydown={() => {}}
+>
     <!-- desktop links -->
     <div class="nav-links">
         {#each links as link}
