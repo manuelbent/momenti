@@ -116,9 +116,8 @@
                 {/if}
             </div>
 
-            <p class="text-[11px] text-[#2e2e2e] mt-4 tracking-[0.02em] text-center">
-                © 2026 momenti. All rights reserved.
-                <br>
+            <p class="text-[11px] text-[#2e2e2e] mt-4 tracking-[0.02em] flex items-center justify-between">
+                <span>© 2026 momenti. All rights reserved.</span>
                 <span class="text-[9px]">v{__APP_VERSION__}</span>
             </p>
         </div>
