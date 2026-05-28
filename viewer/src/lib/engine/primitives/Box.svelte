@@ -2,6 +2,6 @@
     export let node: MomentNode
 </script>
 
-<div style={node.css}>
+<div id={node.id} style={node.css}>
     <slot/>
 </div>
