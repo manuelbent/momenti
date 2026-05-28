@@ -10,6 +10,36 @@
 
     let toolbarEl: HTMLElement
     let fileInput: HTMLInputElement
+    let heroFileInput: HTMLInputElement
+
+    // find the first image-type descendant in a tree
+    const findFirstImage = (node: MomentNode): MomentNode | null => {
+        if (node.type === 'image') return node
+        for (const child of node.children ?? []) {
+            const found = findFirstImage(child)
+            if (found) return found
+        }
+        return null
+    }
+
+    $: selectedBoxNode = ($selectedNode?.type === 'box' && $selectedNode?.id && $moment)
+        ? findNode($moment.content.root, $selectedNode.id)
+        : null
+
+    $: heroImageNode = (selectedBoxNode?.variant === 'hero')
+        ? findFirstImage(selectedBoxNode)
+        : null
+
+    const handleHeroImageSelected = (e: Event) => {
+        if (!heroImageNode) return
+        const target = e.target as HTMLInputElement
+        const file = target.files?.[0]
+        if (!file) return
+        const blobUrl = URL.createObjectURL(file)
+        pendingImages.add(blobUrl, file)
+        updateNode(heroImageNode.id, { src: blobUrl })
+        target.value = ''
+    }
 
     const handleFileSelected = (e: Event) => {
         if (!$selectedNode?.id) return
@@ -254,6 +284,19 @@
                 </button>
             </div>
         </div>
+
+        <div class="h-px bg-black/8 -mx-1.5 my-2"></div>
+    {/if}
+
+    {#if $selectedNode?.type === 'box' && heroImageNode}
+        <button class="py-1 px-2.5 border border-[#e4e0dc] hover:border-black/20 rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
+                           transition-colors flex items-center justify-center"
+                onclick={() => heroFileInput.click()}
+                title="Replace hero image"
+        >
+            <Upload class="w-3"/>
+        </button>
+        <input bind:this={heroFileInput} type="file" accept="image/*" onchange={handleHeroImageSelected} hidden/>
 
         <div class="h-px bg-black/8 -mx-1.5 my-2"></div>
     {/if}
