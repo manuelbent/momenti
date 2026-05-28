@@ -13,6 +13,6 @@
     <p class="text-[11px] text-[#2e2e2e] mt-4 tracking-[0.02em] text-center absolute bottom-10">
         © 2026 momenti. All rights reserved.
         <br>
-        <span class="text-[9px]">v0.0.2-alpha</span>
+        <span class="text-[9px]">v0.0.3-alpha</span>
     </p>
 </div>

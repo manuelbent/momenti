@@ -1,7 +1,7 @@
 {
   "name": "momenti-viewer",
   "description": "Lightweight viewer for momenti.",
-  "version": "0.0.0-alpha",
+  "version": "0.0.3-alpha",
   "type": "module",
   "scripts": {
     "dev": "vite",
