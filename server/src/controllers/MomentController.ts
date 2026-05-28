@@ -120,6 +120,20 @@ export default class MomentController {
             this.sendSseEvent(res, 'chunk', data)
         }
         const onDone = async (data: { prompt: string, momentContent: MomentContent }) => {
+            if (options.replayBuffer) {
+                // the capture connection is responsible for persisting the moment
+                try {
+                    const stored = await this.momentService.pollMomentBySlug(data.momentContent.slug)
+                    this.sendSseEvent(res, 'done', stored)
+                } catch (err) {
+                    console.error('[MomentController] resume: moment not found after polling:', err)
+                    this.sendSseEvent(res, 'error', { error: 'Failed to retrieve the saved Moment.' })
+                } finally {
+                    res.end()
+                }
+                return
+            }
+
             try {
                 const stored = await this.momentService.store({
                     user_id: userId,

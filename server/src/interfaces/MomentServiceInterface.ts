@@ -10,4 +10,5 @@ export default interface MomentServiceInterface {
     getPublishedBySlug(slug: string): Promise<Moment|null>
     getAll(userId: number): Promise<Moment[]>
     slugExists(slug: string, excludeId?: number): Promise<boolean>
+    pollMomentBySlug(slug: string, timeoutMs?: number): Promise<Moment>
 }

@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { getContext } from 'svelte'
     import { submitForm } from '$lib/api/moments'
 
     export let node: MomentNode
 
-    const moment = getContext<Moment>('moment')
-    const momentSlug = moment?.slug ?? ''
+    const [slug] = window.location.hostname.split('.')
 
     let values: Record<string, string> = {}
     let submitted = false
@@ -14,7 +12,7 @@
     const handleSubmit = async (e: Event) => {
         e.preventDefault()
         try {
-            await submitForm(momentSlug, node.id, values)
+            await submitForm(slug, node.id, values)
             submitted = true
         } catch (err) {
             console.error('[Form] submit error:', err)

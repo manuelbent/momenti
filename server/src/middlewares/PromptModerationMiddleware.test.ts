@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { Request, Response, NextFunction } from 'express'
 import PromptModerationMiddleware from './PromptModerationMiddleware'
+import LLMService from '../services/LLMService'
 
 function makeReq(prompt: unknown): Partial<Request> {
     return { body: { prompt } }
@@ -18,7 +19,7 @@ describe('PromptModerationMiddleware (real OpenAI Moderation API)', () => {
     let next: NextFunction
 
     beforeEach(() => {
-        middleware = new PromptModerationMiddleware()
+        middleware = new PromptModerationMiddleware(new LLMService())
         next = vi.fn()
     })
 
