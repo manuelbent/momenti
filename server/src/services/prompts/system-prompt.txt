@@ -59,8 +59,9 @@ interface Moment {
 
 **variant: hero**
 - use layout: 'column' for the hero;
-- the hero image must cover the full screen width;
-- if the hero has an image, overlay the text on top — never above or below;
+- the hero box must have position:relative and min-height:100vh;
+- if the hero has a background image, give that image node css: "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" — never aspect-ratio, never flex sizing;
+- place the overlay (text contents) as a sibling with position:absolute;inset:0 and justify-content:flex-end so text sits at the bottom;
 - the hero must feel spacious, readable, and focused around a single narrative flow.
 
 **variant: card**
@@ -83,7 +84,7 @@ interface Moment {
 **component: image**
 - required fields: 'src' (descriptive placeholder string) and 'alt';
 - limit: up to 3 images per page;
-- always use fluid widths (width: 100%; object-fit: cover;) and an explicit aspect-ratio (16/9 or 21/9 for cinematic, 4/3 for cards) — never fixed pixel widths.
+- always use fluid widths (width: 100%; object-fit: cover;) and an explicit 4/3 aspect-ratio for cards — never fixed pixel widths.
 - use unsplash placeholders for image src.
 
 **component: countdown**
@@ -93,7 +94,7 @@ interface Moment {
 - never include a countdown node unless the user's prompt contains the word "countdown" or "timer".
 
 **component: link**
-- required field: 'href' — destination URL (e.g. "https://example.com", "mailto:hello@example.com");
+- required field: 'href' — destination URL;
 - optional field: 'html' — visible label for non-social CTAs (e.g. "Book Now"); omit for social links;
 - optional field: 'platform' — set to 'instagram', 'tiktok', etc. for social follow CTAs; the renderer displays only the platform icon;
 - optional field: 'css' — style as button or inline anchor;

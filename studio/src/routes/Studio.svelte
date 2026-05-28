@@ -3,12 +3,12 @@
     import { replace } from 'svelte-spa-router'
     import { inviteKey } from '$lib/stores/auth'
     import Layout from '$lib/components/studio/Layout.svelte'
-    import FrameSelector from '$lib/components/studio/frames/FrameSelector.svelte'
-    import FrameView from '$lib/components/studio/frames/FrameView.svelte'
+    import Selector from '$lib/components/studio/preview/Selector.svelte'
+    import Preview from '$lib/components/studio/preview/Preview.svelte'
     import Sidebar from '$lib/components/studio/sidebar/Sidebar.svelte'
     import ElementToolbar from '$lib/components/builder/ElementToolbar.svelte'
 
-    let view: 'desktop'|'mobile'|'code' = 'desktop'
+    let view: 'desktop'|'code' = 'desktop'
 
     onMount(() => {
         if (!$inviteKey) {
@@ -22,11 +22,8 @@
 
     <!-- preview -->
     <div class="flex-1 min-h-0 bg-[#f0ede8] flex flex-col overflow-hidden">
-        <div class="mt-8 flex justify-center shrink-0">
-            <FrameSelector bind:view/>
-        </div>
-
-        <FrameView {view}/>
+        <Selector bind:view/>
+        <Preview {view}/>
     </div>
 
     <!-- right sidebar -->

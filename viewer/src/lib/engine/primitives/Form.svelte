@@ -30,7 +30,7 @@
             <p>{field.text}</p>
 
         {:else if field.type === 'radio'}
-            <fieldset>
+            <fieldset style="display: flex; gap: 1rem;">
                 {#if field.label}
                     <legend>{field.label}</legend>
                 {/if}
@@ -62,17 +62,13 @@
         {/if}
     {/each}
 
-    <button type="submit" style="cursor: pointer; {node.buttonCss ?? ''}">{node.buttonLabel ?? 'Send'}</button>
-    {#if submitted}
-        <p style="font-style: italic;">✓</p>
-    {:else if error}
+    <button type="submit"
+            style="cursor: pointer; {node.buttonCss}"
+            disabled={submitted}>
+        {submitted ? '✓' : node.buttonLabel}
+    </button>
+
+    {#if error}
         <p style="font-style: italic;">Something went wrong. Please try again.</p>
     {/if}
 </form>
-
-<style>
-    fieldset {
-        display: flex;
-        gap: 2rem;
-    }
-</style>

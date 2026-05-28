@@ -1,12 +1,12 @@
 <script lang="ts">
-    import DesktopFrame from '$lib/components/studio/frames/desktop/DesktopFrame.svelte'
-    import CodeFrame from '$lib/components/studio/frames/code/CodeFrame.svelte'
+    import DesktopView from '$lib/components/studio/preview/desktop/DesktopView.svelte'
+    import CodeView from '$lib/components/studio/preview/code/CodeView.svelte'
 
     export let view: 'desktop'|'mobile'|'code' = 'desktop'
 
     const components: Record<string, any> = {
-        desktop: DesktopFrame,
-        code: CodeFrame
+        desktop: DesktopView,
+        code: CodeView
     }
 
     $: component = components[view]

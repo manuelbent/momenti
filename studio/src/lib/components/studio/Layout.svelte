@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Navbar from '$lib/components/studio/components/Navbar.svelte'
+    import Navbar from '$lib/components/studio/Navbar.svelte'
     import Toast from '$lib/components/ui/Toast.svelte'
     import LoadingOverlay from '$lib/components/ui/LoadingOverlay.svelte'
 </script>
