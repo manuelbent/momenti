@@ -11,7 +11,7 @@
     let element: HTMLElement
 
     onMount(() => {
-        element.innerHTML = node.html ?? ''
+        if (element) element.innerHTML = node.html ?? ''
     })
 
     $: if (element && element.innerHTML !== (node.html ?? '')) {
@@ -29,7 +29,7 @@
 </script>
 
 <svelte:element
-        this={node.tag}
+        this={node.tag ?? 'div'}
         id={node.id}
         data-nid={node.id}
         class:momenti-selected={isSelected}
