@@ -8,7 +8,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsc && cp -r src/services/prompts dist/services/prompts",
     "start": "node dist/server.js",
     "migrate:up": "sequelize-cli db:migrate  --config ../database/config.cjs --migrations-path ../database/migrations",
     "migrate:down": "sequelize-cli db:migrate:undo  --config ../database/config.cjs --migrations-path ../database/migrations",
