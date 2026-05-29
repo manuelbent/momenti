@@ -5,6 +5,7 @@
     import Image from '$lib/engine/primitives/Image.svelte'
     import Form from '$lib/engine/primitives/Form.svelte'
     import Map from '$lib/engine/primitives/Map.svelte'
+    import Carousel from '$lib/engine/primitives/Carousel.svelte'
     import Countdown from '$lib/engine/primitives/Countdown.svelte'
     import Link from '$lib/engine/primitives/Link.svelte'
     import Navbar from '$lib/engine/primitives/Navbar.svelte'
@@ -26,6 +27,7 @@
         image: Image,
         form: Form,
         map: Map,
+        carousel: Carousel,
         countdown: Countdown,
         link: Link,
         navbar: Navbar,
