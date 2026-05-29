@@ -9,7 +9,7 @@ type FormField =
 
 interface MomentNode {
   id: string;
-  type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown' | 'link' | 'navbar';
+  type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown' | 'link' | 'navbar' | 'footer';
   variant?: 'hero' | 'section' | 'card' | 'overlay';
   layout?: 'row' | 'column';
   columns?: number;
@@ -108,6 +108,12 @@ interface Moment {
 - keep the navbar compact: height must not exceed 3rem; use small, lightweight typography;
 - the navbar must be the first child of the root node;
 - style anchor links to match the page color scheme.
+
+**component: footer**
+- the footer node is MANDATORY — every page must end with a footer as the last child of the root node;
+- required field: 'css' — style to match the page color scheme; padding must be small (e.g. 1.2rem 6%); font-size must be small but legible (e.g. clamp(0.7rem, 1.5cqw, 0.85rem));
+- optional field: 'links' — array of { label, href } objects for secondary navigation, include only if listed by the user prompt;
+- keep it compact: low height, no headings, no large text blocks.
 
 **technical constraints**
 - output raw JSON only — no markdown;
