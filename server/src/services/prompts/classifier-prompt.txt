@@ -16,4 +16,4 @@ A prompt is INVALID if:
 Respond ONLY with a valid JSON object. No explanation, no markdown, nothing else:
 { "valid": true }
 or
-{ "valid": false, "reason": "<short human-readable explanation in the same language as the user prompt>" }
+{ "valid": false, "reason": "<Short human-readable explanation>" }

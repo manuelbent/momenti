@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express'
-import { z } from 'zod'
 import { MAX_PROMPT_LENGTH, MIN_PROMPT_LENGTH } from '../config/constants'
 
 /**
@@ -7,22 +6,20 @@ import { MAX_PROMPT_LENGTH, MIN_PROMPT_LENGTH } from '../config/constants'
  */
 export default class GenerateMomentRequestValidator {
     /**
-     * @private {ZodObject}
-     */
-    schema = z.object({
-        prompt: z.string().min(MIN_PROMPT_LENGTH).max(MAX_PROMPT_LENGTH),
-    }).strict()
-
-    /**
      * @param {Request} req
      * @param {Response} res
      * @param {NextFunction} next
      */
     async validate(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const result = this.schema.safeParse(req.body)
+        const { prompt } = req.body
 
-        if (!result.success) {
-            res.status(400).json({ error: result.error.issues })
+        if (typeof prompt !== 'string' || prompt.length < MIN_PROMPT_LENGTH) {
+            res.status(400).json({ error: `Prompt must be at least ${MIN_PROMPT_LENGTH} characters.` })
+            return
+        }
+
+        if (prompt.length > MAX_PROMPT_LENGTH) {
+            res.status(400).json({ error: `Prompt must be at most ${MAX_PROMPT_LENGTH} characters.` })
             return
         }
 
