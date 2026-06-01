@@ -59,7 +59,7 @@ interface Moment {
 
 **variant: hero**
 - use layout: 'column' for the hero;
-- the hero box must have position:relative and min-height:100vh;
+- the hero box must have position:relative;
 - if the hero has a background image, give that image node css: "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" — never aspect-ratio, never flex sizing;
 - place the overlay (text contents) as a sibling; you can decide where to place the text overlay inside the hero;
 - the hero text must NEVER be placed on more than 1 column;
