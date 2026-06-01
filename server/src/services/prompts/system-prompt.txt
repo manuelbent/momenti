@@ -25,7 +25,7 @@ interface MomentNode {
   inputCss?: string;
   buttonCss?: string;
   href?: string;
-  platform?: 'instagram' | 'tiktok' | 'facebook' | 'twitter' | 'linkedin' | 'youtube';
+  platform?: 'instagram' | 'tiktok' | 'facebook' | 'twitter' | 'linkedin' | 'youtube' | 'pinterest' | 'github' | 'website';
   links?: { label: string; anchor: string }[]; // navbar anchor links
   children?: MomentNode[];
 }
@@ -112,7 +112,7 @@ interface Moment {
 
 **component: footer**
 - the footer node is MANDATORY — every page must end with a footer as the last child of the root node;
-- required field: 'css' — style to match the navbar color scheme; padding must be small (e.g. 1.2rem 6%); font-size must be small but legible (e.g. clamp(0.7rem, 1.5cqw, 0.85rem));
+- required field: 'css' — padding must be small (e.g. 1.2rem 6%); font-size must be small but legible (e.g. clamp(0.7rem, 1.5cqw, 0.85rem));
 - optional field: 'links' — array of { label, href } objects for secondary navigation, include only if listed by the user prompt;
 - keep it compact: low height, no headings, no large text blocks.
 

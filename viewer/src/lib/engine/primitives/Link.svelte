@@ -5,12 +5,14 @@
 
     const SOCIAL_ICONS: Record<string, string> = {
         instagram: 'mdi:instagram',
+        tiktok:    'ic:baseline-tiktok',
         facebook:  'mdi:facebook',
         twitter:   'mdi:twitter',
-        tiktok:    'ic:baseline-tiktok',
-        pinterest: 'mdi:pinterest',
         linkedin:  'mdi:linkedin',
         youtube:   'mdi:youtube',
+        pinterest: 'mdi:pinterest',
+        github:    'mdi:github',
+        website:   'mdi:web',
     }
 
     $: icon = node.platform ? SOCIAL_ICONS[node.platform] : null
