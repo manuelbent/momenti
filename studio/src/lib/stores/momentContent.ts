@@ -81,4 +81,3 @@ export const selectedHeroImageNode = derived([moment, selectedNode], ([$moment, 
     if (boxNode?.variant !== 'hero') return null
     return findFirstImage(boxNode)
 })
-
