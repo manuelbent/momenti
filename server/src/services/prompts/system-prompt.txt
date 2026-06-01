@@ -61,7 +61,8 @@ interface Moment {
 - use layout: 'column' for the hero;
 - the hero box must have position:relative and min-height:100vh;
 - if the hero has a background image, give that image node css: "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" — never aspect-ratio, never flex sizing;
-- place the overlay (text contents) as a sibling with position:absolute;inset:0 and justify-content:flex-end so text sits at the bottom;
+- place the overlay (text contents) as a sibling; you can decide where to place the text overlay inside the hero;
+- the hero text must NEVER be placed on more than 1 column;
 - the hero must feel spacious, readable, and focused around a single narrative flow.
 
 **variant: card**
@@ -104,7 +105,7 @@ interface Moment {
 
 **component: navbar**
 - required field: 'links' — array of { label, anchor } objects; 'anchor' must match the 'id' of the target section node; every named section must have a corresponding link;
-- required field: 'css' — must include: position: sticky; top: 0; left: 0; width: 100%; z-index: 1000; height: 3rem; display: flex; align-items: center;
+- required field: 'css' — must include: position: sticky; top: 0; left: 0; width: 100%; z-index: 10; height: 3rem; display: flex; align-items: center;
 - keep the navbar compact: height must not exceed 3rem; use small, lightweight typography;
 - the navbar must be the first child of the root node;
 - style anchor links to match the page color scheme.

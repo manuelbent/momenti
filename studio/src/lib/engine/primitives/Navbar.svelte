@@ -64,6 +64,7 @@
         margin-bottom: -4vw;
         position: relative;
         flex-wrap: wrap;
+        z-index: 10 !important;
     }
 
     /* ── desktop links ── */
