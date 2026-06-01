@@ -1,16 +1,17 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte'
-    import { Bold, Italic, Link, Minus, Plus, Trash2, Underline, Upload } from 'lucide-svelte'
+    import { Bold, ImagePlus, Italic, Link, Minus, Plus, Trash2, Underline, Upload } from 'lucide-svelte'
     import { moment } from '$lib/stores/moment'
     import {
         selectedNode,
-        updateNode, deleteNode, clearSelection
+        updateNode, deleteNode, clearSelection, addChildNode
     } from '$lib/stores/momentContent'
     import { pendingImages } from '$lib/stores/pendingImages'
 
     let toolbarEl: HTMLElement
     let fileInput: HTMLInputElement
     let heroFileInput: HTMLInputElement
+    let carouselAddInput: HTMLInputElement
 
     // find the first image-type descendant in a tree
     const findFirstImage = (node: MomentNode): MomentNode | null => {
@@ -50,6 +51,24 @@
         const blobUrl = URL.createObjectURL(file)
         pendingImages.add(blobUrl, file)
         updateNode($selectedNode.id, { src: blobUrl })
+        target.value = ''
+    }
+
+    const handleCarouselAddImage = (e: Event) => {
+        if (!$selectedNode?.id) return
+        const target = e.target as HTMLInputElement
+        const file = target.files?.[0]
+        if (!file) return
+
+        const blobUrl = URL.createObjectURL(file)
+        pendingImages.add(blobUrl, file)
+        const newSlide: MomentNode = {
+            id: `slide-${Date.now()}`,
+            type: 'image',
+            src: blobUrl,
+            alt: file.name.replace(/\.[^/.]+$/, ''),
+        }
+        addChildNode($selectedNode.id, newSlide)
         target.value = ''
     }
 
@@ -310,6 +329,19 @@
             <Upload class="w-3"/>
         </button>
         <input bind:this={fileInput} type="file" accept="image/*" onchange={handleFileSelected} hidden/>
+
+        <div class="h-px bg-black/8 -mx-1.5 my-2"></div>
+    {/if}
+
+    {#if $selectedNode?.type === 'carousel'}
+        <button class="py-1 px-2.5 border border-[#e4e0dc] hover:border-black/20 rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
+                           transition-colors flex items-center justify-center"
+                onclick={() => carouselAddInput.click()}
+                title="Add picture"
+        >
+            <ImagePlus class="w-3"/>
+        </button>
+        <input bind:this={carouselAddInput} type="file" accept="image/*" onchange={handleCarouselAddImage} hidden/>
 
         <div class="h-px bg-black/8 -mx-1.5 my-2"></div>
     {/if}

@@ -1,5 +1,24 @@
 <script lang="ts">
+    import { getContext } from 'svelte'
+    import { selectNode, selectedNode } from '$lib/stores/momentContent'
+
     export let node: MomentNode
+
+    const viewOnly = getContext<boolean>('viewOnly') ?? false
+
+    $: isCarouselSelected = !viewOnly && $selectedNode?.id === node.id
+
+    const selectCarousel = (e: MouseEvent) => {
+        if (viewOnly) return
+        // only select the carousel if not clicking a slide (slides stop propagation)
+        selectNode({ id: node.id, type: 'carousel', deleteId: node.id })
+    }
+
+    const selectSlide = (e: MouseEvent, slide: MomentNode) => {
+        if (viewOnly) return
+        e.stopPropagation()
+        selectNode({ id: slide.id, type: 'image', deleteId: slide.id })
+    }
 
     const COL_CLASS = {
         1: 'grid-cols-1',
@@ -12,8 +31,6 @@
 
     $: count = slides.length
 
-    $: isWideSlideNeeded = count >= 3 && count % 2 === 1
-
     $: desktopCols = Math.min(node.columns ?? count, 4)
 
     $: gridClass = [
@@ -22,12 +39,21 @@
     ].join(' ')
 </script>
 
-{#if isWideSlideNeeded}
-    <div class="w-full space-y-2" style={node.css ?? ''}>
+{#if count === 3}
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="w-full space-y-2"
+         style={node.css ?? ''}
+         class:momenti-selected={isCarouselSelected}
+         data-nid={node.id}
+         on:click={selectCarousel}
+         on:keydown={() => {}}
+    >
         <!-- wide slide -->
         <button type="button"
-                class="w-full aspect-video overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60"
-                on:click={() => {}}>
+                data-nid={slides[0].id}
+                class="w-full aspect-video overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60
+                       {!viewOnly && $selectedNode?.id === slides[0].id ? 'momenti-selected' : ''}"
+                on:click={(e) => selectSlide(e, slides[0])}>
             <img src={slides[0].src ?? ''}
                  alt={slides[0].alt ?? ''}
                  class="h-full w-full object-cover"
@@ -38,8 +64,10 @@
         <div class="grid grid-cols-2 gap-2">
             {#each slides.slice(1) as slide (slide.id)}
                 <button type="button"
-                        class="aspect-square overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60"
-                        on:click={() => {}}>
+                        data-nid={slide.id}
+                        class="aspect-square overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60
+                               {!viewOnly && $selectedNode?.id === slide.id ? 'momenti-selected' : ''}"
+                        on:click={(e) => selectSlide(e, slide)}>
                     <img src={slide.src ?? ''}
                          alt={slide.alt ?? ''}
                          class="h-full w-full object-cover"
@@ -49,12 +77,20 @@
         </div>
     </div>
 {:else}
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class={`grid w-full gap-2 ${gridClass}`}
-         style={node.css ?? ''}>
+         style={node.css ?? ''}
+         class:momenti-selected={isCarouselSelected}
+         data-nid={node.id}
+         on:click={selectCarousel}
+         on:keydown={() => {}}
+    >
         {#each slides as slide (slide.id)}
             <button type="button"
-                    class="aspect-square overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60"
-                    on:click={() => {}}>
+                    data-nid={slide.id}
+                    class="aspect-square overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60
+                           {!viewOnly && $selectedNode?.id === slide.id ? 'momenti-selected' : ''}"
+                    on:click={(e) => selectSlide(e, slide)}>
                 <img src={slide.src ?? ''}
                      alt={slide.alt ?? ''}
                      class="h-full w-full object-cover"

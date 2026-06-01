@@ -48,3 +48,18 @@ export const selectNode = ({ id, type, deleteId, rect }: { id: string, type: Mom
 export const clearSelection = () => {
     selectedNode.set(null)
 }
+
+export const addChildNode = (parentId: string, newNode: MomentNode) => {
+    moment.update(m => {
+        const addRecursive = (node: MomentNode): MomentNode => {
+            if (node.id === parentId) {
+                return { ...node, children: [...(node.children ?? []), newNode] }
+            }
+            if (node.children) {
+                return { ...node, children: node.children.map(addRecursive) }
+            }
+            return node
+        }
+        return { ...m, content: { ...m.content, root: addRecursive(m.content.root) } }
+    })
+}
