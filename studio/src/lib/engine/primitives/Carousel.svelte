@@ -41,10 +41,10 @@
 
 {#if count === 3}
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="w-full space-y-2"
+    <div id={node.id}
+         class="w-full space-y-2"
          style={node.css ?? ''}
          class:momenti-selected={isCarouselSelected}
-         data-nid={node.id}
          on:click={selectCarousel}
          on:keydown={() => {}}
     >
@@ -78,10 +78,10 @@
     </div>
 {:else}
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class={`grid w-full gap-2 ${gridClass}`}
+    <div id={node.id}
+         class={`grid w-full gap-2 ${gridClass}`}
          style={node.css ?? ''}
          class:momenti-selected={isCarouselSelected}
-         data-nid={node.id}
          on:click={selectCarousel}
          on:keydown={() => {}}
     >
