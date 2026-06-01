@@ -8,6 +8,7 @@
     import Link from '$lib/engine/primitives/Link.svelte'
     import Navbar from '$lib/engine/primitives/Navbar.svelte'
     import Footer from '$lib/engine/primitives/Footer.svelte'
+    import Carousel from '$lib/engine/primitives/Carousel.svelte'
 
     export let node: MomentNode
 
@@ -20,7 +21,8 @@
         countdown: Countdown,
         link: Link,
         navbar: Navbar,
-        footer: Footer
+        footer: Footer,
+        carousel: Carousel,
     }
 
     $: component = components[node.type]
