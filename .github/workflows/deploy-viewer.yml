@@ -29,7 +29,6 @@ jobs:
         env:
           VITE_MOMENTI_API_URL: 'https://api.momenti.cc'
         run: |
-          nvm use
           npm ci
           npm run build
 

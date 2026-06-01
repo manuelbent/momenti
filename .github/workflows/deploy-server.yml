@@ -30,7 +30,6 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          nvm use
           npm ci
           npm test
           npm run build
