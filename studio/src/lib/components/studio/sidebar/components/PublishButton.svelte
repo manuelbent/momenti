@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Eye } from 'lucide-svelte'
-    import Button from '$lib/components/ui/Button.svelte'
+    import { Globe } from 'lucide-svelte'
     import { moment } from '$lib/stores/moment'
     import { showToast } from '$lib/stores/toast'
     import { updateMoment } from '$lib/api'
+    import Button from '$lib/components/ui/Button.svelte'
 
     async function handlePublish() {
         if (!$moment) return
@@ -19,6 +19,6 @@
 </script>
 
 <Button onclick={handlePublish} class="text-[#f0ede8] bg-[#0d0d0d]/40 hover:bg-[#0d0d0d]/50">
-    <Eye size={12} strokeWidth={1.8}/>
+    <Globe size={12} strokeWidth={1.8}/>
     Publish
 </Button>

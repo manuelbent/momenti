@@ -15,7 +15,8 @@
     const isHero = $derived(!viewOnly && node.variant === 'hero')
     const isSelected = $derived(isHero && $selectedNode?.id === node.id)
     const isActiveSection = $derived(!viewOnly && $selectedSection?.id === node.id)
-    const needsRelative = $derived(isPromptable || isActiveSection)
+    const isPromptableVariant = $derived(!viewOnly && promptableVariants.includes(node.variant!))
+    const needsRelative = $derived(isPromptableVariant || isActiveSection)
 
     const handleMouseDown = (e: MouseEvent) => {
         if (!isHero) {
