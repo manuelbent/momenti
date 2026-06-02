@@ -106,3 +106,13 @@ export const updateMoment = async (id: number, data: Partial<Moment>): Promise<M
     if (!res.ok) throw new Error(`Failed to update moment: ${res.status}`)
     return res.json()
 }
+
+export const checkSlugAvailability = async (slug: string, excludedId: number): Promise<boolean> => {
+    const query = new URLSearchParams({ slug, excludedId: String(excludedId) }).toString()
+    const res = await fetch(`${API_URL}/moments/check-slug?${query}`, {
+        headers: authHeaders()
+    })
+    if (!res.ok) throw new Error(`Failed to check slug availability: ${res.status}`)
+    const { isAvailable } = await res.json()
+    return isAvailable
+}
