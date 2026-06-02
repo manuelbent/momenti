@@ -1,15 +1,21 @@
 <script lang="ts">
-    import { getContext } from 'svelte'
+    import { getContext, type Snippet } from 'svelte'
     import { selectNode, selectedNode } from '$lib/stores/momentContent'
+    import { selectedSection } from '$lib/stores/section'
+    import TriggerButton from './TriggerButton.svelte'
+    import PromptPanel from './PromptPanel.svelte'
 
-    export let node: MomentNode
+    const { node, children }: { node: MomentNode; children: Snippet } = $props()
 
     const viewOnly = getContext<boolean>('viewOnly') ?? false
-    let isPromptable = false
     const promptableVariants = ['hero', 'section']
 
-    $: isHero = !viewOnly && node.variant === 'hero'
-    $: isSelected = isHero && $selectedNode?.id === node.id
+    let isPromptable = $state(false)
+
+    const isHero = $derived(!viewOnly && node.variant === 'hero')
+    const isSelected = $derived(isHero && $selectedNode?.id === node.id)
+    const isActiveSection = $derived(!viewOnly && $selectedSection?.id === node.id)
+    const needsRelative = $derived(isPromptable || isActiveSection)
 
     const handleMouseDown = (e: MouseEvent) => {
         if (!isHero) {
@@ -17,14 +23,10 @@
         }
 
         const target = e.target as HTMLElement
-
-        // ff the user clicked directly on a contenteditable text node, let the
-        // browser focus it normally so it stays editable
         if (target.closest('[contenteditable]')) {
             return
         }
 
-        // prevent focus from jumping to any contenteditable child
         e.preventDefault()
     }
 
@@ -34,9 +36,6 @@
         }
 
         const target = e.target as HTMLElement
-
-        // if the click landed on an editable text child, let the text node
-        // handle its own selection (handleFocus will call selectNode for the text)
         if (target.closest('[contenteditable]')) {
             return
         }
@@ -44,7 +43,7 @@
         selectNode({ id: node.id, type: 'box', deleteId: node.id })
     }
 
-    const onMouseOver = () => {
+    const onMouseEnter = () => {
         if (viewOnly) {
             return
         }
@@ -54,36 +53,31 @@
         }
     }
 
-    const onMouseOut = () => {
+    const onMouseLeave = () => {
         isPromptable = false
     }
+
+    const openSection = () => selectedSection.set(node)
 </script>
 
 <div id={node.id}
      style="{node.css}{isHero ? ';user-select:none' : ''}"
      data-nid={isHero ? node.id : undefined}
      class:momenti-selected={isSelected}
-     class:momenti-promptable={isPromptable}
-     onmousedown={isHero ? handleMouseDown : undefined}
-     onclick={isHero ? handleClick : undefined}
-     onkeydown={() => {}}
-     onmouseenter={onMouseOver}
-     onmouseleave={onMouseOut}
-     onfocus={() => {}}
-     onblur={() => {}}
+     class:relative={needsRelative}
+     onmousedown={handleMouseDown}
+     onclick={handleClick}
+     onmouseenter={onMouseEnter}
+     onmouseleave={onMouseLeave}
      role={isHero ? 'presentation' : undefined}
 >
-    <slot/>
-    {#if isPromptable}
-        <button onclick={() => console.log(node)}
-                class="absolute bg-[#f0ede8] px-2 py-1 rounded-full bottom-6 right-6 text-[10px] text-[#0d0d0d] cursor-pointer">
-            <span class="font-serif text-sm">m</span>
-        </button>
+    {@render children()}
+
+    {#if isPromptable && !isActiveSection}
+        <TriggerButton onclick={openSection}/>
+    {/if}
+
+    {#if isActiveSection}
+        <PromptPanel/>
     {/if}
 </div>
-
-<style>
-    .momenti-promptable {
-        position: relative;
-    }
-</style>
