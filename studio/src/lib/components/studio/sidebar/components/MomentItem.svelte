@@ -3,7 +3,7 @@
 
     export let moment: Moment
 
-    $: isActive = $activeStore?.slug === moment.slug
+    $: isActive = $activeStore?.id === moment.id
 </script>
 
 <button onclick={() => activeStore.set(moment)}
