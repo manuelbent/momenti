@@ -67,6 +67,22 @@ export default class MomentController {
     }
 
     /**
+     * Check if a slug already exists.
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public async checkSlug(req: Request, res: Response) {
+        try {
+            const { slug, excludedId } = req.query
+            const exists = await this.momentService.slugExists(String(slug), Number(excludedId))
+            res.json({ isAvailable: !exists })
+        } catch (err) {
+            console.error('[MomentController] check slug error:', err)
+            res.status(500).json({ error: 'Internal server error.' })
+        }
+    }
+
+    /**
      * Server-Sent Events endpoint: streams moment generation to the client.
      * @param {Request} req
      * @param {Response} res
