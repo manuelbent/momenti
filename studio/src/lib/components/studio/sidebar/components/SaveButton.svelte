@@ -2,6 +2,7 @@
     import { CloudUpload, LoaderCircle } from 'lucide-svelte'
     import Button from '$lib/components/ui/Button.svelte'
     import { moment, savedAt } from '$lib/stores/moment'
+    import { canSave } from '$lib/stores/editorState'
     import { showToast } from '$lib/stores/toast'
     import { updateMoment } from '$lib/api'
     import { resolvePendingImages } from '$lib/utils/resolvePendingImages'
@@ -32,7 +33,7 @@
     }
 </script>
 
-<Button onclick={handleSave} disabled={isSaving}>
+<Button onclick={handleSave} disabled={!$canSave || isSaving}>
     {#if isSaving}
         <LoaderCircle size={13} strokeWidth={1.8} class="animate-spin"/>
     {:else}

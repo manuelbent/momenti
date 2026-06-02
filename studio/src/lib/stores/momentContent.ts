@@ -1,8 +1,10 @@
 import { writable, derived } from 'svelte/store'
 import { moment } from '$lib/stores/moment'
+import { editorState } from '$lib/stores/editorState'
 import { findNode, findFirstImage } from '$lib/utils/nodeTree'
 
 export const updateNode = (id: string, newData: Partial<MomentNode>) => {
+    editorState.setDirty()
     moment.update(m => {
         const updateRecursive = (node: MomentNode): MomentNode => {
             if (node.id === id) {
@@ -18,6 +20,7 @@ export const updateNode = (id: string, newData: Partial<MomentNode>) => {
 }
 
 export const deleteNode = (id: string) => {
+    editorState.setDirty()
     moment.update(m => {
         const deleteRecursive = (node: MomentNode): MomentNode => {
             if (!node.children) return node
@@ -51,6 +54,7 @@ export const clearSelection = () => {
 }
 
 export const addChildNode = (parentId: string, newNode: MomentNode) => {
+    editorState.setDirty()
     moment.update(m => {
         const addRecursive = (node: MomentNode): MomentNode => {
             if (node.id === parentId) {

@@ -1,37 +1,21 @@
 <script lang="ts">
-    import { moment, savedAt } from '$lib/stores/moment'
+    import { moment } from '$lib/stores/moment'
+    import { editorState } from '$lib/stores/editorState'
     import { checkSlugAvailability } from '$lib/api/moments'
     import { LoaderCircle } from 'lucide-svelte'
 
     $: slug = $moment?.slug ?? ''
 
-    let checking = false
-    let isSlugAvailable: boolean|null = null
     let debounceTimer: ReturnType<typeof setTimeout>
 
-    // per-moment slug availability cache
-    const slugStates = new Map<number, boolean|null>()
-    let previousMomentId: number|null = null
+    $: checking = $editorState.slugChecking
+    $: isSlugAvailable = $editorState.slugAvailable
 
-    // reset / restore availability state when the selected moment changes
+    // Cancel any pending check when the moment changes (editorState resets via its own subscriber)
+    let previousMomentId: number | null = null
     $: if ($moment?.id !== previousMomentId) {
         clearTimeout(debounceTimer)
-        checking = false
-        if ($moment?.id) {
-            const saved = slugStates.get($moment.id)
-            isSlugAvailable = saved !== undefined ? saved : null
-        } else {
-            isSlugAvailable = null
-        }
         previousMomentId = $moment?.id ?? null
-    }
-
-    // reset border when the moment is saved
-    $: if ($savedAt) {
-        isSlugAvailable = null
-        if ($moment?.id) {
-            slugStates.delete($moment.id)
-        }
     }
 
     function sanitize(value: string, trim = false): string {
@@ -54,19 +38,18 @@
         input.value = sanitized
 
         if (!sanitized) {
-            isSlugAvailable = null
-            slugStates.set($moment.id, null)
-            checking = false
+            editorState.setSlugAvailable(null)
+            editorState.setSlugChecking(false)
             return
         }
 
-        checking = true
+        editorState.setSlugChecking(true)
         const momentId = $moment.id
         debounceTimer = setTimeout(async () => {
-            isSlugAvailable = await checkSlugAvailability(sanitized, momentId)
-            slugStates.set(momentId, isSlugAvailable)
-            checking = false
-        }, 400)
+            const available = await checkSlugAvailability(sanitized, momentId)
+            editorState.setSlugAvailable(available)
+            editorState.setSlugChecking(false)
+        }, 800)
     }
 
     function onblur(e: Event) {
