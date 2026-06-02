@@ -26,6 +26,9 @@ export const moments = writable<Moment[]>([])
 // used when loading moments
 export const isLoading = writable<boolean>(false)
 
+// set the timestamp of the last save
+export const savedAt = writable<number>()
+
 // keep the moments list in sync whenever the active moment changes
 moment.subscribe(updated => {
     if (!updated) {

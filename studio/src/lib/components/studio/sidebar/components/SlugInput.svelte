@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { moment } from '$lib/stores/moment'
+    import { moment, savedAt } from '$lib/stores/moment'
     import { checkSlugAvailability } from '$lib/api/moments'
     import { LoaderCircle } from 'lucide-svelte'
 
@@ -8,6 +8,31 @@
     let checking = false
     let isSlugAvailable: boolean|null = null
     let debounceTimer: ReturnType<typeof setTimeout>
+
+    // per-moment slug availability cache
+    const slugStates = new Map<number, boolean|null>()
+    let previousMomentId: number|null = null
+
+    // reset / restore availability state when the selected moment changes
+    $: if ($moment?.id !== previousMomentId) {
+        clearTimeout(debounceTimer)
+        checking = false
+        if ($moment?.id) {
+            const saved = slugStates.get($moment.id)
+            isSlugAvailable = saved !== undefined ? saved : null
+        } else {
+            isSlugAvailable = null
+        }
+        previousMomentId = $moment?.id ?? null
+    }
+
+    // reset border when the moment is saved
+    $: if ($savedAt) {
+        isSlugAvailable = null
+        if ($moment?.id) {
+            slugStates.delete($moment.id)
+        }
+    }
 
     function sanitize(value: string, trim = false): string {
         let s = value
@@ -30,13 +55,16 @@
 
         if (!sanitized) {
             isSlugAvailable = null
+            slugStates.set($moment.id, null)
             checking = false
             return
         }
 
         checking = true
+        const momentId = $moment.id
         debounceTimer = setTimeout(async () => {
-            isSlugAvailable = await checkSlugAvailability(sanitized, $moment.id)
+            isSlugAvailable = await checkSlugAvailability(sanitized, momentId)
+            slugStates.set(momentId, isSlugAvailable)
             checking = false
         }, 400)
     }
@@ -60,7 +88,7 @@
     </div>
 
     <label for="slug"
-           class="flex items-center border border-[#0d0d0d]/10 rounded-md px-3 py-2 bg-white  transition-colors cursor-text {isSlugAvailable ? 'border-[#A8D5BA]' : isSlugAvailable === false ? 'border-[#F2B8B5]' : ''}">
+           class="flex items-center border border-[#0d0d0d]/10 rounded-md px-3 py-2 bg-white  transition-colors cursor-text {isSlugAvailable ? 'border-[#7dc59a]' : isSlugAvailable === false ? 'border-[#d58985]' : ''}">
         <span class="text-[12px] text-[#0d0d0d]/25 shrink-0">https://</span>
         <input id="slug"
                type="text"

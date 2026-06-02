@@ -1,7 +1,7 @@
 <script lang="ts">
     import { CloudUpload, LoaderCircle } from 'lucide-svelte'
     import Button from '$lib/components/ui/Button.svelte'
-    import { moment } from '$lib/stores/moment'
+    import { moment, savedAt } from '$lib/stores/moment'
     import { showToast } from '$lib/stores/toast'
     import { updateMoment } from '$lib/api'
     import { resolvePendingImages } from '$lib/utils/resolvePendingImages'
@@ -19,8 +19,10 @@
             const updated: Moment = await updateMoment($moment.id, {
                 slug: $moment.slug,
                 content,
+                // include other fields that can be updated here
             })
             moment.set(updated)
+            savedAt.set(Date.now())
             showToast('Moment updated.')
         } catch {
             showToast('Something went wrong.', 'error')
