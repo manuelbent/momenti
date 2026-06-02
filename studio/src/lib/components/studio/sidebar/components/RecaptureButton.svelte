@@ -54,7 +54,7 @@
     {#if confirmPending}
         <div class="flex gap-2">
             <Button onclick={cancel}>Cancel</Button>
-            <Button onclick={confirm} class="text-[#f0ede8] bg-[#0d0d0d]/40 hover:bg-[#0d0d0d]/50">Confirm</Button>
+            <Button onclick={confirm} className="text-[#f0ede8] bg-[#0d0d0d]/40 hover:bg-[#0d0d0d]/50">Confirm</Button>
         </div>
     {:else}
         <Button onclick={requestRecapture} disabled={isRecapturing}>

@@ -18,7 +18,7 @@
     }
 </script>
 
-<Button onclick={handleUnpublish} class="text-[#f0ede8] bg-[#0d0d0d]/40 hover:bg-[#0d0d0d]/50">
+<Button onclick={handleUnpublish} className="text-[#f0ede8] bg-[#0d0d0d]/40 hover:bg-[#0d0d0d]/50">
     <GlobeX size={12} strokeWidth={1.8}/>
     Unpublish
 </Button>

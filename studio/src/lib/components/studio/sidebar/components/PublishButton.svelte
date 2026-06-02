@@ -18,7 +18,7 @@
     }
 </script>
 
-<Button onclick={handlePublish} class="text-[#f0ede8] bg-[#0d0d0d]/40 hover:bg-[#0d0d0d]/50">
+<Button onclick={handlePublish} className="text-[#f0ede8] bg-[#0d0d0d]/40 hover:bg-[#0d0d0d]/50">
     <Globe size={12} strokeWidth={1.8}/>
     Publish
 </Button>

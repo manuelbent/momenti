@@ -1,8 +1,8 @@
 <script lang="ts">
     export let disabled: boolean = false
     export let onclick: () => void = () => {}
-    let className: string = 'border border-[#0d0d0d]/6 text-[#0d0d0d]/40'
-    export { className as class }
+
+    export let className: string = 'border border-[#0d0d0d]/6 text-[#0d0d0d]/40'
 </script>
 
 <button
