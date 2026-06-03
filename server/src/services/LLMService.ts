@@ -11,16 +11,25 @@ import LLMServiceInterface from '../interfaces/LLMServiceInterface'
  */
 export default class LLMService implements LLMServiceInterface {
     /**
+     * System prompt for the classifier model.
+     * Loaded once at instance creation from `prompts/classifier-prompt.txt`.
      * @private
      */
     private readonly classifierPrompt: string
 
     /**
-     * System prompt for the Art Director model.
-     * Loaded once at instance creation from `prompts/copywriter.txt`.
+     * Capture system prompt for the Art Director model.
+     * Loaded once at instance creation from `prompts/capture-prompt.txt`.
      * @private
      */
-    private readonly systemPrompt: string
+    private readonly capturePrompt: string
+
+    /**
+     * Patch system prompt for the Art Director model.
+     * Loaded once at instance creation from `prompts/patch-prompt.txt`.
+     * @private
+     */
+    private readonly patchPrompt: string
 
     /**
      * The OpenAI client instance.
@@ -35,7 +44,8 @@ export default class LLMService implements LLMServiceInterface {
      */
     constructor() {
         this.classifierPrompt = readFileSync(join(join(__dirname, 'prompts'), 'classifier-prompt.txt'), 'utf-8')
-        this.systemPrompt = readFileSync(join(join(__dirname, 'prompts'), 'system-prompt.txt'), 'utf-8')
+        this.capturePrompt = readFileSync(join(join(__dirname, 'prompts'), 'capture-prompt.txt'), 'utf-8')
+        this.patchPrompt = readFileSync(join(join(__dirname, 'prompts'), 'patch-prompt.txt'), 'utf-8')
         this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     }
 
@@ -84,7 +94,7 @@ export default class LLMService implements LLMServiceInterface {
     /**
      * @param {string} prompt
      */
-    public async* streamMoment(prompt: string): AsyncGenerator<{
+    public async* captureMoment(prompt: string): AsyncGenerator<{
         chunk?: string;
         done?: boolean;
         momentContent?: MomentContent;
@@ -93,7 +103,7 @@ export default class LLMService implements LLMServiceInterface {
         const stream = await this.openai.chat.completions.create({
             model: 'gpt-5.4',
             messages: [
-                { role: 'system', content: this.systemPrompt },
+                { role: 'system', content: this.capturePrompt },
                 { role: 'user', content: `<PROMPT>${prompt.trim()}</PROMPT>` },
             ],
             response_format: { type: 'json_object' },
@@ -114,14 +124,70 @@ export default class LLMService implements LLMServiceInterface {
         try {
             const momentContent: MomentContent = JSON.parse(accumulated)
             if (!momentContent.slug || !momentContent.root) {
-                console.error('[LLMService] streamMoment: invalid moment structure:', momentContent)
+                console.error('[LLMService] captureMoment: invalid moment structure:', momentContent)
                 yield { error: 'Invalid Moment structure.' }
                 return
             }
 
             yield { done: true, momentContent }
         } catch {
-            console.error('[LLMService] streamMoment: malformed JSON:', accumulated)
+            console.error('[LLMService] captureMoment: malformed JSON:', accumulated)
+            yield { error: 'Failed to generate a valid Moment.' }
+        }
+    }
+    
+    /**
+     * Streams a targeted patch of an existing MomentContent.
+     * The LLM receives the full current content, the id of the node to change,
+     * and the user's plain-language instruction, then returns the full updated
+     * MomentContent.
+     * @param {string} nodeId - The id of the MomentNode the user selected.
+     * @param {string} prompt - The user's change instruction.
+     * @param {MomentContent} content - The full current MomentContent.
+     */
+    public async* patchMoment(nodeId: string, prompt: string, content: MomentContent): AsyncGenerator<{
+        chunk?: string;
+        done?: boolean;
+        momentContent?: MomentContent;
+        error?: string;
+    }> {
+        const userMessage =
+            `<CURRENT_CONTENT>${JSON.stringify(content)}</CURRENT_CONTENT>\n` +
+            `<TARGET_NODE_ID>${nodeId}</TARGET_NODE_ID>\n` +
+            `<CHANGE>${prompt.trim()}</CHANGE>`
+
+        const stream = await this.openai.chat.completions.create({
+            model: 'gpt-5.4',
+            messages: [
+                { role: 'system', content: this.patchPrompt },
+                { role: 'user', content: userMessage },
+            ],
+            response_format: { type: 'json_object' },
+            temperature: 0.8,
+            stream: true,
+        })
+
+        let accumulated = ''
+
+        for await (const part of stream) {
+            const delta = part.choices[0]?.delta?.content ?? ''
+            if (delta) {
+                accumulated += delta
+                yield { chunk: delta }
+            }
+        }
+
+        try {
+            const momentContent: MomentContent = JSON.parse(accumulated)
+            if (!momentContent.slug || !momentContent.root) {
+                console.error('[LLMService] patchMoment: invalid moment structure:', momentContent)
+                yield { error: 'Invalid Moment structure.' }
+                return
+            }
+
+            yield { done: true, momentContent }
+        } catch {
+            console.error('[LLMService] patchMoment: malformed JSON:', accumulated)
             yield { error: 'Failed to generate a valid Moment.' }
         }
     }

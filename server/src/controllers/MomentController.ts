@@ -92,7 +92,7 @@ export default class MomentController {
         const { prompt } = req.body
 
         // start the worker, detached
-        this.streamWorker.start(user.id, prompt)
+        this.streamWorker.capture(user.id, prompt)
 
         // subscribe to events
         this.setupStreamListeners(req, res, user.id)
@@ -118,17 +118,40 @@ export default class MomentController {
     }
 
     /**
+     * Server-Sent Events endpoint: streams a targeted patch of an existing moment.
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public patch = (req: Request, res: Response): void => {
+        const user: User = res.locals.user
+        const { momentId, nodeId, prompt, content } = req.body
+
+        this.streamWorker.patch(user.id, nodeId, prompt, content)
+
+        this.setupStreamListeners(req, res, user.id, {
+            onDone: async (data) => this.momentService.update(momentId, { content: data.momentContent }),
+            onDoneErrorMessage: 'Failed to save the patched Moment.',
+            onDoneErrorLogPrefix: '[MomentController] patch update error:',
+        })
+    }
+
+    /**
      * Core helper to manage event subscription, chunk playback, and connection cleanup.
      * @param {Request} req
      * @param {Response} res
      * @param {number} userId
-     * @param {{replayBuffer: boolean, prompt: string}} options
+     * @param options
      */
     private setupStreamListeners(
         req: Request,
         res: Response,
         userId: number,
-        options: { replayBuffer?: boolean } = {}
+        options: {
+            replayBuffer?: boolean
+            onDone?: (data: { prompt: string; momentContent: MomentContent }) => Promise<unknown>
+            onDoneErrorMessage?: string
+            onDoneErrorLogPrefix?: string
+        } = {}
     ): void {
         const emitter = this.streamWorker.getEmitter(userId)!
 
@@ -136,6 +159,19 @@ export default class MomentController {
             this.sendSseEvent(res, 'chunk', data)
         }
         const onDone = async (data: { prompt: string, momentContent: MomentContent }) => {
+            if (options.onDone) {
+                try {
+                    const result = await options.onDone(data)
+                    this.sendSseEvent(res, 'done', result)
+                } catch (err) {
+                    console.error(options.onDoneErrorLogPrefix ?? '[MomentController] done error:', err)
+                    this.sendSseEvent(res, 'error', { error: options.onDoneErrorMessage ?? 'Failed to save the Moment.' })
+                } finally {
+                    res.end()
+                }
+                return
+            }
+
             if (options.replayBuffer) {
                 // the capture connection is responsible for persisting the moment
                 try {

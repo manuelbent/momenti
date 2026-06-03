@@ -15,6 +15,15 @@ router.post('/capture',
     (req, res) => ioc.momentController.capture(req, res)
 )
 
+router.post('/patch',
+    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.generationGuardMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.patchMomentRequestValidator.validate(req, res, next),
+    (req, res, next) => ioc.promptModerationMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
+    (req, res) => ioc.momentController.patch(req, res)
+)
+
 router.get('/capture/resume',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.sseMiddleware.handle(req, res, next),

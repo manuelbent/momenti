@@ -49,6 +49,7 @@ import SubmitFeedbackRequestValidator from '../validators/SubmitFeedbackRequestV
 import LLMService from '../services/LLMService'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
+import PatchMomentRequestValidator from '../validators/PatchMomentRequestValidator'
 
 /**
  * Dependency injection container.
@@ -100,6 +101,7 @@ class Container {
     private _submitFormDataRequestValidator?: SubmitFormDataRequestValidator
     private _submitFeedbackRequestValidator?: SubmitFeedbackRequestValidator
     private _checkSlugRequestValidator?: CheckSlugRequestValidator
+    private _patchMomentRequestValidator?: PatchMomentRequestValidator
 
     public get malformedDataMiddleware(): MalformedDataMiddleware {
         return this._malformedDataMiddleware ??= new MalformedDataMiddleware()
@@ -247,6 +249,10 @@ class Container {
 
     public get checkSlugRequestValidator(): CheckSlugRequestValidator {
         return this._checkSlugRequestValidator ??= new CheckSlugRequestValidator()
+    }
+
+    public get patchMomentRequestValidator(): PatchMomentRequestValidator {
+        return this._patchMomentRequestValidator ??= new PatchMomentRequestValidator()
     }
 
     public get imageController(): ImageController {

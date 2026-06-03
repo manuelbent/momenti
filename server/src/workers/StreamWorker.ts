@@ -25,7 +25,7 @@ export default class StreamWorker implements StreamWorkerInterface {
      * @param {number} userId
      * @param {string} prompt
      */
-    public start(userId: number, prompt: string): void {
+    public capture(userId: number, prompt: string): void {
         this.streamCacheService.clear(userId)
         this.emitters.delete(userId)
 
@@ -34,7 +34,26 @@ export default class StreamWorker implements StreamWorkerInterface {
         this.emitters.set(userId, emitter)
 
         // run the generation loop detached from the call stack
-        void this.run(userId, prompt, emitter)
+        void this.runCapture(userId, prompt, emitter)
+    }
+
+    /**
+     * Starts a new patch stream for the given user.
+     * Clears any existing entry for the user before beginning.
+     * @param {number} userId
+     * @param {string} nodeId
+     * @param {string} prompt
+     * @param {MomentContent} content
+     */
+    public patch(userId: number, nodeId: string, prompt: string, content: MomentContent): void {
+        this.streamCacheService.clear(userId)
+        this.emitters.delete(userId)
+
+        this.streamCacheService.init(userId)
+        const emitter = new EventEmitter()
+        this.emitters.set(userId, emitter)
+
+        void this.runPatch(userId, nodeId, prompt, content, emitter)
     }
 
     /**
@@ -65,9 +84,9 @@ export default class StreamWorker implements StreamWorkerInterface {
      * @param {EventEmitter} emitter
      * @private
      */
-    private async run(userId: number, prompt: string, emitter: EventEmitter): Promise<void> {
+    private async runCapture(userId: number, prompt: string, emitter: EventEmitter): Promise<void> {
         try {
-            for await (const payload of this.llmService.streamMoment(prompt)) {
+            for await (const payload of this.llmService.captureMoment(prompt)) {
                 if (payload.error) {
                     this.emit(userId, emitter, 'error', { error: payload.error })
                     break
@@ -83,8 +102,42 @@ export default class StreamWorker implements StreamWorkerInterface {
                 }
             }
         } catch (err) {
-            console.error(`[StreamWorker] Generation loop error for userId=${userId}:`, err)
+            console.error(`[StreamWorker] Generation loop error for user with ID ${userId}:`, err)
             this.emit(userId, emitter, 'error', { error: 'Failed to generate the Moment. Please try again.' })
+        } finally {
+            this.finalize(userId)
+        }
+    }
+
+    /**
+     * Runs the patch loop, emitting and caching events as they arrive.
+     * @param {number} userId
+     * @param {string} nodeId
+     * @param {string} prompt
+     * @param {MomentContent} content
+     * @param {EventEmitter} emitter
+     * @private
+     */
+    private async runPatch(userId: number, nodeId: string, prompt: string, content: MomentContent, emitter: EventEmitter): Promise<void> {
+        try {
+            for await (const payload of this.llmService.patchMoment(nodeId, prompt, content)) {
+                if (payload.error) {
+                    this.emit(userId, emitter, 'error', { error: payload.error })
+                    break
+                }
+
+                if (payload.chunk) {
+                    this.emit(userId, emitter, 'chunk', { chunk: payload.chunk })
+                }
+
+                if (payload.done) {
+                    this.emit(userId, emitter, 'done', { momentContent: payload.momentContent })
+                    break
+                }
+            }
+        } catch (err) {
+            console.error(`[StreamWorker] Patch loop error for user with ID ${userId}:`, err)
+            this.emit(userId, emitter, 'error', { error: 'Failed to patch the Moment. Please try again.' })
         } finally {
             this.finalize(userId)
         }
