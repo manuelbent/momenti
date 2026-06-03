@@ -2,8 +2,8 @@
     import { getContext, type Snippet } from 'svelte'
     import { selectNode, selectedNode } from '$lib/stores/momentContent'
     import { selectedSection } from '$lib/stores/section'
-    import TriggerButton from './TriggerButton.svelte'
-    import PromptPanel from './PromptPanel.svelte'
+    import PromptButton from '$lib/engine/patch/PromptButton.svelte'
+    import PromptPanel from '$lib/engine/patch/PromptPanel.svelte'
 
     const { node, children }: { node: MomentNode; children: Snippet } = $props()
 
@@ -58,7 +58,10 @@
         isPromptable = false
     }
 
-    const openSection = () => selectedSection.set(node)
+    const openSection: (e: MouseEvent) => void = (e) => {
+        e.stopPropagation()
+        selectedSection.set(node)
+    }
 </script>
 
 <div id={node.id}
@@ -75,7 +78,7 @@
     {@render children()}
 
     {#if isPromptable && !isActiveSection}
-        <TriggerButton onclick={openSection}/>
+        <PromptButton onclick={openSection}/>
     {/if}
 
     {#if isActiveSection}

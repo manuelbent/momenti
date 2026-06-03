@@ -2,7 +2,7 @@
     import { fade } from 'svelte/transition'
     import { Brush } from 'lucide-svelte'
 
-    const { onclick }: { onclick: () => void } = $props()
+    export let onclick: (e: MouseEvent) => void
 </script>
 
 <button {onclick}

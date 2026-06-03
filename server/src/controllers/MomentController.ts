@@ -124,12 +124,14 @@ export default class MomentController {
      */
     public patch = (req: Request, res: Response): void => {
         const user: User = res.locals.user
-        const { momentId, nodeId, prompt, content } = req.body
+        const { nodeId, prompt, content } = req.body
 
         this.streamWorker.patch(user.id, nodeId, prompt, content)
 
+        // I might cache the patched content once done not to lose the changes if the user disconnects or refreshes
+
         this.setupStreamListeners(req, res, user.id, {
-            onDone: async (data) => this.momentService.update(momentId, { content: data.momentContent }),
+            onDone: async (data) => data.momentContent,
             onDoneErrorMessage: 'Failed to save the patched Moment.',
             onDoneErrorLogPrefix: '[MomentController] patch update error:',
         })

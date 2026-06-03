@@ -16,7 +16,7 @@ export const capture = async (prompt: string, callbacks: CaptureCallbacks): Prom
         throw new Error(`Unexpected response: ${res.status}`)
     }
 
-    await readStream(res.body, callbacks)
+    await readStream<Moment>(res.body, callbacks)
 }
 
 export const resume = async (callbacks: CaptureCallbacks): Promise<void> => {
@@ -26,10 +26,18 @@ export const resume = async (callbacks: CaptureCallbacks): Promise<void> => {
 
     if (!res.ok || !res.body) return
 
-    await readStream(res.body, callbacks)
+    await readStream<Moment>(res.body, callbacks)
 }
 
-const readStream = async (body: ReadableStream<Uint8Array>, callbacks: CaptureCallbacks): Promise<void> => {
+const readStream = async <T>(
+    body: ReadableStream<Uint8Array>,
+    callbacks: {
+        onChunk: (chunk: string) => void
+        onDone: (data: T) => void
+        onError?: (err: Error) => void
+        onIdle?: () => void
+    }
+): Promise<void> => {
     const reader = body
         .pipeThrough(new TextDecoderStream() as unknown as ReadableWritablePair<string, Uint8Array>)
         .getReader()
@@ -45,38 +53,63 @@ const readStream = async (body: ReadableStream<Uint8Array>, callbacks: CaptureCa
         buffer = messages.pop() ?? ''
 
         for (const msg of messages) {
-            if (handleMessage(msg, callbacks) === 'idle') return
+            let event: string | undefined
+            let data: unknown
+
+            for (const line of msg.split('\n')) {
+                if (line.startsWith('event:')) event = line.slice('event:'.length).trim()
+                else if (line.startsWith('data:')) data = JSON.parse(line.slice('data:'.length).trim())
+            }
+
+            if (!event || data === undefined) continue
+
+            switch (event) {
+                case 'idle':
+                    callbacks.onIdle?.()
+                    return
+                case 'chunk':
+                    callbacks.onChunk((data as { chunk: string }).chunk)
+                    break
+                case 'done':
+                    callbacks.onDone(data as T)
+                    return
+                case 'error':
+                    throw new Error((data as { error: string }).error)
+            }
         }
     }
 }
 
-const handleMessage = (message: string, callbacks: CaptureCallbacks): 'idle' | void => {
-    let event: string | undefined
-    let data: unknown
+export const patch = async (
+    {
+        momentId,
+        nodeId,
+        prompt,
+        content,
+        callbacks,
+    }: {
+        momentId: number,
+        nodeId: string,
+        prompt: string,
+        content: MomentContent,
+        callbacks: PatchCallbacks,
+    }): Promise<void> => {
+    const res = await fetch(`${API_URL}/patch`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ momentId, nodeId, prompt, content }),
+    })
 
-    for (const line of message.split('\n')) {
-        if (line.startsWith('event:')) {
-            event = line.slice('event:'.length).trim()
-        } else if (line.startsWith('data:')) {
-            data = JSON.parse(line.slice('data:'.length).trim())
-        }
+    if (!res.ok) {
+        const body = await res.text()
+        throw new Error(`Unexpected response: ${body} ${res.status}`)
     }
 
-    if (!event || data === undefined) return
-
-    switch (event) {
-        case 'idle':
-            callbacks.onIdle?.()
-            return 'idle'
-        case 'chunk':
-            callbacks.onChunk((data as { chunk: string }).chunk)
-            break
-        case 'done':
-            callbacks.onDone(data as Moment)
-            break
-        case 'error':
-            throw new Error((data as { error: string }).error)
+    if (!res.body) {
+        throw new Error(`Unexpected response: ${res.status}`)
     }
+
+    await readStream<MomentContent>(res.body, callbacks)
 }
 
 export const getMomentBySlug = async (slug: string): Promise<Moment|null> => {

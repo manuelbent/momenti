@@ -5,6 +5,12 @@ interface CaptureCallbacks {
     onIdle?: () => void
 }
 
+interface PatchCallbacks {
+    onChunk: (chunk: string) => void
+    onDone: (data: MomentContent) => void
+    onError?: (err: Error) => void
+}
+
 type FeedbackType = 'suggestion'|'bug'|'other'
 
 interface FeedbackBody {
