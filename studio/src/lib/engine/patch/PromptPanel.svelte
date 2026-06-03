@@ -91,6 +91,12 @@
             submit()
         }
     }
+
+    const onSubmit = (e: Event) => {
+        e.preventDefault()
+        e.stopPropagation()
+        submit()
+    }
 </script>
 
 <svelte:window onmousedown={onMouseDown}/>
@@ -117,7 +123,7 @@
                     onkeydown={onTextareaKeyDown}
                     onclick={e => e.stopPropagation()}></textarea>
 
-                <button onclick={submit}
+                <button onclick={onSubmit}
                         disabled={!promptValue.trim()}
                         class="absolute bottom-2 right-2 p-2 text-[#f0ede8] text-xs font-medium rounded-full
                         bg-[#0d0d0d]/40 hover:bg-[#0d0d0d]/50 transition-colors

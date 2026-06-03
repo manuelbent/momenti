@@ -11,7 +11,7 @@
     // r=50 → circumference ≈ 314. We cap visible fill at 90% so it never looks "done"
     // before the route transition fires.
     const CIRCUMFERENCE = 2 * Math.PI * 50
-    const ESTIMATED_CHARS = 3000
+    const ESTIMATED_CHARS = 7_000
     const progress = $derived(Math.min(0.9, streamText.length / ESTIMATED_CHARS))
     const dashOffset = $derived(CIRCUMFERENCE * (1 - progress))
 
