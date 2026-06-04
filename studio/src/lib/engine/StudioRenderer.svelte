@@ -1,7 +1,7 @@
 <script lang="ts">
     import { sidebarMode } from '$lib/stores/sidebarMode'
 
-    // Pure primitives
+    // pure primitives
     import Text       from '$lib/engine/primitives/Text.svelte'
     import Image      from '$lib/engine/primitives/Image.svelte'
     import Carousel   from '$lib/engine/primitives/Carousel.svelte'
@@ -12,31 +12,29 @@
     import Navbar     from '$lib/engine/primitives/Navbar.svelte'
     import Footer     from '$lib/engine/primitives/Footer.svelte'
 
-    // Studio interactive components
+    // studio interactive components
     import SelectableBox       from '$lib/engine/studio/SelectableBox.svelte'
     import EditableText        from '$lib/engine/studio/EditableText.svelte'
     import UploadableImage     from '$lib/engine/studio/UploadableImage.svelte'
     import UploadableCarousel  from '$lib/engine/studio/UploadableCarousel.svelte'
+    import type { Component } from 'svelte'
 
     export let node: MomentNode
 
-    // Shared leaf components — the same in every mode
+    // shared components across all modes
     const shared = { form: Form, map: Map, countdown: Countdown, link: Link, navbar: Navbar, footer: Footer }
-
-    // settings → edit text + upload images; sections are plain
+    // components for settings: all interactive, allowing content editing and section selection
     const settingsMap = { ...shared, text: EditableText,  image: UploadableImage, carousel: UploadableCarousel, box: SelectableBox }
-
-    // changes  → select sections; content is read-only
+    // components for changes: mostly static, allowing only section selection and content editing for text and images
     const changesMap  = { ...shared, text: Text,          image: Image,           carousel: Carousel,           box: SelectableBox }
 
-    // moments / anything else → fully static
-    const staticMap   = { ...shared, text: Text,          image: Image,           carousel: Carousel,           box: SelectableBox }
+    const componentsMap: Record<string, Record<string, Component<any>>> = {
+        settings: settingsMap,
+        changes:  changesMap,
+        moments:  settingsMap
+    }
 
-    $: components = $sidebarMode === 'settings' ? settingsMap
-                  : $sidebarMode === 'changes'  ? changesMap
-                  : staticMap
-
-    $: component = components[node.type as keyof typeof components]
+    $: component = componentsMap[$sidebarMode]?.[node.type]
 </script>
 
 {#if node.type === 'box'}

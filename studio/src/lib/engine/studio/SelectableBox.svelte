@@ -4,7 +4,7 @@
 
     export let node: MomentNode
 
-    // Only hero/section variants are selectable
+    // only sections (hero and section) can be selected, and only in changes mode
     $: isSection = ['hero', 'section'].includes(node.variant!)
     $: isChangesMode = $sidebarMode === 'changes'
     $: isSelected = isSection && isChangesMode && $selectedSection?.id === node.id
