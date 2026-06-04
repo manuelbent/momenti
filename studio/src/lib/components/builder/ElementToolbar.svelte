@@ -35,7 +35,6 @@
      class="fixed left-0 top-1/2 z-9999 flex flex-col items-stretch
             bg-[#f0ede8] border border-[#0D0D0D14] text-[#0d0d0d]
             rounded-r-xl py-2 px-1.5 font-[Inter,sans-serif] text-xs
-            transition-transform duration-220 ease-in-out
             -translate-y-1/2
             {$selectedNode ? 'translate-x-0' : '-translate-x-[calc(100%+12px)]'}"
      role="toolbar"
@@ -62,9 +61,11 @@
     {/if}
 
     <!-- delete -->
-    <button class="py-1 px-2.5 border border-[#e4e0dc] hover:border-black/20 rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
-                   transition-colors flex items-center justify-center"
-            onclick={handleDelete} title="Delete element">
-        <Trash2 class="w-3 text-red-800"/>
-    </button>
+    {#if $selectedNode !== null}
+        <button class="py-1 px-2.5 border border-[#e4e0dc] hover:border-black/20 rounded-md text-[#0d0d0d] text-xs font-[inherit] cursor-pointer
+                       transition-colors flex items-center justify-center"
+                onclick={handleDelete} title="Delete element">
+            <Trash2 class="w-3 text-red-800"/>
+        </button>
+    {/if}
 </div>
