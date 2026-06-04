@@ -7,8 +7,8 @@
     one message away.
 </h1>
 <p class="text-[15px] leading-[1.75] text-[#888]">
-    Imagine the perfect page for your moment.<br>
-    A launch, a festival, a store, a personal card, anything that comes to mind.<br>
-    Feel free to be creative: the colors, the atmosphere, the mood, the tone you want.<br>
-    Let momenti bring it to life.
+    Imagine the perfect page for your idea.<br>
+    An event, a startup launch, a festival, a personal brand, a side project. Anything.<br>
+    Just write what you want: the style, the mood, the content, the vibe.<br>
+    Let momenti generate it for you and publish it, with a single click.
 </p>
