@@ -30,5 +30,4 @@
             <MomentItem moment={m}/>
         {/each}
     {/if}
-
 </div>

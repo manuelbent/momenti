@@ -20,9 +20,9 @@
      role="presentation"
      style={node.css ?? ''}
      onclick={() => fileInput.click()}
-     onkeydown={() => {}}
->
+     onkeydown={() => {}}>
     <img src={node.src ?? ''} alt={node.alt ?? ''} class="main-img" />
+    <div class="overlay"></div>
     <input bind:this={fileInput} type="file" accept="image/*" onchange={handleFileSelected} hidden/>
 </div>
 
@@ -35,8 +35,25 @@
 
     .momenti-img-container:hover {
         cursor: pointer;
-        outline: 2px dashed #ccc;
-        outline-offset: -2px;
+    }
+
+    .momenti-img-container:hover .overlay {
+        opacity: 60%;
+    }
+
+    .overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        background-color: rgba(0, 0, 0, 0.45);
+        color: #fff;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
     }
 
     .main-img {

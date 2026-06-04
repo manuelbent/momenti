@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Component } from 'svelte'
     import { sidebarMode } from '$lib/stores/sidebarMode'
 
     // pure primitives
@@ -17,7 +18,6 @@
     import EditableText        from '$lib/engine/studio/EditableText.svelte'
     import UploadableImage     from '$lib/engine/studio/UploadableImage.svelte'
     import UploadableCarousel  from '$lib/engine/studio/UploadableCarousel.svelte'
-    import type { Component } from 'svelte'
 
     export let node: MomentNode
 

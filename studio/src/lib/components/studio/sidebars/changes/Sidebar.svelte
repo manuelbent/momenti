@@ -66,29 +66,24 @@
 </script>
 
 <div class="flex flex-col h-full">
-
-    <!-- history (grows to fill space) -->
+    <!-- history -->
     <div class="flex-1 min-h-0 overflow-y-auto p-6">
     </div>
 
-    <!-- input -->
+    <!-- prompt -->
     <div class="shrink-0 border-t border-[#0d0d0d]/6 p-4">
         <form onsubmit={onSubmit} class="relative">
-            <textarea
-                    bind:this={textarea}
-                    bind:value={promptValue}
-                    class="w-full rounded-xl px-4 py-3 pr-11 border border-[#0d0d0d]/8 outline-none resize-none
+            <textarea bind:this={textarea}
+                      bind:value={promptValue}
+                      class="w-full rounded-xl px-4 py-3 pr-11 border border-[#0d0d0d]/8 outline-none resize-none
                        font-serif text-xs bg-white leading-6 text-[#0d0d0d] placeholder-[#0d0d0d]/35"
-                    placeholder="What would you like to change?"
-                    rows="3"
-                    onkeydown={onTextareaKeyDown}
-            ></textarea>
-            <button
-                    type="submit"
+                      placeholder="What would you like to change?"
+                      rows="3"
+                      onkeydown={onTextareaKeyDown}></textarea>
+            <button type="submit"
                     disabled={!promptValue.trim() || isStreaming}
                     class="absolute bottom-2.5 right-1 p-1 rounded-full bg-[#0d0d0d]/40 hover:bg-[#0d0d0d]/60
-                       text-[#f0ede8] transition-colors disabled:opacity-30 cursor-pointer"
-            >
+                       text-[#f0ede8] transition-colors disabled:opacity-30 cursor-pointer">
                 <ArrowUp size={14}/>
             </button>
         </form>
@@ -97,6 +92,4 @@
     {#if isStreaming}
         <StreamingOverlay streamText={$patchChunk}/>
     {/if}
-
 </div>
-
