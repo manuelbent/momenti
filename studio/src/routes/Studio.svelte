@@ -42,16 +42,16 @@
         </div>
 
         <!-- active panel -->
-        <div class="flex-1 min-h-0 overflow-y-auto">
-            <div class:hidden={activeTab !== 'settings'}>
+        <div class="flex-1 min-h-0 flex flex-col">
+            <div class="h-full flex flex-col" class:hidden={activeTab !== 'settings'}>
                 <SettingsSidebar/>
             </div>
 
-            <div class:hidden={activeTab !== 'changes'}>
+            <div class="h-full flex flex-col" class:hidden={activeTab !== 'changes'}>
                 <ChangesSidebar/>
             </div>
 
-            <div class:hidden={activeTab !== 'moments'}>
+            <div class="h-full flex flex-col" class:hidden={activeTab !== 'moments'}>
                 <MomentsSidebar/>
             </div>
         </div>
