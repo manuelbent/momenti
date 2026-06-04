@@ -7,7 +7,6 @@
     import ViewButton from './components/ViewButton.svelte'
     import PublishButton from './components/PublishButton.svelte'
     import UnpublishButton from './components/UnpublishButton.svelte'
-    import YourMoments from './components/YourMoments.svelte'
     import PromptViewer from './components/PromptViewer.svelte'
     import DownloadFormSubmissionsButton from './components/DownloadFormSubmissionsButton.svelte'
 </script>
@@ -46,7 +45,4 @@
         {/if}
     </div>
 
-    <hr class="border-[#0d0d0d]/6 -mx-6"/>
-
-    <YourMoments/>
 </div>
