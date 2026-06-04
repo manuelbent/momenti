@@ -3,7 +3,7 @@
     import { moment } from '$lib/stores/moment'
     import { ChevronDown } from 'lucide-svelte'
 
-    let open = false
+    let open = true
 
     $: prompt = $moment?.prompt
         .replace(/^"|"$/g, '')   // strip surrounding quotes if any
