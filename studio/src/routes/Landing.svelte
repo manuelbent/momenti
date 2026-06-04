@@ -98,7 +98,7 @@
     <Navbar/>
 
     <main class="flex-1 flex items-center justify-center px-6 py-15">
-        <div class="w-full max-w-180 flex flex-col">
+        <div class="w-full max-w-180 flex flex-col gap-5">
             <Hero/>
 
             <div class="grid min-h-57.5">
@@ -116,7 +116,7 @@
                 {/if}
             </div>
 
-            <p class="text-[11px] text-[#2e2e2e] mt-4 tracking-[0.02em] flex items-center justify-between">
+            <p class="text-[11px] text-[#2e2e2e] tracking-[0.02em] flex items-center justify-between">
                 <span>© 2026 momenti. All rights reserved.</span>
                 <span class="text-[9px]">v{__APP_VERSION__}</span>
             </p>
