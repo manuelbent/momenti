@@ -45,7 +45,7 @@
         position: absolute;
         top: 5px;
         left: 5px;
-        padding: 2px 7px;
+        padding: 2px 4px 0 4px;
         background: rgba(220, 38, 38, 0.85);
         color: #fff;
         font-size: 10px;
@@ -68,7 +68,7 @@
         position: absolute;
         top: 5px;
         left: 5px;
-        padding: 2px 7px;
+        padding: 2px 4px 0 4px;
         background: rgba(220, 38, 38, 1) !important;
         color: #fff;
         font-size: 10px;

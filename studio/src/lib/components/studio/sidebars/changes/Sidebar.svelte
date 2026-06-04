@@ -70,12 +70,12 @@
     <div class="flex-1 min-h-0 overflow-y-auto p-6">
     </div>
 
-    <div class="flex-0 px-3 py-1">
-        <span class="text-[10px] italic text-[#0d0d0d]/30">
-            {#if $selectedSection}
-                Section: {$selectedSection.id}
-            {/if}
-        </span>
+    <div class="flex items-center px-3 py-1 gap-1">
+        {#if $selectedSection}
+            <span class="w-1 h-1 rounded-full bg-[#dc2627]"></span>
+            <span title="Currently selected section"
+                  class="px-0.75 py-0 font-bold rounded-xs bg-[#dc2627] text-white text-[8px] uppercase cursor-default">{$selectedSection.id}</span>
+        {/if}
     </div>
 
     <!-- prompt -->
