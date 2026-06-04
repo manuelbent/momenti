@@ -9,11 +9,10 @@
     import ChangesSidebar from '$lib/components/studio/sidebars/changes/Sidebar.svelte'
     import MomentsSidebar from '$lib/components/studio/sidebars/moments/Sidebar.svelte'
     import LidButton from '$lib/components/studio/sidebars/LidButton.svelte'
-    import ElementToolbar from '$lib/components/builder/ElementToolbar.svelte'
+    import { sidebarMode } from '$lib/stores/sidebarMode'
     import { Pencil, Settings, Library } from 'lucide-svelte'
 
     let view: 'desktop'|'code' = 'desktop'
-    let activeTab: 'settings'|'changes'|'moments' = 'settings'
 
     onMount(() => {
         if (!$inviteKey) {
@@ -36,22 +35,22 @@
 
         <!-- tab lids -->
         <div class="absolute right-full top-2 flex flex-col">
-            <LidButton icon={Settings} title="Settings" active={activeTab === 'settings'} onclick={() => activeTab = 'settings'}/>
-            <LidButton icon={Pencil} title="Changes" active={activeTab === 'changes'} onclick={() => activeTab = 'changes'}/>
-            <LidButton icon={Library} title="Your Moments" active={activeTab === 'moments'} onclick={() => activeTab = 'moments'}/>
+            <LidButton icon={Settings} title="Settings" active={$sidebarMode === 'settings'} onclick={() => sidebarMode.set('settings')}/>
+            <LidButton icon={Pencil} title="Changes" active={$sidebarMode === 'changes'} onclick={() => sidebarMode.set('changes')}/>
+            <LidButton icon={Library} title="Your Moments" active={$sidebarMode === 'moments'} onclick={() => sidebarMode.set('moments')}/>
         </div>
 
         <!-- active panel -->
         <div class="flex-1 min-h-0 flex flex-col">
-            <div class="h-full flex flex-col" class:hidden={activeTab !== 'settings'}>
+            <div class="h-full flex flex-col" class:hidden={$sidebarMode !== 'settings'}>
                 <SettingsSidebar/>
             </div>
 
-            <div class="h-full flex flex-col" class:hidden={activeTab !== 'changes'}>
+            <div class="h-full flex flex-col" class:hidden={$sidebarMode !== 'changes'}>
                 <ChangesSidebar/>
             </div>
 
-            <div class="h-full flex flex-col" class:hidden={activeTab !== 'moments'}>
+            <div class="h-full flex flex-col" class:hidden={$sidebarMode !== 'moments'}>
                 <MomentsSidebar/>
             </div>
         </div>
@@ -60,4 +59,3 @@
 
 </Layout>
 
-<ElementToolbar/>
