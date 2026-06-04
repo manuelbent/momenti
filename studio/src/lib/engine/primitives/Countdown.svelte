@@ -1,23 +1,15 @@
 <script lang="ts">
-    import { onMount, onDestroy, getContext } from 'svelte'
+    import { onMount, onDestroy } from 'svelte'
 
     export let node: MomentNode
 
-    const viewOnly = getContext<boolean>('viewOnly') ?? false
-
     interface TimeLeft {
-        days: number
-        hours: number
-        minutes: number
-        seconds: number
-        expired: boolean
+        days: number; hours: number; minutes: number; seconds: number; expired: boolean
     }
 
     function calculate(): TimeLeft {
         const diff = new Date(node.targetDate ?? '').getTime() - Date.now()
-        if (!node.targetDate || diff <= 0) {
-            return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true }
-        }
+        if (!node.targetDate || diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true }
         const totalSeconds = Math.floor(diff / 1000)
         return {
             days:    Math.floor(totalSeconds / 86400),
@@ -40,18 +32,11 @@
 
     onDestroy(() => clearInterval(timer))
 
-    function pad(n: number): string {
-        return String(n).padStart(2, '0')
-    }
+    function pad(n: number): string { return String(n).padStart(2, '0') }
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-<div
-    class="flex items-center justify-center gap-1 [font-variant-numeric:tabular-nums]"
-    id={node.id}
-    data-nid={node.id}
-    style={node.css ?? ''}
->
+<div class="flex items-center justify-center gap-1 [font-variant-numeric:tabular-nums]"
+     id={node.id} data-nid={node.id} style={node.css ?? ''}>
     {#if timeLeft.expired}
         <span class="opacity-40 text-2xl">—</span>
     {:else}
@@ -71,4 +56,3 @@
         {/each}
     {/if}
 </div>
-

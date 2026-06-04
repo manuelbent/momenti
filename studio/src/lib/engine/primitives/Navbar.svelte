@@ -1,9 +1,5 @@
 <script lang="ts">
-    import { getContext } from 'svelte'
-
     export let node: MomentNode
-
-    const viewOnly = getContext<boolean>('viewOnly') ?? false
 
     $: links = (node as any).links as { label: string; anchor: string }[] ?? []
 
@@ -12,20 +8,13 @@
         const target = document.getElementById(anchor)
         if (target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            // close the drawer after navigation
             const toggle = document.getElementById(`nav-toggle-${node.id}`) as HTMLInputElement
             if (toggle) toggle.checked = false
         }
     }
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<nav id={node.id}
-     data-nid={node.id}
-     style={node.css ?? ''}
-     onkeydown={() => {}}
->
-    <!-- desktop links -->
+<nav id={node.id} data-nid={node.id} style={node.css ?? ''}>
     <div class="nav-links">
         {#each links as link}
             <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
@@ -35,15 +24,11 @@
         {/each}
     </div>
 
-    <!-- hamburger -->
     <input type="checkbox" id={`nav-toggle-${node.id}`} class="nav-toggle" aria-label="Toggle menu" />
     <label for={`nav-toggle-${node.id}`} class="hamburger" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
     </label>
 
-    <!-- mobile drawer -->
     <div class="nav-drawer">
         {#each links as link}
             <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->

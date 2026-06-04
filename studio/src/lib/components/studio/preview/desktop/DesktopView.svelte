@@ -1,7 +1,7 @@
 <script lang="ts">
     import { loadFonts } from '$shared/loadFonts'
     import { moment } from '$lib/stores/moment'
-    import Renderer from '$lib/engine/Renderer.svelte'
+    import Renderer from '$lib/engine/StudioRenderer.svelte'
     import BrowserChrome from './components/BrowserChrome.svelte'
 
     $: loadFonts($moment?.content.fonts)

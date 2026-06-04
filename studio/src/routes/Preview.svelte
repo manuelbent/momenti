@@ -21,6 +21,6 @@
 
 {#if ready && $moment}
     <div in:fade={{ duration: 400 }} style="position: relative">
-        <Renderer node={$moment.content.root} viewOnly={true}/>
+        <Renderer node={$moment.content.root}/>
     </div>
 {/if}

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { moment } from '$lib/stores/moment'
     import { loadFonts } from '$shared/loadFonts'
-    import Renderer from '$lib/engine/Renderer.svelte'
+    import Renderer from '$lib/engine/StudioRenderer.svelte'
     import StatusBar from './components/StatusBar.svelte'
 
     $: loadFonts($moment?.content.fonts)
