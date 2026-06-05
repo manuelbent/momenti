@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { MAX_PROMPT_LENGTH, MIN_PROMPT_LENGTH } from '../config/constants'
 
 const patchMomentSchema = z.object({
-    momentId: z.number().int(),
     nodeId: z.string(),
     prompt: z.string().trim().min(MIN_PROMPT_LENGTH).max(MAX_PROMPT_LENGTH),
     content: z.object({

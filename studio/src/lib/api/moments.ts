@@ -94,10 +94,10 @@ export const patch = async (
         content: MomentContent,
         callbacks: PatchCallbacks,
     }): Promise<void> => {
-    const res = await fetch(`${API_URL}/patch`, {
-        method: 'POST',
+    const res = await fetch(`${API_URL}/moments/${momentId}`, {
+        method: 'PATCH',
         headers: authHeaders(),
-        body: JSON.stringify({ momentId, nodeId, prompt, content }),
+        body: JSON.stringify({ nodeId, prompt, content }),
     })
 
     if (!res.ok) {

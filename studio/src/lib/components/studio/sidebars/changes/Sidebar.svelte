@@ -38,6 +38,7 @@
                     },
                     onDone: (updatedContent: MomentContent) => {
                         moment.update(m => ({ ...m, content: updatedContent }))
+                        // update the change history?
                         editorState.setDirty()
                         selectedSection.set(null)
                         patchState.set('idle')
@@ -84,9 +85,9 @@
             <textarea bind:this={textarea}
                       bind:value={promptValue}
                       class="w-full rounded-xl px-3 py-2 pr-11 border border-[#0d0d0d]/8 outline-none resize-none
-                       font-serif text-xs bg-white leading-6 text-[#0d0d0d] placeholder-[#0d0d0d]/35"
+                       font-serif text-xs bg-white leading-tight text-[#0d0d0d] placeholder-[#0d0d0d]/35"
                       placeholder="What would you like to change?"
-                      rows="4"
+                      rows="6"
                       onkeydown={onTextareaKeyDown}></textarea>
             <button type="submit"
                     disabled={!promptValue.trim() || isStreaming}

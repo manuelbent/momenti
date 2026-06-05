@@ -31,6 +31,10 @@ Change.init({
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
     },
+    node_id: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     prompt: {
         type: DataTypes.STRING,
         allowNull: false,

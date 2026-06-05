@@ -15,15 +15,6 @@ router.post('/capture',
     (req, res) => ioc.momentController.capture(req, res)
 )
 
-router.post('/patch',
-    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
-    (req, res, next) => ioc.generationGuardMiddleware.handle(req, res, next),
-    (req, res, next) => ioc.patchMomentRequestValidator.validate(req, res, next),
-    (req, res, next) => ioc.promptModerationMiddleware.handle(req, res, next),
-    (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
-    (req, res) => ioc.momentController.patch(req, res)
-)
-
 router.get('/capture/resume',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
@@ -50,6 +41,16 @@ router.put('/moments/:id',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.updateMomentRequestValidator.validate(req, res, next),
     (req, res) => ioc.momentController.update(req, res)
+)
+
+router.patch('/moments/:id',
+    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    // todo: check if the moment belongs to the user
+    (req, res, next) => ioc.generationGuardMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.patchMomentRequestValidator.validate(req, res, next),
+    (req, res, next) => ioc.promptModerationMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
+    (req, res) => ioc.momentController.patch(req, res)
 )
 
 router.post('/moments/:slug/submissions',

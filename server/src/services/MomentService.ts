@@ -13,7 +13,6 @@ export default class MomentService implements MomentServiceInterface {
 
     /**
      * Persist moment to DB.
-     * If the slug exists, append a timestamp.
      * @param {Partial<Moment>} data
      */
     public async store(data: Partial<Moment>): Promise<Moment> {
