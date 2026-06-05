@@ -53,6 +53,11 @@ router.patch('/moments/:id',
     (req, res) => ioc.momentController.patch(req, res)
 )
 
+router.get('/moments/:id/changes',
+    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    (req, res) => ioc.momentController.loadChanges(req, res)
+)
+
 router.post('/moments/:slug/submissions',
     (req, res, next) => ioc.submitFormDataRequestValidator.validate(req, res, next),
     (req, res) => ioc.formSubmissionController.store(req, res)

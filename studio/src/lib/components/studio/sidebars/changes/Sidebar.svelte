@@ -1,13 +1,16 @@
 <script lang="ts">
+    import { ArrowUp } from 'lucide-svelte'
     import { selectedSection, patchState, patchChunk } from '$lib/stores/section'
+    import { appendChange } from '$lib/stores/changes'
     import { moment } from '$lib/stores/moment'
     import { editorState } from '$lib/stores/editorState'
     import { showToast } from '$lib/stores/toast'
     import { patch } from '$lib/api/moments'
     import StreamingOverlay from '$lib/engine/patch/StreamingOverlay.svelte'
-    import { ArrowUp } from 'lucide-svelte'
+    import History from '$lib/components/studio/sidebars/changes/components/History.svelte'
 
     let textarea: HTMLTextAreaElement|null = $state(null)
+    let historyEl: HTMLDivElement|null = $state(null)
     let promptValue = $state('')
 
     const isStreaming = $derived($patchState === 'streaming')
@@ -21,11 +24,15 @@
         patchChunk.set('')
         patchState.set('streaming')
 
+        // capture before clearing
+        const submittedPrompt = promptValue.trim()
+        const submittedNodeId = sectionNode.id
+
         try {
             await patch({
                 momentId: $moment.id,
                 nodeId: sectionNode.id,
-                prompt: promptValue.trim(),
+                prompt: submittedPrompt,
                 content: $moment.content,
                 callbacks: {
                     onChunk: (chunk: string) => {
@@ -38,12 +45,21 @@
                     },
                     onDone: (updatedContent: MomentContent) => {
                         moment.update(m => ({ ...m, content: updatedContent }))
-                        // update the change history?
                         editorState.setDirty()
                         selectedSection.set(null)
                         patchState.set('idle')
                         patchChunk.set('')
                         promptValue = ''
+
+                        appendChange({
+                            id: Date.now(),
+                            moment_id: $moment.id,
+                            node_id: submittedNodeId,
+                            old_content: undefined,
+                            new_content: updatedContent,
+                            prompt: submittedPrompt,
+                            created_at: new Date().toISOString(),
+                        })
                     },
                 },
             })
@@ -67,9 +83,7 @@
 </script>
 
 <div class="flex flex-col h-full">
-    <!-- history -->
-    <div class="flex-1 min-h-0 overflow-y-auto p-6">
-    </div>
+    <History bind:historyEl/>
 
     <div class="flex items-center px-3 py-1 gap-1">
         {#if $selectedSection}

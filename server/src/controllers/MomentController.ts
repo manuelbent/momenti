@@ -54,6 +54,22 @@ export default class MomentController {
     }
 
     /**
+     * Load all changes for a moment.
+     * @param {Request} req
+     * @param {Response} res
+     */
+    public async loadChanges(req: Request, res: Response) {
+        try {
+            const { id } = req.params
+            const changes = await this.changeService.getAll(Number(id))
+            res.json(changes)
+        } catch (err) {
+            console.error('[MomentController] load changes error:', err)
+            res.status(500).json({ error: 'Internal server error.' })
+        }
+    }
+
+    /**
      * Update the moment.
      * @param {Request} req
      * @param {Response} res

@@ -149,3 +149,12 @@ export const checkSlugAvailability = async (slug: string, excludedId: number): P
     const { isAvailable } = await res.json()
     return isAvailable
 }
+
+export const getChanges = async (momentId: number): Promise<Change[]> => {
+    const res = await fetch(`${API_URL}/moments/${momentId}/changes`, {
+        headers: authHeaders(),
+    })
+    if (!res.ok) throw new Error(`Failed to fetch changes: ${res.status}`)
+    return res.json()
+}
+

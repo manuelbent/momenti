@@ -14,9 +14,17 @@ export default class ChangeService implements ChangeServiceInterface {
 
     /**
      * Persist change to DB.
-     * @param {Partial<Moment>} data
+     * @param {Partial<Change>} data
      */
-    public async store(data: Partial<Moment>): Promise<Change> {
+    public async store(data: Partial<Change>): Promise<Change> {
         return this.changeRepository.create(data)
+    }
+
+    /**
+     * Retrieve all changes for a moment, ordered by creation time.
+     * @param {number} momentId
+     */
+    public async getAll(momentId: number): Promise<Change[]> {
+        return this.changeRepository.getAllByMomentId(momentId) // todo: rename
     }
 }
