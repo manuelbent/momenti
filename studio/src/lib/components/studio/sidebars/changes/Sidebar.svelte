@@ -15,6 +15,12 @@
 
     const isStreaming = $derived($patchState === 'streaming')
 
+    const loadChange = (change: Change) => {
+        moment.update(m => ({ ...m, content: change.new_content }))
+        editorState.setDirty()
+        showToast('Change loaded. Save when ready.')
+    }
+
     const submit = async () => {
         const sectionNode = $selectedSection
         if (!sectionNode || !promptValue.trim() || isStreaming) {
@@ -83,7 +89,7 @@
 </script>
 
 <div class="flex flex-col h-full">
-    <History bind:historyEl/>
+    <History bind:historyEl onload={loadChange}/>
 
     <div class="flex items-center px-3 py-1 gap-1">
         {#if $selectedSection}
