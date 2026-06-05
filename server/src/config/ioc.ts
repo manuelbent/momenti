@@ -50,6 +50,10 @@ import LLMService from '../services/LLMService'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
 import PatchMomentRequestValidator from '../validators/PatchMomentRequestValidator'
+import ChangeService from '../services/ChangeService'
+import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
+import ChangeRepository from '../repositories/ChangeRepository'
+import ChangeRepositoryInterface from '../interfaces/ChangeRepositoryInterface'
 
 /**
  * Dependency injection container.
@@ -74,6 +78,7 @@ class Container {
     private _inviteKeyRepository?: InviteKeyRepositoryInterface
     private _formSubmissionRepository?: FormSubmissionRepositoryInterface
     private _feedbackRepository?: FeedbackRepositoryInterface
+    private _changeRepository?: ChangeRepositoryInterface
     // services
     private _momentService?: MomentServiceInterface
     private _inviteKeyService?: InviteKeyServiceInterface
@@ -81,6 +86,7 @@ class Container {
     private _formSubmissionService?: FormSubmissionServiceInterface
     private _feedbackService?: FeedbackServiceInterface
     private _streamCacheService?: StreamCacheServiceInterface
+    private _changeService?: ChangeServiceInterface
     // services (non-orm)
     private _r2Service?: R2Service
     private _llmService?: LLMServiceInterface
@@ -155,6 +161,10 @@ class Container {
         return this._momentRepository ??= new MomentRepository()
     }
 
+    public get changeRepository(): ChangeRepositoryInterface {
+        return this._changeRepository ??= new ChangeRepository()
+    }
+
     public get inviteKeyRepository(): InviteKeyRepositoryInterface {
         return this._inviteKeyRepository ??= new InviteKeyRepository()
     }
@@ -169,6 +179,10 @@ class Container {
 
     public get momentService(): MomentServiceInterface {
         return this._momentService ??= new MomentService(this.momentRepository)
+    }
+
+    public get changeService(): ChangeServiceInterface {
+        return this._changeService ??= new ChangeService(this.changeRepository)
     }
 
     public get inviteKeyService(): InviteKeyServiceInterface {
@@ -204,7 +218,7 @@ class Container {
     }
 
     public get momentController(): MomentController {
-        return this._momentController ??= new MomentController(this.momentService, this.streamWorker)
+        return this._momentController ??= new MomentController(this.momentService, this.changeService, this.streamWorker)
     }
 
     public get systemController(): SystemController {
