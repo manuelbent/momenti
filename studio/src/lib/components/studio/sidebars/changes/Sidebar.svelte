@@ -18,7 +18,6 @@
     const loadChange = (change: Change) => {
         moment.update(m => ({ ...m, content: change.new_content }))
         editorState.setDirty()
-        showToast('Change loaded. Save when ready.')
     }
 
     const submit = async () => {
