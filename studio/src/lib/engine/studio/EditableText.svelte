@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte'
     import { updateNode } from '$lib/stores/momentContent'
+    import { tooltip } from '$lib/actions/tooltip'
 
     export let node: MomentNode
 
@@ -15,8 +16,6 @@
 
     function handleMouseDown() {
         if (isEditing) return
-        // Synchronous DOM mutation on mousedown lets the browser
-        // place the text cursor at the exact click position on mouseup.
         isEditing = true
         element.contentEditable = 'true'
     }
@@ -39,6 +38,7 @@
     bind:this={element}
     style={node.css}
     contenteditable="false"
+    use:tooltip={"Edit"}
     onmousedown={handleMouseDown}
     onkeydown={() => {}}
     onblur={handleBlur}
@@ -55,4 +55,3 @@
         outline: 2px dashed #ccc;
     }
 </style>
-
