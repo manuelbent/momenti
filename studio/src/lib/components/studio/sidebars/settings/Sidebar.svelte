@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { moment, moments, hasForms } from '$lib/stores/moment'
+    import { moment, hasForms } from '$lib/stores/moment'
     import SlugInput from './components/SlugInput.svelte'
-    import PromptCounter from './components/PromptCounter.svelte'
     import SaveButton from './components/SaveButton.svelte'
     import PreviewButton from './components/PreviewButton.svelte'
     import ViewButton from './components/ViewButton.svelte'
@@ -12,10 +11,6 @@
 </script>
 
 <div class="flex flex-col h-full overflow-y-auto p-6 gap-6">
-
-    <PromptCounter used={$moments.length}/>
-
-    <hr class="border-[#0d0d0d]/6 -mx-6"/>
 
     <PromptViewer/>
 

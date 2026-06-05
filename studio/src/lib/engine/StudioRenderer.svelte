@@ -3,6 +3,7 @@
     import { sidebarMode } from '$lib/stores/sidebarMode'
 
     // pure primitives
+    import Box        from '$lib/engine/primitives/Box.svelte'
     import Text       from '$lib/engine/primitives/Text.svelte'
     import Image      from '$lib/engine/primitives/Image.svelte'
     import Carousel   from '$lib/engine/primitives/Carousel.svelte'
@@ -27,11 +28,13 @@
     const settingsMap = { ...shared, text: EditableText,  image: UploadableImage, carousel: UploadableCarousel, box: SelectableBox }
     // components for changes: mostly static, allowing only section selection and content editing for text and images
     const changesMap  = { ...shared, text: Text,          image: Image,           carousel: Carousel,           box: SelectableBox }
+    // components for moments: purely static, no interactivity
+    const staticMap   = { ...shared, text: Text,          image: Image,           carousel: Carousel,           box: Box }
 
     const componentsMap: Record<string, Record<string, Component<any>>> = {
         settings: settingsMap,
         changes:  changesMap,
-        moments:  settingsMap
+        moments:  staticMap
     }
 
     $: component = componentsMap[$sidebarMode]?.[node.type]
