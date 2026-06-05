@@ -30,3 +30,54 @@ html, body {
     --animate-breathe: breathe 2.8s ease-in-out infinite;
 }
 
+/* Change sidebar section needs hoverable and selectable moment components */
+.selectable {
+    position: relative;
+}
+
+.selectable:hover {
+    box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.45);
+    cursor: pointer;
+}
+
+.selectable:hover::after {
+    content: attr(data-label);
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    padding: 2px 4px 0 4px;
+    background: rgba(220, 38, 38, 0.85);
+    color: #fff;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 3px;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.selected {
+    box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.8) !important;
+}
+
+.selected::after {
+    content: attr(data-label);
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    padding: 2px 4px 0 4px;
+    background: rgba(220, 38, 38, 1) !important;
+    color: #fff;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 3px;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 10;
+}
