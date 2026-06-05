@@ -1,7 +1,6 @@
 <script lang="ts">
     import { updateNode } from '$lib/stores/momentContent'
     import { registerImage } from '$lib/utils/imageUpload'
-    import { tooltip } from '$lib/actions/tooltip'
 
     export let node: MomentNode
 
@@ -15,14 +14,34 @@
     }
 </script>
 
-<div class="overflow-hidden cursor-pointer"
+<div class="container overflow-hidden cursor-pointer"
      id={node.id}
      data-nid={node.id}
      role="presentation"
      style={node.css}
-     use:tooltip={"Upload new image"}
      onclick={() => fileInput.click()}
      onkeydown={() => {}}>
     <img src={node.src} alt={node.alt}/>
     <input bind:this={fileInput} type="file" accept="image/*" onchange={handleFileSelected} hidden/>
 </div>
+
+<style>
+    .container {
+        position: relative;
+    }
+
+    .container:hover::after {
+        content: "UPLOAD NEW IMAGE";
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        background: #fff;
+        color: #000;
+        font: 600 8px/1 sans-serif;
+        letter-spacing: .05em;
+        padding: 1px 4px;
+        border-radius: 2px;
+        pointer-events: none;
+        z-index: 9999;
+    }
+</style>
