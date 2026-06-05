@@ -56,7 +56,7 @@
         border-radius: 3px;
         pointer-events: none;
         white-space: nowrap;
-        z-index: 10;
+        z-index: 1;
     }
 
     .selected {
