@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
+import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
 import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
 import User from '../models/User'
 
@@ -10,10 +11,12 @@ export default class MomentController {
     /**
      * @constructor
      * @param {MomentServiceInterface} momentService
+     * @param {ChangeServiceInterface} changeService
      * @param {StreamWorkerInterface} streamWorker
      */
     constructor(
         private momentService: MomentServiceInterface,
+        private changeService: ChangeServiceInterface,
         private streamWorker: StreamWorkerInterface,
     ) {}
 

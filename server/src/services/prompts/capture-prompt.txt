@@ -83,7 +83,7 @@ interface Moment {
 - radio groups must use self-explanatory option strings (e.g. ["Yes", "No"]).
 
 **component: image**
-- required fields: 'src' (descriptive placeholder string) and 'alt';
+- required fields: 'src' (short placeholder string) and 'alt';
 - limit: up to 3 images per page;
 - always use fluid widths (width: 100%; object-fit: cover;) and an explicit 4/3 aspect-ratio for cards — never fixed pixel widths.
 - use unsplash placeholders for image src.
