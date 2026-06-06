@@ -19,7 +19,7 @@ export default class UploadMiddleware {
     constructor() {
         this.multerSingle = multer({
             storage: multer.memoryStorage(),
-            limits: { fileSize: 4 * 1024 * 1024 }, // 4 MB
+            limits: { fileSize: 5 * 1024 * 1024 },
             fileFilter: (_req, file, cb) => {
                 if (file.mimetype.startsWith('image/')) cb(null, true)
                 else cb(new Error('Only image files are allowed.'))
