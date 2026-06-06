@@ -10,7 +10,7 @@ module.exports = {
                 R2_ACCESS_KEY_ID: 'R2_ACCESS_KEY_ID_VALUE',
                 R2_SECRET_ACCESS_KEY: 'R2_SECRET_ACCESS_KEY_VALUE',
                 R2_PUBLIC_URL: 'R2_PUBLIC_URL_VALUE',
-                R2_BUCKET_NAME: 'momenti-mvp',
+                R2_BUCKET_NAME: 'momenti-dev',
                 MAX_MOMENTS_ALLOWED: 30,
                 REDIS_URL: 'redis://localhost:6379',
                 RATE_LIMIT_VALIDATE_MAX: 10,
