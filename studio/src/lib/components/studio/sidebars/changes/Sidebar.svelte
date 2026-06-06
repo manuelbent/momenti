@@ -70,7 +70,7 @@
 </script>
 
 <div class="flex flex-col h-full">
-    <Counter used={$changes.length} total={10}/>
+    <Counter used={$changes.length}/>
 
     <History bind:historyEl onload={loadChange}/>
 

@@ -2,7 +2,7 @@
     import { onMount } from 'svelte'
     import { moment, moments, isLoading } from '$lib/stores/moment'
     import { getMoments } from '$lib/api'
-    import PromptCounter from '$lib/components/studio/sidebars/settings/components/PromptCounter.svelte'
+    import Counter from '$lib/components/studio/sidebars/moments/components/Counter.svelte'
     import MomentItem from '$lib/components/studio/sidebars/moments/components/MomentItem.svelte'
 
     onMount(async () => {
@@ -22,7 +22,7 @@
 </script>
 
 <div class="flex flex-col h-full overflow-y-auto p-6 gap-6">
-    <PromptCounter used={$moments.length}/>
+    <Counter used={$moments.length}/>
 
     <div class="flex flex-col gap-3">
         {#if !$moments.length}

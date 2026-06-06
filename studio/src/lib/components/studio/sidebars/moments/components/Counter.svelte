@@ -1,6 +1,6 @@
 <script lang="ts">
     export let used: number = 0
-    export let total: number = 10
+    export let total: number = 5
 
     $: pct = (used / total) * 100
 </script>
