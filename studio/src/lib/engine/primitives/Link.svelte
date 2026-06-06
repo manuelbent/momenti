@@ -11,6 +11,7 @@
         linkedin:  'mdi:linkedin',
         youtube:   'mdi:youtube',
         pinterest: 'mdi:pinterest',
+        snapchat:  'mdi:snapchat',
         github:    'mdi:github',
         website:   'mdi:web',
     }

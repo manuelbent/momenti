@@ -5,7 +5,7 @@
     let { onload, historyEl = $bindable(null) }: { onload: (change: Change) => void, historyEl?: HTMLDivElement|null } = $props()
 </script>
 
-<div bind:this={historyEl} class="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-4">
+<div bind:this={historyEl} class="flex-1 min-h-0 overflow-y-auto p-6 flex flex-col gap-4">
     {#if $changesLoading}
         <p class="text-[11px] text-[#0d0d0d]/30 text-center mt-4">Loading…</p>
     {:else if !$changes.length}

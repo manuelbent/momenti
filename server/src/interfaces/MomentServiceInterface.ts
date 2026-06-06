@@ -6,6 +6,7 @@ import Moment from '../models/Moment'
 export default interface MomentServiceInterface {
     store(data: Partial<Moment>): Promise<Moment>
     update(id: number, data: Partial<Moment>): Promise<Moment>
+    getById(id: number): Promise<Moment|null>
     getBySlug(slug: string): Promise<Moment|null>
     getPublishedBySlug(slug: string): Promise<Moment|null>
     getAll(userId: number): Promise<Moment[]>

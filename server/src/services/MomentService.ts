@@ -36,6 +36,15 @@ export default class MomentService implements MomentServiceInterface {
     }
 
     /**
+     * Find a moment by its id.
+     * @param {number} id
+     * @return {Moment|null}
+     */
+    public async getById(id: number): Promise<Moment|null> {
+        return this.momentRepository.findById(id)
+    }
+
+    /**
      * Find a moment by its slug.
      * @param {string} slug
      */

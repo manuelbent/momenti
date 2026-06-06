@@ -2,6 +2,7 @@ import { Model, DataTypes, BelongsToGetAssociationMixin, HasManyGetAssociationsM
 import sequelize from '../config/sequelize'
 import User from './User'
 import type FormSubmission from './FormSubmission'
+import type Change from './Change'
 
 export default class Moment extends Model {
     declare id: number
@@ -15,6 +16,7 @@ export default class Moment extends Model {
 
     declare getUser: BelongsToGetAssociationMixin<User>
     declare getFormSubmissions: HasManyGetAssociationsMixin<FormSubmission>
+    declare getChanges: HasManyGetAssociationsMixin<Change>
 }
 
 Moment.init({

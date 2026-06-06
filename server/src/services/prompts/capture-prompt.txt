@@ -25,7 +25,7 @@ interface MomentNode {
   inputCss?: string;
   buttonCss?: string;
   href?: string;
-  platform?: 'instagram' | 'tiktok' | 'facebook' | 'twitter' | 'linkedin' | 'youtube' | 'pinterest' | 'github' | 'website';
+  platform?: 'instagram' | 'tiktok' | 'facebook' | 'twitter' | 'linkedin' | 'youtube' | 'pinterest' | 'snapchat' | 'github' | 'website';
   links?: { label: string; anchor: string }[]; // navbar anchor links
   children?: MomentNode[];
 }

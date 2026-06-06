@@ -46,6 +46,7 @@ router.put('/moments/:id',
 router.patch('/moments/:id',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     // todo: check if the moment belongs to the user
+    (req, res, next) => ioc.changeLimitMiddleware.handle(req, res, next),
     (req, res, next) => ioc.generationGuardMiddleware.handle(req, res, next),
     (req, res, next) => ioc.patchMomentRequestValidator.validate(req, res, next),
     (req, res, next) => ioc.promptModerationMiddleware.handle(req, res, next),
