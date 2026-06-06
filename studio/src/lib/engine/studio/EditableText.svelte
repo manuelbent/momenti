@@ -69,7 +69,7 @@
     }
 
     :global([contenteditable="true"]:focus) {
-        outline: 2px dashed #ccc;
+        outline: 1px dashed #ccc;
     }
 
     :global([contenteditable="true"]:focus::after) {
