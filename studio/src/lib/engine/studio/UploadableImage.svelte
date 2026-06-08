@@ -45,6 +45,6 @@
         padding: 1px 4px;
         border-radius: 2px;
         pointer-events: none;
-        z-index: 9999;
+        z-index: 9;
     }
 </style>

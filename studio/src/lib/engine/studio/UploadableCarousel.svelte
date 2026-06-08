@@ -48,7 +48,7 @@
         <div class="grid grid-cols-2 gap-2">
             {#each slides.slice(1) as slide (slide.id)}
                 <button type="button"
-                        class="aspect-square overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
+                        class="container aspect-square overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
                         onclick={(e) => handleSlideClick(e, slide)}>
                     <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
                 </button>
@@ -61,7 +61,7 @@
     <div id={node.id} data-nid={node.id} class={`grid w-full gap-2 ${gridClass}`} style={node.css ?? ''}>
         {#each slides as slide (slide.id)}
             <button type="button"
-                    class="aspect-square overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
+                    class="container relative aspect-square overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
                     onclick={(e) => handleSlideClick(e, slide)}>
                 <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
             </button>
@@ -70,6 +70,23 @@
         {/each}
     </div>
 {/if}
+
+<style>
+    .container:hover::after {
+        content: "UPLOAD NEW IMAGE";
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        background: #fff;
+        color: #000;
+        font: 600 8px/1 sans-serif;
+        letter-spacing: .05em;
+        padding: 1px 4px;
+        border-radius: 2px;
+        pointer-events: none;
+        z-index: 9;
+    }
+</style>
 
 
 
