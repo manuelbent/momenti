@@ -21,11 +21,18 @@
      style={node.css}
      onclick={() => fileInput.click()}
      onkeydown={() => {}}>
-    <img src={node.src} alt={node.alt}/>
+    <img src={node.src} alt={node.alt} class="main-img"/>
     <input bind:this={fileInput} type="file" accept="image/*" onchange={handleFileSelected} hidden/>
 </div>
 
 <style>
+    .main-img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
     .container:hover::after {
         content: "UPLOAD NEW IMAGE";
         position: absolute;
