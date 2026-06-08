@@ -74,7 +74,7 @@ const readStream = async <T>(
                     callbacks.onDone(data as T)
                     return
                 case 'error':
-                    throw new Error((data as { error: string }).error)
+                    callbacks.onError?.(new Error((data as { error: string }).error))
             }
         }
     }
@@ -89,9 +89,9 @@ export const patch = async (
         callbacks,
     }: {
         momentId: number,
-        nodeId: string,
         prompt: string,
         content: MomentContent,
+        nodeId?: string,
         callbacks: PatchCallbacks,
     }): Promise<void> => {
     const res = await fetch(`${API_URL}/moments/${momentId}`, {
@@ -100,9 +100,13 @@ export const patch = async (
         body: JSON.stringify({ nodeId, prompt, content }),
     })
 
+    if (res.status === 403) {
+        throw new Error('Forbidden: changes limit reached.')
+    }
+
     if (!res.ok) {
         const body = await res.text()
-        throw new Error(`Unexpected response: ${body} ${res.status}`)
+        throw new Error(body)
     }
 
     if (!res.body) {

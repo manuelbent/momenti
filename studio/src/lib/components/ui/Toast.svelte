@@ -23,7 +23,7 @@
         aria-live="polite"
         in:fly={{ x: 48, duration: 600, opacity: 0 }}
         out:fly={{ x: 48, duration: 600, opacity: 0 }}
-        class="fixed bottom-6 right-6 z-9999 flex items-center gap-2.5 px-4 py-2.5 rounded-xl shadow-lg text-[12px] tracking-[0.04em] pointer-events-none
+        class="fixed bottom-6 right-6 z-9999 flex items-center gap-2.5 px-4 py-2 rounded-xl shadow-lg text-[12px] tracking-[0.04em] pointer-events-none
         {colorClasses[$toast.type]}">
         <Icon size={12} strokeWidth={2.5} />
         {$toast.message}

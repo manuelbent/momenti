@@ -11,7 +11,6 @@
 
     let historyEl: HTMLDivElement | null = $state(null)
     let pendingPrompt: string | null = $state(null)
-    let pendingNodeId: string | null = $state(null)
 
     const isStreaming = $derived($patchState === 'streaming')
 
@@ -21,21 +20,15 @@
     }
 
     const submit = async (submittedPrompt: string) => {
-        const sectionNode = $selectedSection
-        if (!sectionNode) {
-            showToast('Please select a section on your moment first.', 'info')
-            return
-        }
-
         if (isStreaming) {
             return
         }
 
-        const submittedNodeId = sectionNode.id
+        // a section is optional: when none is selected the change applies page-wide
+        const submittedNodeId = $selectedSection?.id ?? null
 
         // Immediately show the user's message
         pendingPrompt = submittedPrompt
-        pendingNodeId = submittedNodeId
 
         patchChunk.set('')
         patchState.set('streaming')
@@ -43,7 +36,7 @@
         try {
             await patch({
                 momentId: $moment.id,
-                nodeId: sectionNode.id,
+                nodeId: submittedNodeId ?? undefined,
                 prompt: submittedPrompt,
                 content: $moment.content,
                 callbacks: {
@@ -54,7 +47,6 @@
                         patchState.set('error')
                         patchChunk.set('')
                         pendingPrompt = null
-                        pendingNodeId = null
                         showToast('Could not process the prompt. Please try again.', 'error')
                     },
                     onDone: (updatedContent: MomentContent) => {
@@ -76,15 +68,14 @@
 
                         // Clear pending message after change is added
                         pendingPrompt = null
-                        pendingNodeId = null
                     },
                 },
             })
-        } catch {
+        } catch (err) {
             patchState.set('error')
             patchChunk.set('')
             pendingPrompt = null
-            pendingNodeId = null
+            showToast((err as any).message, 'error')
         }
     }
 </script>
@@ -92,7 +83,7 @@
 <div class="flex flex-col h-full">
     <Counter used={$changes.length}/>
 
-    <History bind:historyEl onload={loadChange} {isStreaming} {pendingPrompt} {pendingNodeId}/>
+    <History bind:historyEl onload={loadChange} {isStreaming} {pendingPrompt}/>
 
     <PromptInput selectedSection={$selectedSection} {isStreaming} onsubmit={submit}/>
 </div>

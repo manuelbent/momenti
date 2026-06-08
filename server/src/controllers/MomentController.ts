@@ -146,7 +146,7 @@ export default class MomentController {
         const { id } = req.params
         const { nodeId, prompt, content } = req.body
 
-        this.streamWorker.patch(user.id, nodeId, prompt, content)
+        this.streamWorker.patch(user.id, prompt, content, nodeId)
 
         this.setupStreamListeners(req, res, user.id, {
             onDone: async (data: { momentContent: MomentContent }) => {

@@ -41,11 +41,11 @@ export default class StreamWorker implements StreamWorkerInterface {
      * Starts a new patch stream for the given user.
      * Clears any existing entry for the user before beginning.
      * @param {number} userId
-     * @param {string} nodeId
      * @param {string} prompt
      * @param {MomentContent} content
+     * @param {string|undefined} nodeId
      */
-    public patch(userId: number, nodeId: string, prompt: string, content: MomentContent): void {
+    public patch(userId: number, prompt: string, content: MomentContent, nodeId?: string): void {
         this.streamCacheService.clear(userId)
         this.emitters.delete(userId)
 
@@ -112,15 +112,15 @@ export default class StreamWorker implements StreamWorkerInterface {
     /**
      * Runs the patch loop, emitting and caching events as they arrive.
      * @param {number} userId
-     * @param {string} nodeId
+     * @param {string} [nodeId]
      * @param {string} prompt
      * @param {MomentContent} content
      * @param {EventEmitter} emitter
      * @private
      */
-    private async runPatch(userId: number, nodeId: string, prompt: string, content: MomentContent, emitter: EventEmitter): Promise<void> {
+    private async runPatch(userId: number, nodeId: string|undefined, prompt: string, content: MomentContent, emitter: EventEmitter): Promise<void> {
         try {
-            for await (const payload of this.llmService.patchMoment(nodeId, prompt, content)) {
+            for await (const payload of this.llmService.patchMoment(prompt, content, nodeId)) {
                 if (payload.error) {
                     this.emit(userId, emitter, 'error', { error: payload.error })
                     break

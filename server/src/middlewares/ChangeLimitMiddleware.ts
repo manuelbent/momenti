@@ -27,7 +27,7 @@ export default class ChangeLimitMiddleware {
 
         const changes = await moment.getChanges()
         if (changes.length >= MAX_CHANGES_ALLOWED) {
-            res.status(429).json({ error: `Change limit reached. You can make at most ${MAX_CHANGES_ALLOWED} changes to a moment.` })
+            res.status(403).json({ error: `Change limit reached. You can make at most ${MAX_CHANGES_ALLOWED} changes to a moment.` })
             return
         }
 

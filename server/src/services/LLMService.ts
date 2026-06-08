@@ -135,17 +135,19 @@ export default class LLMService implements LLMServiceInterface {
             yield { error: 'Failed to generate a valid Moment.' }
         }
     }
-    
+
     /**
      * Streams a targeted patch of an existing MomentContent.
-     * The LLM receives the full current content, the id of the node to change,
-     * and the user's plain-language instruction, then returns the full updated
-     * MomentContent.
-     * @param {string} nodeId - The id of the MomentNode the user selected.
+     * The LLM receives:
+     * - the user's plain-language instruction,
+     * - the full current content,
+     * - optional id of the node to change
+     * then returns the full updated MomentContent.
      * @param {string} prompt - The user's change instruction.
      * @param {MomentContent} content - The full current MomentContent.
+     * @param {string|undefined} nodeId - The id of the MomentNode the user selected, if any.
      */
-    public async* patchMoment(nodeId: string, prompt: string, content: MomentContent): AsyncGenerator<{
+    public async* patchMoment(prompt: string, content: MomentContent, nodeId: string|undefined): AsyncGenerator<{
         chunk?: string;
         done?: boolean;
         momentContent?: MomentContent;
@@ -153,8 +155,11 @@ export default class LLMService implements LLMServiceInterface {
     }> {
         const userMessage =
             `<CURRENT_CONTENT>${JSON.stringify(content)}</CURRENT_CONTENT>\n` +
-            `<TARGET_NODE_ID>${nodeId}</TARGET_NODE_ID>\n` +
-            `<CHANGE>${prompt.trim()}</CHANGE>`
+            `<CHANGE>${prompt.trim()}</CHANGE>\n` +
+            (nodeId ?
+                `<TARGET_NODE_ID>${nodeId}</TARGET_NODE_ID>\n` :
+                ''
+            )
 
         const stream = await this.openai.chat.completions.create({
             model: 'gpt-5.4',

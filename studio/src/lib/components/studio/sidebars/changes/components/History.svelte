@@ -8,13 +8,11 @@
         historyEl = $bindable(null),
         isStreaming,
         pendingPrompt,
-        pendingNodeId,
     }: {
         onload: (change: Change) => void,
         historyEl?: HTMLDivElement|null
         isStreaming: boolean,
         pendingPrompt?: string | null,
-        pendingNodeId?: string | null,
     } = $props()
 
     const scrollToBottom = async () => {
@@ -51,7 +49,11 @@
             <div class="flex flex-col items-start gap-1" title="{new Date(change.created_at).toLocaleString()}">
                 <div class="max-w-[85%] bg-[#0d0d0d]/4 border border-[#0d0d0d]/8 rounded-xl rounded-tl-xs px-3 py-2 flex items-center gap-2">
                     <span class="font-serif text-xs text-[#0d0d0d]/70 leading-snug flex-1">
-                        Changes applied to <span class="font-bold">{change.node_id}</span>.
+                        {#if change.node_id}
+                            Changes applied to <span class="font-bold">{change.node_id}</span>.
+                        {:else}
+                            Changes applied to your moment.
+                        {/if}
                     </span>
                     <button onclick={() => onload(change)}
                             class="shrink-0 p-1 rounded-md text-[#0d0d0d]/40 bg-[#f1ede9] border border-[#0d0d0d]/6 hover:border-black/12 transition-all duration-150 cursor-pointer"
