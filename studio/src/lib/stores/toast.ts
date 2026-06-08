@@ -2,7 +2,7 @@ import { writable } from 'svelte/store'
 
 interface Toast {
     message: string
-    type: 'success' | 'error'
+    type: 'success' | 'error' | 'info'
 }
 
 export const toast = writable<Toast | null>(null)

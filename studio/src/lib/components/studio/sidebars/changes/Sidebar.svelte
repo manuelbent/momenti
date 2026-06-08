@@ -22,7 +22,14 @@
 
     const submit = async (submittedPrompt: string) => {
         const sectionNode = $selectedSection
-        if (!sectionNode || isStreaming) return
+        if (!sectionNode) {
+            showToast('Please select a section on your moment first.', 'info')
+            return
+        }
+
+        if (isStreaming) {
+            return
+        }
 
         const submittedNodeId = sectionNode.id
 
