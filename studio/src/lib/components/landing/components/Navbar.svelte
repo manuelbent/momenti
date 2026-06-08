@@ -7,7 +7,7 @@
     <span class="text-[18px] tracking-[0.12em] font-serif">momenti</span>
     {#if $inviteKey}
         <a href="/#/studio" class="ml-auto text-[#888] hover:text-[#f0ede8] transition-colors duration-150">
-            <SwatchBook size={16} strokeWidth={1.8}/>
+            <SwatchBook size={15} strokeWidth={1.8}/>
         </a>
     {/if}
 </header>
