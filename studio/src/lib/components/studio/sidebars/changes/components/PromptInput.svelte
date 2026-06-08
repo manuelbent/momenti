@@ -45,6 +45,7 @@
     <form onsubmit={handleSubmit} class="relative flex">
         <textarea bind:this={textarea}
                   bind:value={promptValue}
+                  disabled={isStreaming}
                   class="w-full rounded-xl px-3 py-2 pr-11 border border-[#0d0d0d]/8 outline-none resize-none
                    font-serif text-xs bg-white leading-tight text-[#0d0d0d] placeholder-[#0d0d0d]/35"
                   placeholder="What would you like to change?"

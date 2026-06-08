@@ -1,14 +1,42 @@
 <script lang="ts">
     import { CornerUpLeft } from 'lucide-svelte'
     import { changes, changesLoading } from '$lib/stores/changes'
+    import { tick } from 'svelte'
 
-    let { onload, historyEl = $bindable(null) }: { onload: (change: Change) => void, historyEl?: HTMLDivElement|null } = $props()
+    let {
+        onload,
+        historyEl = $bindable(null),
+        isStreaming,
+        pendingPrompt,
+        pendingNodeId,
+    }: {
+        onload: (change: Change) => void,
+        historyEl?: HTMLDivElement|null
+        isStreaming: boolean,
+        pendingPrompt?: string | null,
+        pendingNodeId?: string | null,
+    } = $props()
+
+    const scrollToBottom = async () => {
+        await tick()
+        if (historyEl) {
+            historyEl.scrollTop = historyEl.scrollHeight
+        }
+    }
+
+    // watch for changes and scroll
+    $effect(() => {
+        $changes
+        pendingPrompt
+        isStreaming
+        scrollToBottom()
+    })
 </script>
 
 <div bind:this={historyEl} class="flex-1 min-h-0 overflow-y-auto p-6 flex flex-col gap-4">
     {#if $changesLoading}
         <p class="text-[11px] text-[#0d0d0d]/30 text-center mt-4">Loading…</p>
-    {:else if !$changes.length}
+    {:else if !$changes.length && !pendingPrompt}
         <p class="text-[11px] text-[#0d0d0d]/30 text-center mt-4">No changes yet.</p>
     {:else}
         {#each $changes as change (change.id)}
@@ -33,5 +61,29 @@
                 </div>
             </div>
         {/each}
+
+        {#if pendingPrompt}
+            <!-- pending user prompt -->
+            <div class="flex flex-col items-end gap-1">
+                <div class="max-w-[85%] bg-[#0d0d0d]/4 border border-[#0d0d0d]/8 rounded-xl rounded-tr-xs px-3 py-2 flex items-center gap-2">
+                    <p class="font-serif text-xs text-[#0d0d0d] leading-snug whitespace-pre-wrap">{pendingPrompt}</p>
+                </div>
+            </div>
+        {/if}
+
+        {#if isStreaming}
+            <div class="flex flex-col items-start gap-1">
+                <div class="max-w-[85%] bg-[#0d0d0d]/4 border border-[#0d0d0d]/8 rounded-xl rounded-tl-xs px-3 py-2 flex items-center gap-2">
+                    <div class="flex items-center justify-center gap-1">
+                        <div class="w-1 h-1 bg-[#0d0d0d]/30 rounded-full animate-bounce"
+                             style="animation-delay: 0ms;"></div>
+                        <div class="w-1 h-1 bg-[#0d0d0d]/30 rounded-full animate-bounce"
+                             style="animation-delay: 150ms;"></div>
+                        <div class="w-1 h-1 bg-[#0d0d0d]/30 rounded-full animate-bounce"
+                             style="animation-delay: 300ms;"></div>
+                    </div>
+                </div>
+            </div>
+        {/if}
     {/if}
 </div>

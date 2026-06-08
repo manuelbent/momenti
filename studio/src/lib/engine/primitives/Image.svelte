@@ -6,5 +6,5 @@
      id={node.id}
      data-nid={node.id}
      style={node.css}>
-    <img src={node.src} alt={node.alt} class="main-img" />
+    <img src={node.src} alt={node.alt} />
 </div>

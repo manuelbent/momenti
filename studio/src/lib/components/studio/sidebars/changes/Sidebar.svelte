@@ -5,12 +5,13 @@
     import { editorState } from '$lib/stores/editorState'
     import { showToast } from '$lib/stores/toast'
     import { patch } from '$lib/api/moments'
-    import StreamingOverlay from '$lib/engine/patch/StreamingOverlay.svelte'
     import History from '$lib/components/studio/sidebars/changes/components/History.svelte'
     import PromptInput from '$lib/components/studio/sidebars/changes/components/PromptInput.svelte'
     import Counter from '$lib/components/studio/sidebars/changes/components/Counter.svelte'
 
     let historyEl: HTMLDivElement | null = $state(null)
+    let pendingPrompt: string | null = $state(null)
+    let pendingNodeId: string | null = $state(null)
 
     const isStreaming = $derived($patchState === 'streaming')
 
@@ -24,6 +25,10 @@
         if (!sectionNode || isStreaming) return
 
         const submittedNodeId = sectionNode.id
+
+        // Immediately show the user's message
+        pendingPrompt = submittedPrompt
+        pendingNodeId = submittedNodeId
 
         patchChunk.set('')
         patchState.set('streaming')
@@ -41,6 +46,8 @@
                     onError: () => {
                         patchState.set('error')
                         patchChunk.set('')
+                        pendingPrompt = null
+                        pendingNodeId = null
                         showToast('Could not process the prompt. Please try again.', 'error')
                     },
                     onDone: (updatedContent: MomentContent) => {
@@ -59,12 +66,18 @@
                             prompt: submittedPrompt,
                             created_at: new Date().toISOString(),
                         })
+
+                        // Clear pending message after change is added
+                        pendingPrompt = null
+                        pendingNodeId = null
                     },
                 },
             })
         } catch {
             patchState.set('error')
             patchChunk.set('')
+            pendingPrompt = null
+            pendingNodeId = null
         }
     }
 </script>
@@ -72,15 +85,7 @@
 <div class="flex flex-col h-full">
     <Counter used={$changes.length}/>
 
-    <History bind:historyEl onload={loadChange}/>
+    <History bind:historyEl onload={loadChange} {isStreaming} {pendingPrompt} {pendingNodeId}/>
 
-    <PromptInput
-        selectedSection={$selectedSection}
-        {isStreaming}
-        onsubmit={submit}
-    />
-
-    {#if isStreaming}
-        <StreamingOverlay streamText={$patchChunk}/>
-    {/if}
+    <PromptInput selectedSection={$selectedSection} {isStreaming} onsubmit={submit}/>
 </div>

@@ -14,7 +14,7 @@
     }
 </script>
 
-<div class="container overflow-hidden cursor-pointer"
+<div class="container relative block overflow-hidden cursor-pointer"
      id={node.id}
      data-nid={node.id}
      role="presentation"
@@ -26,10 +26,6 @@
 </div>
 
 <style>
-    .container {
-        position: relative;
-    }
-
     .container:hover::after {
         content: "UPLOAD NEW IMAGE";
         position: absolute;
