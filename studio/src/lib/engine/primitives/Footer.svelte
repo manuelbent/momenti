@@ -6,8 +6,12 @@
     const year = new Date().getFullYear()
 </script>
 
-<footer id={node.id} data-nid={node.id} style={node.css ?? ''}
+<footer id={node.id} data-nid={node.id} style={node.css}
     class="box-border flex flex-col items-center gap-4 px-[6%] py-8 border-t border-white/15 text-center">
+
+    {#if node.html}
+        <p class="text-inherit">{node.html}</p>
+    {/if}
 
     {#if links.length > 0}
         <nav class="flex flex-wrap justify-center gap-x-1">
