@@ -27,7 +27,7 @@
         // a section is optional: when none is selected the change applies page-wide
         const submittedNodeId = $selectedSection?.id ?? null
 
-        // Immediately show the user's message
+        // immediately show the user's message
         pendingPrompt = submittedPrompt
 
         patchChunk.set('')
