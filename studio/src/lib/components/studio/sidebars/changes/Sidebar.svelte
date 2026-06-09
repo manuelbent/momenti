@@ -5,9 +5,9 @@
     import { editorState } from '$lib/stores/editorState'
     import { showToast } from '$lib/stores/toast'
     import { patch } from '$lib/api/moments'
-    import History from '$lib/components/studio/sidebars/changes/components/History.svelte'
-    import PromptInput from '$lib/components/studio/sidebars/changes/components/PromptInput.svelte'
     import Counter from '$lib/components/studio/sidebars/changes/components/Counter.svelte'
+    import History from '$lib/components/studio/sidebars/changes/components/history/History.svelte'
+    import PromptInput from '$lib/components/studio/sidebars/changes/components/PromptInput.svelte'
 
     let historyEl: HTMLDivElement | null = $state(null)
     let pendingPrompt: string | null = $state(null)

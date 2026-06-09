@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte'
     import { replace } from 'svelte-spa-router'
-    import { Type, Pencil, SwatchBook } from 'lucide-svelte'
+    import { Type, SwatchBook, PencilLine } from 'lucide-svelte'
     import { inviteKey } from '$lib/stores/auth'
     import { sidebarMode } from '$lib/stores/sidebarMode'
     import Layout from '$lib/components/studio/Layout.svelte'
@@ -34,7 +34,7 @@
         <div class="absolute right-full top-2 flex flex-col">
             <LidButton icon={SwatchBook} title="Your Moments" active={$sidebarMode === 'moments'} onclick={() => sidebarMode.set('moments')}/>
             <LidButton icon={Type} title="Editor" active={$sidebarMode === 'editor'} onclick={() => sidebarMode.set('editor')}/>
-            <LidButton icon={Pencil} title="Changes" active={$sidebarMode === 'changes'} onclick={() => sidebarMode.set('changes')}/>
+            <LidButton icon={PencilLine} title="Changes" active={$sidebarMode === 'changes'} onclick={() => sidebarMode.set('changes')}/>
         </div>
 
         <!-- active panel -->
