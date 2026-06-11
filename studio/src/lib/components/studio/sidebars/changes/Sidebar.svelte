@@ -9,7 +9,6 @@
     import History from '$lib/components/studio/sidebars/changes/components/history/History.svelte'
     import PromptInput from '$lib/components/studio/sidebars/changes/components/PromptInput.svelte'
 
-    let historyEl: HTMLDivElement | null = $state(null)
     let pendingPrompt: string | null = $state(null)
 
     const isStreaming = $derived($patchState === 'streaming')
@@ -83,7 +82,7 @@
 <div class="flex flex-col h-full">
     <Counter used={$changes.length}/>
 
-    <History bind:historyEl onload={loadChange} {isStreaming} {pendingPrompt}/>
+    <History onload={loadChange} {isStreaming} {pendingPrompt}/>
 
     <PromptInput selectedSection={$selectedSection} {isStreaming} onsubmit={submit}/>
 </div>

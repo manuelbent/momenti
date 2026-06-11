@@ -1,6 +1,6 @@
 <script lang="ts">
     import { changes, changesLoading } from '$lib/stores/changes'
-    import { tick } from 'svelte'
+    import { sidebarMode } from '$lib/stores/sidebarMode'
     import UserMessage from '$lib/components/studio/sidebars/changes/components/history/components/UserMessage.svelte'
     import AssistantMessage
         from '$lib/components/studio/sidebars/changes/components/history/components/AssistantMessage.svelte'
@@ -8,7 +8,6 @@
 
     let {
         onload,
-        historyEl = $bindable(null),
         isStreaming,
         pendingPrompt,
     }: {
@@ -18,19 +17,14 @@
         pendingPrompt?: string|null,
     } = $props()
 
-    const scrollToBottom = async () => {
-        await tick()
-        if (historyEl) {
-            historyEl.scrollTop = historyEl.scrollHeight
-        }
-    }
+    let historyEl: HTMLDivElement
 
     // watch for changes and scroll
     $effect(() => {
         $changes
-        pendingPrompt
-        isStreaming
-        scrollToBottom()
+        $sidebarMode
+        if (!historyEl) return
+        historyEl.scrollTop = historyEl.scrollHeight
     })
 </script>
 
