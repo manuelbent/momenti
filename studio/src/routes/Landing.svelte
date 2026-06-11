@@ -10,10 +10,10 @@
     import Loader from '$lib/components/landing/components/Loader.svelte'
     import FormCard from '$lib/components/landing/components/FormCard.svelte'
     import InviteModal from '$lib/components/landing/InviteModal.svelte'
+    import Footer from '$lib/components/landing/components/Footer.svelte'
 
     let prompt = $state('')
     let isCapturing = $state(false)
-    let isLeaving = $state(false)
     let error = $state('')
     let streamText = $state('')
     let showInviteModal = $state(false)
@@ -37,7 +37,6 @@
                 },
                 onDone: (data) => {
                     moment.set(data)
-                    isLeaving = true
                     setTimeout(() => push('/studio'), 450)
                 },
             })
@@ -70,7 +69,6 @@
         }
 
         isCapturing = true
-        isLeaving = false
         error = ''
         streamText = ''
 
@@ -81,7 +79,6 @@
                 },
                 onDone: (data) => {
                     moment.set(data)
-                    isLeaving = true
                     setTimeout(() => push('/studio'), 450)
                 },
             })
@@ -92,8 +89,7 @@
     }
 </script>
 
-<div class="min-h-screen bg-[#0d0d0d] text-[#f0ede8] flex flex-col transition-opacity duration-400"
-     class:opacity-0={isLeaving}>
+<div class="min-h-screen bg-primary text-tertiary flex flex-col transition-opacity duration-400">
 
     <Navbar/>
 
@@ -107,7 +103,7 @@
                 {:else if isCapturing}
                     <div class="[grid-area:1/1] h-full flex items-center justify-center"
                          transition:fade={{ duration: 400 }}>
-                        <Loader {streamText}/>
+                        <Loader theme="light" {streamText}/>
                     </div>
                 {:else}
                     <div class="[grid-area:1/1]" transition:fade={{ duration: 400 }}>
@@ -116,10 +112,7 @@
                 {/if}
             </div>
 
-            <p class="text-[11px] text-[#2e2e2e] tracking-[0.02em] flex items-center justify-between">
-                <span>© 2026 momenti. All rights reserved.</span>
-                <span class="text-[9px]">v{__APP_VERSION__}</span>
-            </p>
+            <Footer/>
         </div>
     </main>
 </div>

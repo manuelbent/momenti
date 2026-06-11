@@ -6,7 +6,7 @@
     Your <TypeWriter/><span class="-ml-1">,</span><br>
     one message away.
 </h1>
-<p class="text-[15px] leading-[1.75] text-[#888]">
+<p class="text-[15px] leading-[1.75] text-secondary">
     Imagine the perfect page for your idea.<br>
     An event, a startup launch, a festival, a personal brand, a side project. Anything.<br>
     Just write what you want: the style, the mood, the content, the vibe.<br>

@@ -16,17 +16,27 @@ html, body {
 }
 
 @keyframes orbit {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes breathe {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50%       { opacity: 1;   transform: scale(2); }
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(2);
+    }
 }
 
 @theme {
-    --animate-orbit:   orbit   3.2s linear infinite;
+    --animate-orbit: orbit 3.2s linear infinite;
     --animate-breathe: breathe 2.8s ease-in-out infinite;
 }
 
@@ -80,4 +90,12 @@ html, body {
     pointer-events: none;
     white-space: nowrap;
     z-index: 10;
+}
+
+@theme {
+    --color-primary: #f0ede8;
+    --color-secondary: #0d0d0d59;
+    --color-tertiary: #0d0d0d;
+    --color-accent: #0d0d0d0f;
+    --color-error: #e07070;
 }
