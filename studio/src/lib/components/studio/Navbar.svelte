@@ -5,13 +5,13 @@
     let feedbackOpen = false
 </script>
 
-<header class="flex items-center px-6 md:px-10 py-7 border-b border-[#0d0d0d]/6">
+<header class="flex items-center px-6 md:px-10 py-7 border-b border-accent">
     <a href="/">
         <span class="text-[18px] tracking-[0.12em] font-serif">momenti</span>
     </a>
 
     <button on:click={() => feedbackOpen = true}
-            class="ml-auto -mb-2 text-[#0d0d0d]/35 hover:text-[#0d0d0d]/70 transition-colors cursor-pointer">
+            class="ml-auto text-secondary hover:text-tertiary transition-colors duration-150 cursor-pointer">
         <MessageSquare size={12} strokeWidth={1.8}/>
     </button>
 </header>

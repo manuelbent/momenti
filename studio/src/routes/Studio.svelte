@@ -23,13 +23,13 @@
 
 <Layout>
     <!-- preview -->
-    <div class="flex-1 min-h-0 bg-[#f0ede8] flex flex-col overflow-hidden">
+    <div class="flex-1 min-h-0 bg-primary flex flex-col overflow-hidden">
         <Selector bind:view/>
         <Preview {view}/>
     </div>
 
     <!-- right sidebars -->
-    <aside class="w-92 border-l border-[#0d0d0d]/6 shrink-0 flex flex-col relative">
+    <aside class="w-92 border-l border-accent shrink-0 flex flex-col relative">
         <!-- tab lids -->
         <div class="absolute right-full top-2 flex flex-col">
             <LidButton icon={SwatchBook} title="Your Moments" active={$sidebarMode === 'moments'} onclick={() => sidebarMode.set('moments')}/>

@@ -95,7 +95,9 @@ html, body {
 @theme {
     --color-primary: #f0ede8;
     --color-secondary: #0d0d0d59;
+    --color-secondary-hover: #0d0d0d7f;
     --color-tertiary: #0d0d0d;
     --color-accent: #0d0d0d0f;
+    --color-accent-hover: #0d0d0d1f;
     --color-error: #e07070;
 }
