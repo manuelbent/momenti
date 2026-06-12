@@ -15,7 +15,7 @@
     </div>
 
     <!-- track -->
-    <div class="h-0.5 w-full rounded-full bg-ink-accent overflow-hidden">
+    <div class="h-0.5 w-full rounded-full bg-ink-accent/50 overflow-hidden">
         <div class="h-full rounded-full bg-ink-faint transition-all duration-500"
              style="width: {pct}%"></div>
     </div>
