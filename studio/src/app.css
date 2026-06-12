@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 html, body {
-    background-color: #0d0d0d;
+    background-color: var(--color-canvas);
 }
 
 .momenti-selected {
-    outline: 1px solid rgba(0, 0, 0, 0.25) !important;
+    outline: 1px solid color-mix(in srgb, var(--color-ink) 25%, transparent) !important;
     outline-offset: 2px !important;
 }
 
 .momenti-section-selected {
-    outline: 1px dashed rgba(13, 13, 13, 0.5) !important;
+    outline: 1px dashed color-mix(in srgb, var(--color-ink) 50%, transparent) !important;
     outline-offset: -2px !important;
     cursor: pointer;
 }
@@ -35,18 +35,13 @@ html, body {
     }
 }
 
-@theme {
-    --animate-orbit: orbit 3.2s linear infinite;
-    --animate-breathe: breathe 2.8s ease-in-out infinite;
-}
-
 /* Change sidebar section needs hoverable and selectable moment components */
 .selectable {
     position: relative;
 }
 
 .selectable:hover {
-    box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.45);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-select) 45%, transparent);
     cursor: pointer;
 }
 
@@ -56,8 +51,8 @@ html, body {
     top: 5px;
     left: 5px;
     padding: 2px 4px 0 4px;
-    background: rgba(220, 38, 38, 0.85);
-    color: #fff;
+    background: color-mix(in srgb, var(--color-select) 85%, transparent);
+    color: white;
     font-size: 10px;
     font-family: sans-serif;
     font-weight: 600;
@@ -70,7 +65,7 @@ html, body {
 }
 
 .selected {
-    box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.8) !important;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-select) 80%, transparent) !important;
 }
 
 .selected::after {
@@ -79,8 +74,8 @@ html, body {
     top: 5px;
     left: 5px;
     padding: 2px 4px 0 4px;
-    background: rgba(220, 38, 38, 1) !important;
-    color: #fff;
+    background: var(--color-select) !important;
+    color: white;
     font-size: 10px;
     font-family: sans-serif;
     font-weight: 600;
@@ -93,11 +88,40 @@ html, body {
 }
 
 @theme {
-    --color-primary: #f0ede8;
-    --color-secondary: #0d0d0d59;
-    --color-secondary-hover: #0d0d0d7f;
-    --color-tertiary: #0d0d0d;
-    --color-accent: #0d0d0d0f;
-    --color-accent-hover: #0d0d0d1f;
+    /*
+     * animations
+     */
+    --animate-orbit: orbit 3.2s linear infinite;
+    --animate-breathe: breathe 2.8s ease-in-out infinite;
+
+    /*
+     * canvas main surface / page background
+     */
+    --color-canvas: #f0ede8;
+
+    /*
+     * ink accent for UI elements, muted text
+     */
+    --color-ink-accent: #dbdbdb;
+    --color-ink-accent-hover: #c9c9c9;
+
+    /*
+     * ink main foreground color for text, icons
+     */
+    --color-ink: #0d0d0d;
+    --color-ink-faint: #a3a3a3;
+    --color-ink-faint-hover: #686868;
+
+    /*
+     * select color for hover and selection states, error, success, info, brand, etc.
+     */
+    --color-select: #dc2626;
     --color-error: #e07070;
+    --color-valid: #7dc59a;
+    --color-invalid: #d58985;
+    --color-success: #1a6638;
+    --color-success-bg: #e8f5ee;
+    --color-success-border: #b6dfc7;
+    --color-info: #959391;
+    --color-brand: #9d174d;
 }

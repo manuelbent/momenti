@@ -62,17 +62,17 @@
 
 <div class="flex flex-col gap-1.5">
     <div class="flex items-center justify-between w-full">
-        <span class="text-[11px] tracking-[0.12em] text-[#0d0d0d]/40">Address</span>
+        <span class="text-[11px] tracking-[0.12em] text-ink/40">Address</span>
         {#if checking}
-            <span class="text-[8px] text-[#0d0d0d]/25">
+            <span class="text-[8px] text-ink/25">
                 <LoaderCircle class="animate-spin" size={12} />
             </span>
         {/if}
     </div>
 
     <label for="slug"
-           class="flex items-center border border-[#0d0d0d]/10 rounded-md px-3 py-2 bg-white  transition-colors cursor-text {isSlugAvailable ? 'border-[#7dc59a]' : isSlugAvailable === false ? 'border-[#d58985]' : ''}">
-        <span class="text-[12px] text-[#0d0d0d]/25 shrink-0">https://</span>
+           class="flex items-center border border-ink/10 rounded-md px-3 py-2 bg-white  transition-colors cursor-text {isSlugAvailable ? 'border-valid' : isSlugAvailable === false ? 'border-invalid' : ''}">
+        <span class="text-[12px] text-ink/25 shrink-0">https://</span>
         <input id="slug"
                type="text"
                bind:value={slug}
@@ -80,8 +80,8 @@
                {oninput}
                maxlength={50}
                placeholder="your-slug"
-               class="flex-1 text-[12px] text-[#0d0d0d] bg-transparent outline-none placeholder:text-[#0d0d0d]/25"
+               class="flex-1 text-[12px] text-ink bg-transparent outline-none placeholder:text-ink/25"
         />
-        <span class="text-[12px] text-[#0d0d0d]/25 shrink-0">.momenti.cc</span>
+        <span class="text-[12px] text-ink/25 shrink-0">.momenti.cc</span>
     </label>
 </div>

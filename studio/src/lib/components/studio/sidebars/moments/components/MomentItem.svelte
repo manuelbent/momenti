@@ -14,14 +14,14 @@
 
 <button {onclick}
         class="group w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left transition-colors duration-150 cursor-pointer
-        {isActive ? 'bg-[#0d0d0d]/6' : 'hover:bg-[#0d0d0d]/4'}"
+        {isActive ? 'bg-ink/6' : 'hover:bg-ink/4'}"
 >
     <!-- dot -->
     <span class="w-1.5 h-1.5 rounded-full shrink-0 transition-colors duration-150
-        {isActive ? 'bg-[#0d0d0d]/50' : 'bg-[#0d0d0d]/15 group-hover:bg-[#0d0d0d]/30'}">
+        {isActive ? 'bg-ink/50' : 'bg-ink/15 group-hover:bg-ink/30'}">
     </span>
-    <span class="text-[12px] text-[#0d0d0d]/60 truncate group-hover:text-[#0d0d0d]/80 transition-colors duration-150
-        {isActive ? 'text-[#0d0d0d]' : ''}">
+    <span class="text-[12px] text-ink/60 truncate group-hover:text-ink/80 transition-colors duration-150
+        {isActive ? 'text-ink' : ''}">
         {moment.slug}
     </span>
 </button>

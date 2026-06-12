@@ -46,7 +46,7 @@
     onDestroy(() => { clearTimeout(typeTimeout) })
 </script>
 
-<span class="text-[#9d174d]">{displayed}</span><span class="cursor">|</span>
+<span class="text-brand">{displayed}</span><span class="cursor">|</span>
 
 <style>
     .cursor {

@@ -15,7 +15,7 @@
     }
 </script>
 
-<button class="text-[#0d0d0d]/40 text-[10px] font-mono tracking-wide cursor-pointer" on:click={copyToClipboard}>
+<button class="text-ink/40 text-[10px] font-mono tracking-wide cursor-pointer" on:click={copyToClipboard}>
     {#if copied}
         <CheckIcon size={13} strokeWidth={1.6}/>
     {:else}

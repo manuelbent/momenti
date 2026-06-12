@@ -1,21 +1,15 @@
 <script lang="ts">
     import { fade } from 'svelte/transition'
 
-    const { streamText = '', theme = 'dark' }: { streamText?: string; theme?: 'dark' | 'light' } = $props()
+    const { streamText = '' }: { streamText?: string } = $props()
 
-    const ringColor = $derived(theme === 'light' ? '#0d0d0d' : '#f0ede8')
-    const dotColor = $derived(theme === 'light' ? '#0d0d0d' : '#f0ede8')
-    const textColor = $derived(theme === 'light' ? '#333' : '#555')
-
-    // --- Progress ring -------------------------------------------------------
-    // r=50 → circumference ≈ 314. We cap visible fill at 90% so it never looks "done"
-    // before the route transition fires.
+    // progress ring
     const CIRCUMFERENCE = 2 * Math.PI * 50
     const ESTIMATED_CHARS = 7_000
     const progress = $derived(Math.min(0.9, streamText.length / ESTIMATED_CHARS))
     const dashOffset = $derived(CIRCUMFERENCE * (1 - progress))
 
-    // --- Status messages -----------------------------------------------------
+    // messages
     const milestones: Array<{ test: (t: string) => boolean; label: string }> = [
         { test: () => true, label: 'Imagining your moment...' },
         { test: t => t.includes('"slug"'), label: 'Naming your moment...' },
@@ -26,7 +20,7 @@
         { test: t => (t.match(/"html":/g) ?? []).length > 1, label: 'Writing the content...' },
         { test: t => t.includes('"image"'), label: 'Adding visuals...' },
         { test: t => t.includes('"form"'), label: 'Building interactions...' },
-        { test: t => t.length > 2200, label: 'Polishing the details...' },
+        { test: t => t.length > 44000, label: 'Polishing the details...' },
     ]
 
     function deriveStatus(text: string): string {
@@ -62,20 +56,19 @@
     })
 </script>
 
-<div class="flex flex-col items-center gap-10" aria-live="polite" aria-label="AI is generating your page">
+<div class="flex flex-col items-center gap-10" aria-live="polite" aria-label="Generating your moment">
     <!-- ring stack -->
     <div class="relative w-28 h-28">
 
         <!-- 1. dim base ring -->
-        <svg class="absolute inset-0 w-full h-full" viewBox="0 0 112 112" fill="none">
-            <circle cx="56" cy="56" r="50" stroke={ringColor} stroke-width="0.75" opacity="0.07"/>
+        <svg class="absolute inset-0 w-full h-full text-ink" viewBox="0 0 112 112" fill="none">
+            <circle cx="56" cy="56" r="50" stroke-width="0.75" opacity="0.07"/>
         </svg>
 
         <!-- 2. progress fill ring (rotated so it starts at the top) -->
-        <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 112 112" fill="none">
+        <svg class="absolute inset-0 w-full h-full -rotate-90 text-ink" viewBox="0 0 112 112" fill="none">
             <circle
                     cx="56" cy="56" r="50"
-                    stroke={ringColor}
                     stroke-width="1"
                     stroke-linecap="round"
                     opacity="0.35"
@@ -87,18 +80,16 @@
 
         <!-- 3. breathing centre dot -->
         <div class="absolute inset-0 flex items-center justify-center">
-            <div class="dot" style="background: {dotColor}"></div>
+            <div class="dot bg-ink"></div>
         </div>
     </div>
 
     <!-- status label -->
     <div class="h-4 overflow-hidden">
         {#key displayedStatus}
-            <p
-                    class="text-[11px] tracking-[0.24em] uppercase"
-                    style="color: {textColor}"
-                    in:fade={{ duration: 500, delay: 80 }}
-                    out:fade={{ duration: 250 }}
+            <p class="text-[11px] tracking-[0.24em] uppercase text-ink"
+               in:fade={{ duration: 500, delay: 80 }}
+               out:fade={{ duration: 250 }}
             >{displayedStatus}</p>
         {/key}
     </div>

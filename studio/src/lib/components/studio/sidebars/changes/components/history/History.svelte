@@ -32,7 +32,7 @@
     {#if $changesLoading}
         <!-- loading state -->
     {:else if !$changes.length && !pendingPrompt}
-        <p class="text-[11px] text-[#0d0d0d]/30 text-center mt-4">No changes yet.</p>
+        <p class="text-[11px] text-ink/30 text-center mt-4">No changes yet.</p>
     {:else}
         {#each $changes as change (change.id)}
             <!-- user prompt -->

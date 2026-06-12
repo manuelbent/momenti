@@ -4,9 +4,9 @@
     import { Check, X, Info } from 'lucide-svelte'
 
     const colorClasses = {
-        success: 'bg-[#e8f5ee] text-[#1a6638] border border-[#b6dfc7]',
+        success: 'bg-success-bg text-success border border-success-border',
         error: 'bg-red-50 text-red-700 border border-red-200',
-        info: 'bg-[#f1ede9] text-[#959391] border border-[#dfdbd7]'
+        info: 'bg-canvas text-info border border-canvas-border'
     }
 
     const icons = {

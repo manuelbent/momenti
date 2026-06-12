@@ -2,15 +2,18 @@
     export let disabled: boolean = false
     export let onclick: () => void = () => {}
 
-    export let className: string = 'border border-[#0d0d0d]/6 text-[#0d0d0d]/40'
+    export let className: string = ''
 </script>
 
 <button
         {onclick}
         {disabled}
         class="group flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-md
-         text-[12px] tracking-[0.08em] hover:border-black/15 transition-all duration-150
-         disabled:opacity-30 disabled:cursor-default cursor-pointer {className}"
->
+                text-[12px] tracking-[0.08em] border
+                text-ink-faint hover:text-ink-faint-hover
+                border-ink-accent hover:border-ink-accent-hover
+                disabled:text-ink-accent disabled:hover:border-ink-accent
+                transition-colors duration-150
+                cursor-pointer disabled:cursor-default {className}">
     <slot/>
 </button>

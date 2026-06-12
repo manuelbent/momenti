@@ -89,7 +89,7 @@
     }
 </script>
 
-<div class="min-h-screen bg-primary text-tertiary flex flex-col transition-opacity duration-400">
+<div class="min-h-screen bg-canvas flex flex-col transition-opacity duration-400">
 
     <Navbar/>
 
@@ -103,7 +103,7 @@
                 {:else if isCapturing}
                     <div class="[grid-area:1/1] h-full flex items-center justify-center"
                          transition:fade={{ duration: 400 }}>
-                        <Loader theme="light" {streamText}/>
+                        <Loader {streamText}/>
                     </div>
                 {:else}
                     <div class="[grid-area:1/1]" transition:fade={{ duration: 400 }}>

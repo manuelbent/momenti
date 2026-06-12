@@ -1,5 +1,6 @@
 <script lang="ts">
     import { ArrowUp } from 'lucide-svelte'
+    import RoundButton from '$lib/components/ui/RoundButton.svelte'
 
     let {
         prompt = $bindable(''),
@@ -53,11 +54,11 @@
     })
 </script>
 
-<div class="flex flex-col border bg-white border-accent rounded-2xl overflow-hidden">
+<div class="flex flex-col border bg-white border-ink-accent rounded-2xl overflow-hidden">
     <textarea
             bind:this={textarea}
             class="w-full bg-white border-none outline-none resize-none px-5.5 py-5 text-[16px] leading-[1.7]
-            text-tertiary caret-primary placeholder-secondary/50 font-serif"
+            text-ink placeholder-ink-accent caret-canvas font-serif"
             placeholder={placeholder}
             bind:value={prompt}
             rows={5}
@@ -67,12 +68,7 @@
         <p class="text-xs text-error px-5.5 py-2">{error}</p>
     {/if}
 
-    <div class="flex justify-end p-3 border-t border-accent bg-white">
-        <button disabled={!prompt.trim()}
-                onclick={onCapture}
-                class="p-1.5 rounded-full text-primary bg-tertiary/40 hover:bg-tertiary/60
-                disabled:bg-tertiary/20 disabled:cursor-default cursor-pointer transition-colors duration-200">
-            <ArrowUp size={14}/>
-        </button>
+    <div class="flex justify-end p-3 border-t border-ink-accent">
+        <RoundButton Icon={ArrowUp} onclick={onCapture} disabled={!prompt.trim()}/>
     </div>
 </div>

@@ -3,11 +3,11 @@
     import { inviteKey } from '$lib/stores/auth'
 </script>
 
-<header class="flex items-center px-6 md:px-10 py-7 border-b border-accent">
+<header class="flex items-center px-6 md:px-10 py-7 border-b border-ink-accent">
     <span class="text-[18px] tracking-[0.12em] font-serif">momenti</span>
     {#if $inviteKey}
-        <a href="/#/studio" class="ml-auto text-secondary hover:text-tertiary transition-colors duration-150">
-            <SwatchBook size={15} strokeWidth={1.8}/>
+        <a href="/#/studio" class="ml-auto" title="Studio">
+            <SwatchBook size={15} strokeWidth={1.5}/>
         </a>
     {/if}
 </header>

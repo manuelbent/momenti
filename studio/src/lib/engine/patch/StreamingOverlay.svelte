@@ -15,7 +15,7 @@
 </script>
 
 <div
-        class="fixed inset-0 flex items-center justify-center bg-[#f0ede8]/50 backdrop-blur-sm pointer-events-auto select-none z-50"
+        class="fixed inset-0 flex items-center justify-center bg-canvas/50 backdrop-blur-sm pointer-events-auto select-none z-50"
         transition:fade={{ duration: 300 }}
         aria-live="polite"
         aria-label="Changes in progress..."

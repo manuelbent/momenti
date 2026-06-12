@@ -9,7 +9,7 @@
     <div class="flex items-center gap-3">
         <DesktopButton active={view === 'desktop'} onclick={() => view = 'desktop'}/>
 
-        <span class="w-px h-3.5 bg-accent"></span>
+        <span class="w-px h-3.5 bg-ink-accent"></span>
 
         <CodeButton active={view === 'code'} onclick={() => view = 'code'}/>
     </div>
