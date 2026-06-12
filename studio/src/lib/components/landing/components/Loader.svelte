@@ -20,7 +20,7 @@
         { test: t => (t.match(/"html":/g) ?? []).length > 1, label: 'Writing the content...' },
         { test: t => t.includes('"image"'), label: 'Adding visuals...' },
         { test: t => t.includes('"form"'), label: 'Building interactions...' },
-        { test: t => t.length > 44000, label: 'Polishing the details...' },
+        { test: t => t.length > 5000, label: 'Polishing the details...' },
     ]
 
     function deriveStatus(text: string): string {
@@ -61,16 +61,17 @@
     <div class="relative w-28 h-28">
 
         <!-- 1. dim base ring -->
-        <svg class="absolute inset-0 w-full h-full text-ink" viewBox="0 0 112 112" fill="none">
-            <circle cx="56" cy="56" r="50" stroke-width="0.75" opacity="0.07"/>
+        <svg class="absolute inset-0 w-full h-full " viewBox="0 0 112 112" fill="none">
+            <circle cx="56" cy="56" r="50" stroke-width="0.75" stroke="#0d0d0d" opacity="0.07"/>
         </svg>
 
         <!-- 2. progress fill ring (rotated so it starts at the top) -->
-        <svg class="absolute inset-0 w-full h-full -rotate-90 text-ink" viewBox="0 0 112 112" fill="none">
+        <svg class="absolute inset-0 w-full h-full -rotate-90 " viewBox="0 0 112 112" fill="none">
             <circle
                     cx="56" cy="56" r="50"
                     stroke-width="1"
                     stroke-linecap="round"
+                    stroke="#0d0d0d"
                     opacity="0.35"
                     stroke-dasharray={CIRCUMFERENCE}
                     stroke-dashoffset={dashOffset}
@@ -80,14 +81,14 @@
 
         <!-- 3. breathing centre dot -->
         <div class="absolute inset-0 flex items-center justify-center">
-            <div class="dot bg-ink"></div>
+            <div class="dot" style="background: #0d0d0d"></div>
         </div>
     </div>
 
     <!-- status label -->
     <div class="h-4 overflow-hidden">
         {#key displayedStatus}
-            <p class="text-[11px] tracking-[0.24em] uppercase text-ink"
+            <p class="text-[11px] tracking-widest text-ink"
                in:fade={{ duration: 500, delay: 80 }}
                out:fade={{ duration: 250 }}
             >{displayedStatus}</p>
