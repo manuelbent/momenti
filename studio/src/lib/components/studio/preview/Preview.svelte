@@ -12,6 +12,6 @@
     $: component = components[view]
 </script>
 
-<div class="flex flex-1 justify-center w-full min-h-0 p-8">
+<div class="flex flex-1 justify-center w-full min-h-0">
     <svelte:component this={component} />
 </div>

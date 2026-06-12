@@ -5,7 +5,7 @@
     export let view: 'desktop'|'code' = 'desktop'
 </script>
 
-<div class="mt-8 flex justify-center shrink-0">
+<div class="flex justify-center shrink-0">
     <div class="flex items-center gap-3">
         <DesktopButton active={view === 'desktop'} onclick={() => view = 'desktop'}/>
 

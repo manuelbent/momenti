@@ -23,7 +23,7 @@
 
 <Layout>
     <!-- preview -->
-    <div class="flex-1 min-h-0 bg-primary flex flex-col overflow-hidden">
+    <div class="flex-1 min-h-0 bg-primary flex flex-col overflow-hidden px-8 py-6 gap-4">
         <Selector bind:view/>
         <Preview {view}/>
     </div>
