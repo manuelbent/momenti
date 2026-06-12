@@ -9,5 +9,5 @@
         class="cursor-pointer transition-opacity duration-150 {active ? 'opacity-100' : 'opacity-25 hover:opacity-50'}"
         title="Code"
 >
-    <Braces size={14} strokeWidth={1.6}/>
+    <Braces size={12} strokeWidth={1.6}/>
 </button>

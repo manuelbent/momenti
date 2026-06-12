@@ -9,6 +9,6 @@
         class="cursor-pointer transition-opacity duration-150 {active ? 'opacity-100' : 'opacity-25 hover:opacity-50'}"
         title="Desktop"
 >
-    <Monitor size={14} strokeWidth={1.6}/>
+    <Monitor size={12} strokeWidth={1.6}/>
 </button>
 
