@@ -11,9 +11,7 @@
 
 <button {onclick}
         title={title}
-        class="w-7 h-8 flex items-center justify-center rounded-l border border-ink/6 cursor-pointer text-ink/40
+        class="w-7 h-8 flex items-center justify-center rounded-l border border-ink-accent text-ink-faint cursor-pointer
                {active ? 'border-r-canvas' : 'border-r-transparent'}">
     <Icon size={12} strokeWidth={1.5}/>
 </button>
-
-

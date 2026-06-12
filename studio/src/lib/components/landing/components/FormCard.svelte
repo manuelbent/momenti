@@ -69,6 +69,8 @@
     {/if}
 
     <div class="flex justify-end p-3 border-t border-ink-accent">
-        <RoundButton Icon={ArrowUp} onclick={onCapture} disabled={!prompt.trim()}/>
+        <RoundButton onclick={onCapture} disabled={!prompt.trim()}>
+            <ArrowUp size={12}/>
+        </RoundButton>
     </div>
 </div>

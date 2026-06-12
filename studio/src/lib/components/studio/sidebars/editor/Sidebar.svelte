@@ -14,11 +14,11 @@
 
     <PromptViewer/>
 
-    <hr class="border-ink/6 -mx-6"/>
+    <hr class="border-ink-accent -mx-6"/>
 
     <SlugInput/>
 
-    <hr class="border-ink/6 -mx-6"/>
+    <hr class="border-ink-accent -mx-6"/>
 
     <div class="flex flex-col gap-3">
         <SaveButton/>

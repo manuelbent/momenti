@@ -1,6 +1,7 @@
 <script lang="ts">
     import Navbar from '$lib/components/studio/Navbar.svelte'
     import Toast from '$lib/components/ui/Toast.svelte'
+    import LoadingOverlay from '$lib/components/ui/LoadingOverlay.svelte'
 </script>
 
 <div class="h-screen flex flex-col overflow-hidden">
@@ -12,3 +13,5 @@
 </div>
 
 <Toast/>
+
+<LoadingOverlay/>

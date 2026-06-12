@@ -2,18 +2,19 @@
     import { ArrowUp } from 'lucide-svelte'
     import { MAX_CHANGES_ALLOWED } from '$lib/config/constants'
     import { changes } from '$lib/stores/changes'
+    import RoundButton from '$lib/components/ui/RoundButton.svelte'
 
     let {
         selectedSection,
         isStreaming,
         onsubmit,
     }: {
-        selectedSection: { id: string } | null
+        selectedSection: { id: string }|null
         isStreaming: boolean
         onsubmit: (prompt: string) => void
     } = $props()
 
-    let textarea: HTMLTextAreaElement | null = $state(null)
+    let textarea: HTMLTextAreaElement|null = $state(null)
     let promptValue = $state('')
 
     export function clear() {
@@ -46,21 +47,19 @@
 </div>
 
 <div class="shrink-0 border-t border-ink/6 p-3">
-    <form onsubmit={handleSubmit} class="relative flex">
+    <form class="relative flex">
         <textarea bind:this={textarea}
                   bind:value={promptValue}
                   disabled={isTextareaDisabled}
-                  class="w-full rounded-xl px-3 py-2 pr-11 border border-ink/8 outline-none resize-none
-                   font-serif text-xs bg-white leading-tight text-ink placeholder-ink/35"
+                  class="w-full rounded-xl px-3 py-2 text-xs outline-none resize-none
+                   border border-ink-accent text-ink
+                   bg-white leading-tight placeholder-ink-accent caret-canvas font-serif"
                   placeholder="What would you like to change?"
                   rows="6"
                   onkeydown={onKeyDown}></textarea>
-        <button type="submit"
-                disabled={isButtonDisabled}
-                class="absolute bottom-2 right-2 p-1 rounded-full bg-ink/40 hover:bg-ink/60
-                   text-canvas transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-ink/40 disabled:cursor-default">
-            <ArrowUp size={14}/>
-        </button>
+        <RoundButton onclick={handleSubmit} disabled={isButtonDisabled} className="absolute bottom-2 right-2">
+            <ArrowUp size={12}/>
+        </RoundButton>
     </form>
 </div>
 

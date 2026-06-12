@@ -39,5 +39,5 @@
     {:else}
         <CloudUpload size={13} strokeWidth={1.8} />
     {/if}
-    Save
+    <span>Save</span>
 </Button>

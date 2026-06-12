@@ -5,11 +5,9 @@
     import CopyButton from './components/CopyButton.svelte'
 </script>
 
-<!-- outer shell matches DesktopFrame -->
-<div class="flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden shadow-2xl shadow-ink/8 border border-ink/8">
-
-    <!-- header bar -->
-    <div class="flex items-center justify-between px-4 py-2.5 bg-canvas-dim border-b border-ink/8 shrink-0">
+<div class="flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden border border-ink-accent shadow-2xl">
+    <!-- header -->
+    <div class="flex items-center justify-between px-4 py-2.5 bg-canvas-dim border-b border-ink-accent shrink-0">
         <div class="flex items-center gap-2 text-ink/40">
             <Braces size={13} strokeWidth={1.6}/>
             <span class="text-[10px] font-mono tracking-wide">{$moment.slug}.json</span>
@@ -19,7 +17,7 @@
     </div>
 
     <!-- code body -->
-    <div class="json-wrap flex-1 min-h-0 overflow-auto px-5 py-5">
+    <div class="json-wrap flex-1 min-h-0 overflow-auto px-5 py-5 bg-white">
         <JsonView json={$moment?.content}/>
     </div>
 </div>

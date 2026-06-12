@@ -18,7 +18,10 @@
     }
 </script>
 
-<Button onclick={handlePublish} className="text-canvas bg-ink/40 hover:bg-ink/50">
+<Button onclick={handlePublish}
+        className="bg-ink-faint hover:bg-ink-faint-hover
+        border-ink-faint hover:border-ink-faint-hover
+        text-canvas!">
     <Globe size={12} strokeWidth={1.8}/>
     Publish
 </Button>

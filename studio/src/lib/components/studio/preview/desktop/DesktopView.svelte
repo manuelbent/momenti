@@ -11,7 +11,7 @@
     $: scale = containerWidth > 0 ? containerWidth / DESKTOP_WIDTH : 1
 </script>
 
-<div class="flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden shadow-2xl shadow-ink/8 border border-ink/8">
+<div class="flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden border border-ink-accent shadow-2xl">
 
     <BrowserChrome slug={$moment?.slug ?? '<your-custom-slug>'} />
 
