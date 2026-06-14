@@ -25,13 +25,13 @@
 
 <div class="fixed inset-0 z-50 flex items-center justify-center">
     <!-- blurred overlay — fades independently so backdrop-filter blurs in smoothly -->
-    <div class="absolute inset-0 bg-ink/70 backdrop-blur-md" role="presentation" transition:fade={{ duration: 300 }} onclick={onClose}></div>
+    <div class="absolute inset-0 bg-ink/50 backdrop-blur-md" role="presentation" transition:fade={{ duration: 300 }} onclick={onClose}></div>
 
     <!-- modal card -->
-    <div class="relative z-10 w-full max-w-sm mx-4 bg-dark-surface border border-white/10 rounded-2xl px-8 py-9 flex flex-col gap-5 shadow-2xl"
+    <div class="relative z-10 w-full max-w-sm mx-4 bg-dark-surface rounded-2xl px-8 py-9 flex flex-col gap-5 shadow-2xl bg-canvas border border-ink-accent"
          transition:fade={{ duration: 250, delay: 50 }}>
         <div class="flex flex-col gap-1.5">
-            <h2 class="text-[22px] tracking-[-0.02em] text-canvas">Use your invite key</h2>
+            <h2 class="text-[22px] tracking-[-0.02em] text-ink">Use your invite key</h2>
             <p class="text-[13px] text-dark-muted leading-[1.6]">
                 Right now, momenti is invite-only.<br>
                 Enter your invite key to get started.
@@ -40,7 +40,9 @@
 
         <div class="flex flex-col gap-2">
             <input type="text"
-                   class="w-full bg-white/4 border border-white/10 rounded-xl px-4 py-3 text-[15px] text-canvas placeholder-dark-faint outline-none focus:border-white/25 transition-colors duration-150 tracking-[0.08em]"
+                   class="w-full  rounded-xl px-4 py-3 text-[15px] outline-none
+                    border border-ink-accent focus:border-ink-accent-hover bg-white
+                    transition-colors duration-150 tracking-[0.08em]"
                    bind:value
                    onkeydown={(e) => { if (e.key === 'Enter') submit() }}
                    autocomplete="off"
