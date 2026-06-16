@@ -1,6 +1,6 @@
 {
   "name": "momenti-studio",
-  "version": "0.2.5-alpha",
+  "version": "0.2.6-alpha",
   "description": "Studio for momenti.",
   "type": "module",
   "scripts": {
