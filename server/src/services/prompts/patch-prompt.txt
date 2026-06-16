@@ -70,11 +70,11 @@ interface MomentContent {
 
 **layout**
 - major sections must stack vertically from top to bottom;
-- keep margin between sections;
+- keep gaps between sections;
 - prefer one strong element per horizontal row;
 - use horizontal layouts only for small supporting elements;
 - when in doubt, stack vertically;
-- use vw, cqw, or rem for margins and spacing, not fixed pixels;
+- use vw, cqw, or rem (e.g. gap:4vw, gap:2rem) for gap;
 - use percentage for padding;
 - never use max-width or fixed pixel widths for containers.
 
