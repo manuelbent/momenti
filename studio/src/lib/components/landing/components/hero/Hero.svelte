@@ -6,9 +6,9 @@
     Your <TypeWriter/><span class="-ml-1">,</span><br>
     one message away.
 </h1>
-<p class="text-[15px] leading-[1.75] text-ink-faint">
-    Imagine the perfect page for your idea.<br>
+<p class="text-[14px] leading-[1.75] text-ink-faint font-light">
+    You have an idea and now you need a page.<br>
     An event, a startup launch, a festival, a personal brand, a side project. Anything.<br>
     Just write what you want: the style, the mood, the content, the vibe.<br>
-    Let momenti generate it for you and publish it, with a single click.
+    Let momenti generate it and publish it for you, with <i>one</i> single click.
 </p>

@@ -57,11 +57,11 @@
 <div class="flex flex-col border bg-white border-ink-accent rounded-2xl overflow-hidden">
     <textarea
             bind:this={textarea}
-            class="w-full bg-white border-none outline-none resize-none px-5.5 py-5 text-[16px] leading-[1.7]
+            class="w-full bg-white border-none outline-none resize-none px-5.5 py-5 text-[14px] leading-[1.7]
             text-ink placeholder-ink-accent caret-canvas font-serif"
             placeholder={placeholder}
             bind:value={prompt}
-            rows={5}
+            rows={6}
             onkeydown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) onCapture() }}></textarea>
 
     {#if error}
