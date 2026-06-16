@@ -7,7 +7,7 @@
 </script>
 
 <footer id={node.id} data-nid={node.id} style={node.css}
-    class="box-border flex flex-col items-center gap-4 px-[6%] py-8 border-t border-white/15 text-center">
+    class="box-border flex flex-col items-center gap-4 px-[6%] py-8 border-t border-white/15 text-center z-999">
 
     {#if node.html}
         <p class="text-inherit">{node.html}</p>

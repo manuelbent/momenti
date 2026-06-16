@@ -16,7 +16,7 @@
     <BrowserChrome slug={$moment?.slug ?? '<your-custom-slug>'} />
 
     <!-- content — rendered at true desktop width (1280 px) then zoomed to fit the frame -->
-    <div class="flex-1 min-h-0 bg-white overflow-y-auto overflow-x-hidden" bind:clientWidth={containerWidth}>
+    <div class="flex-1 min-h-0 bg-white overflow-y-auto overflow-x-hidden" bind:clientWidth={containerWidth} style="transform: translate(0);">
         <div style="width: {DESKTOP_WIDTH}px; zoom: {scale};">
             {#if $moment}
                 <Renderer node={$moment.content.root} />

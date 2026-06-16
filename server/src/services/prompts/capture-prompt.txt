@@ -49,11 +49,11 @@ interface Moment {
 
 **layout**
 - major sections must stack vertically from top to bottom;
-- keep gaps between sections;
+- keep margin between sections;
 - prefer one strong element per horizontal row;
 - use horizontal layouts only for small supporting elements;
 - when in doubt, stack vertically;
-- use vw, cqw, or rem (e.g. gap:4vw, gap:2rem) for gap;
+- use vw, cqw, or rem for margins and spacing, not fixed pixels;
 - use percentage for padding;
 - never use max-width or fixed pixel widths for containers.
 
@@ -78,7 +78,7 @@ interface Moment {
 
 **component: form**
 - required field: 'fields' — array of input objects;
-- required field: 'css' — styles the form container directly;;
+- required field: 'css' — styles the form container directly;
 - text inputs must use 'placeholder' instead of labels - no labels, titles, or helper text allowed;
 - radio groups must use self-explanatory option strings (e.g. ["Yes", "No"]).
 

@@ -23,6 +23,7 @@
     $effect(() => {
         $changes
         $sidebarMode
+        pendingPrompt
         if (!historyEl) return
         historyEl.scrollTop = historyEl.scrollHeight
     })
