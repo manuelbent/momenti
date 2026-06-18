@@ -1,6 +1,7 @@
 <script lang="ts">
     import { updateNode } from '$lib/stores/momentContent'
     import { registerImage } from '$lib/utils/imageUpload'
+    import { ChevronLeft, ChevronRight } from 'lucide-svelte'
 
     export let node: MomentNode
 
@@ -11,8 +12,15 @@
         4: 'grid-cols-4',
     } as const
 
+    const PAGE_SIZE = 2
+
     $: slides = node.children ?? []
     $: count = slides.length
+    $: isPaginated = count > PAGE_SIZE
+    $: pages = isPaginated
+        ? Array.from({ length: Math.ceil(count / PAGE_SIZE) }, (_, i) =>
+            slides.slice(i * PAGE_SIZE, i * PAGE_SIZE + PAGE_SIZE))
+        : [slides]
     $: isWideSlideNeeded = count >= 3 && count % 2 === 1
     $: desktopCols = Math.min(node.columns ?? count, 4)
     $: gridClass = [
@@ -21,6 +29,12 @@
     ].join(' ')
 
     let fileInputs: Record<string, HTMLInputElement> = {}
+
+    let trackEl: HTMLDivElement
+
+    function scrollByPage(dir: -1|1) {
+        trackEl?.scrollBy({ left: dir * trackEl.clientWidth, behavior: 'smooth' })
+    }
 
     function handleFileSelected(e: Event, slideId: string) {
         const file = (e.target as HTMLInputElement).files?.[0]
@@ -35,7 +49,38 @@
     }
 </script>
 
-{#if isWideSlideNeeded}
+{#if isPaginated}
+    <div id={node.id} data-nid={node.id} class="relative w-full" style={node.css ?? ''}>
+        <div bind:this={trackEl}
+             class="flex w-full snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth">
+            {#each pages as page, p (p)}
+                <div class="grid w-full shrink-0 snap-start grid-cols-2 gap-2">
+                    {#each page as slide (slide.id)}
+                        <button type="button"
+                                class="container relative aspect-square overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
+                                onclick={(e) => handleSlideClick(e, slide)}>
+                            <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover"
+                                 loading="lazy"/>
+                        </button>
+                        <input bind:this={fileInputs[slide.id]} type="file" accept="image/*"
+                               onchange={(e) => handleFileSelected(e, slide.id)} hidden/>
+                    {/each}
+                </div>
+            {/each}
+        </div>
+
+        <button type="button" aria-label="Previous"
+                class="absolute left-1 top-1/2 z-10 grid -translate-y-1/2 place-items-center rounded-full bg-black/45 p-1  cursor-pointer hover:bg-black/65"
+                onclick={() => scrollByPage(-1)}>
+            <ChevronLeft size={18}/>
+        </button>
+        <button type="button" aria-label="Next"
+                class="absolute right-1 top-1/2 z-10 grid -translate-y-1/2 place-items-center rounded-full bg-black/45 p-1  cursor-pointer hover:bg-black/65"
+                onclick={() => scrollByPage(1)}>
+            <ChevronRight size={18}/>
+        </button>
+    </div>
+{:else if isWideSlideNeeded}
     <div id={node.id} data-nid={node.id} class="w-full space-y-2" style={node.css ?? ''}>
         <button type="button"
                 class="w-full aspect-video overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
