@@ -7,8 +7,8 @@
     $: loadFonts($moment?.content.fonts)
 </script>
 
-<div class="justify-center overflow-auto">
-    <div class="relative w-72 shrink-0 rounded-[44px] overflow-hidden border border-canvas-border flex flex-col">
+<div class="">
+    <div class="relative w-72 shrink-0 rounded-[44px] overflow-hidden border border-ink-accent shadow-2xl flex flex-col">
 
         <StatusBar/>
 
