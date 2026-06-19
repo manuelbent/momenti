@@ -4,7 +4,7 @@
     import DynamicIsland from './DynamicIsland.svelte'
 </script>
 
-<div class="relative flex items-center align-middle justify-between px-6 pt-3 pb-2 bg-white shrink-0">
+<div class="relative flex items-center align-middle justify-between px-7 py-3.5 shrink-0">
 
     <Time/>
 
@@ -16,5 +16,3 @@
         <BatteryMedium size={12} class="text-ink-accent"/>
     </div>
 </div>
-
-

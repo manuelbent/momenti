@@ -7,22 +7,20 @@
     $: loadFonts($moment?.content.fonts)
 </script>
 
-<div class="">
-    <div class="relative w-72 shrink-0 rounded-[44px] overflow-hidden border border-ink-accent shadow-2xl flex flex-col">
+<div class="relative w-72 shrink-0 rounded-[44px] overflow-hidden border border-ink-accent shadow-2xl flex flex-col">
 
-        <StatusBar/>
+    <StatusBar/>
 
-        <!-- scrollable content — rendered at real iPhone width (390 px) then zoomed to fit the frame -->
-        <div class="overflow-y-auto h-126 bg-white overflow-x-hidden">
-            <div style="width: 390px; zoom: {288 / 390};">
-                {#if $moment}
-                    <Renderer node={$moment.content.root}/>
-                {:else}
-                    <div class="flex items-center justify-center h-64 text-ink/20 text-sm tracking-wide">
-                        no moment yet
-                    </div>
-                {/if}
-            </div>
+    <!-- scrollable content — rendered at real iPhone width (390 px) then zoomed to fit the frame -->
+    <div class="overflow-y-auto bg-white overflow-x-hidden">
+        <div style="width: 390px; zoom: {288 / 390};">
+            {#if $moment}
+                <Renderer node={$moment.content.root}/>
+            {:else}
+                <div class="flex items-center justify-center h-64 text-ink/20 text-sm tracking-wide">
+                    no moment yet
+                </div>
+            {/if}
         </div>
     </div>
 </div>
