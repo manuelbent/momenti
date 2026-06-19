@@ -1,6 +1,6 @@
 {
   "name": "momenti-server",
-  "version": "0.2.3-alpha",
+  "version": "0.2.4-alpha",
   "description": "API layer for momenti.",
   "type": "commonjs",
   "main": "dist/server.js",
