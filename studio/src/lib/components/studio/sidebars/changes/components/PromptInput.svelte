@@ -26,7 +26,10 @@
 
     const handleSubmit = (e: Event) => {
         e.preventDefault()
-        if (!promptValue.trim() || isStreaming) return
+        if (!promptValue.trim() || isStreaming) {
+            return
+        }
+
         onsubmit(promptValue.trim())
         promptValue = ''
     }

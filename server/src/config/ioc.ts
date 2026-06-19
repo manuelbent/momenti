@@ -55,6 +55,7 @@ import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
 import ChangeRepository from '../repositories/ChangeRepository'
 import ChangeRepositoryInterface from '../interfaces/ChangeRepositoryInterface'
 import ChangeLimitMiddleware from '../middlewares/ChangeLimitMiddleware'
+import MomentOwnershipMiddleware from '../middlewares/MomentOwnershipMiddleware'
 
 /**
  * Dependency injection container.
@@ -74,6 +75,7 @@ class Container {
     private _generationGuardMiddleware?: GenerationGuardMiddleware
     private _rateLimiterMiddleware?: RateLimiterMiddleware
     private _changeLimitMiddleware?: ChangeLimitMiddleware
+    private __momentOwnershipMiddleware?: MomentOwnershipMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -133,6 +135,10 @@ class Container {
 
     public get changeLimitMiddleware(): ChangeLimitMiddleware {
         return this._changeLimitMiddleware ??= new ChangeLimitMiddleware(this.momentService)
+    }
+
+    public get momentOwnerShipMiddleware(): MomentOwnershipMiddleware {
+        return this.__momentOwnershipMiddleware ??= new MomentOwnershipMiddleware(this.momentService)
     }
 
     public get downloadFormSubmissionsMiddleware(): DownloadFormSubmissionsMiddleware {
