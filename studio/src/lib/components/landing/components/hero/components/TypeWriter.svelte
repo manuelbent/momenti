@@ -9,7 +9,7 @@
         typingSpeedMs?: number
     }
 
-    let { pauseMs = 1000, backspaceSpeedMs = 65, typingSpeedMs = 95 }: Props = $props()
+    let { pauseMs = 600, backspaceSpeedMs = 65, typingSpeedMs = 65 }: Props = $props()
 
     let cycleIndex = 0
     const initial = words[0] ?? ''
