@@ -25,6 +25,6 @@ export default class ChangeService implements ChangeServiceInterface {
      * @param {number} momentId
      */
     public async getAll(momentId: number): Promise<Change[]> {
-        return this.changeRepository.getAllByMomentId(momentId) // todo: rename
+        return this.changeRepository.getAllByMomentId(momentId)
     }
 }
