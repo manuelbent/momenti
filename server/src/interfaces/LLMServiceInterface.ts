@@ -10,7 +10,7 @@ export default interface LLMServiceInterface {
         momentContent?: MomentContent;
         error?: string;
     }>
-    patchMoment(prompt: string, content: MomentContent, nodeId?: string): AsyncGenerator<{
+    patchMoment(params: PatchMomentParams): AsyncGenerator<{
         chunk?: string;
         done?: boolean;
         momentContent?: MomentContent;

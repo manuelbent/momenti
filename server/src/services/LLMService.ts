@@ -141,24 +141,31 @@ export default class LLMService implements LLMServiceInterface {
      * The LLM receives:
      * - the user's plain-language instruction,
      * - the full current content,
-     * - optional id of the node to change
+     * - optional id of the node to change,
+     * - optional history of previous change prompts (for vague follow-ups),
      * then returns the full updated MomentContent.
-     * @param {string} prompt - The user's change instruction.
-     * @param {MomentContent} content - The full current MomentContent.
-     * @param {string|undefined} nodeId - The id of the MomentNode the user selected, if any.
+     * @param {PatchMomentParams} params - The patch parameters.
      */
-    public async* patchMoment(prompt: string, content: MomentContent, nodeId: string|undefined): AsyncGenerator<{
+    public async* patchMoment(params: PatchMomentParams): AsyncGenerator<{
         chunk?: string;
         done?: boolean;
         momentContent?: MomentContent;
         error?: string;
     }> {
+        const { prompt, content, nodeId, history } = params
+
+        // only the prior prompt strings are sent (no prior contents) to keep token usage low
+
         const userMessage =
             `<CURRENT_CONTENT>${JSON.stringify(content)}</CURRENT_CONTENT>\n` +
             `<CHANGE>${prompt.trim()}</CHANGE>\n` +
             (nodeId ?
-                `<TARGET_NODE_ID>${nodeId}</TARGET_NODE_ID>\n` :
-                ''
+                    `<TARGET_NODE_ID>${nodeId}</TARGET_NODE_ID>\n` :
+                    ''
+            ) +
+            ((history && history.length) ?
+                    `<CHANGE_HISTORY>\n${history.map((p, i) => `${i + 1}. ${p.trim()}`).join('\n')}\n</CHANGE_HISTORY>\n` :
+                    ''
             )
 
         const stream = await this.openai.chat.completions.create({

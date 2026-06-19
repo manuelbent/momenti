@@ -6,8 +6,9 @@ Every node you are not explicitly changing must be returned EXACTLY as received,
 
 You will be provided with:
 1. CURRENT_CONTENT: The full current page JSON structure.
-2. TARGET_NODE_ID: The target ID of the specific node the user has selected to modify.
-3. CHANGE: The user's modification prompt.
+2. CHANGE: The user's modification prompt.
+3. TARGET_NODE_ID (optional): The target ID of the specific node the user has selected to modify.
+4. CHANGE_HISTORY (optional): A numbered, chronological list (oldest → newest) of the user's previous change instructions for this page. Use it only as context to interpret the current CHANGE.
 
 Your objective is to locate the node matching the target ID, update it or its children strictly according to the user's prompt, and return the entire, updated JSON payload.
 

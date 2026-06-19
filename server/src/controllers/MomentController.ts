@@ -141,12 +141,23 @@ export default class MomentController {
      * @param {Request} req
      * @param {Response} res
      */
-    public patch = (req: Request, res: Response): void => {
+    public patch = async (req: Request, res: Response): Promise<void> => {
         const user: User = res.locals.user
         const { id } = req.params
         const { nodeId, prompt, content } = req.body
 
-        this.streamWorker.patch(user.id, prompt, content, nodeId)
+        // load prior change prompts (from oldest to newest)
+        let history: string[]
+        try {
+            const changes = await this.changeService.getAll(Number(id))
+            history = changes.map(change => change.prompt)
+        } catch (err) {
+            console.error('[MomentController] patch: failed to load change history:', err)
+            res.status(500).json({ error: 'Internal server error.' })
+            return
+        }
+
+        this.streamWorker.patch(user.id, { prompt, content, nodeId, history })
 
         this.setupStreamListeners(req, res, user.id, {
             onDone: async (data: { momentContent: MomentContent }) => {
