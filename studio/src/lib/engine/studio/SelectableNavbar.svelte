@@ -18,7 +18,9 @@
      style={node.css}
      class:selectable={true}
      class:selected={isSelected}
-     onclick={handleClick}>
+     onclick={handleClick}
+     onkeydown={() => {}}
+     role="presentation">
     <div class="nav-links">
         {#each links as link}
             <a href="#_" onclick={(e) => e.preventDefault()}>{link.label}</a>
