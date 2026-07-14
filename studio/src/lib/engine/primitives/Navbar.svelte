@@ -114,7 +114,7 @@
     }
 
     /* ── responsive breakpoint ── */
-    @media (max-width: 768px) {
+    @container (max-width: 768px) {
         .nav-links {
             display: none;
         }
