@@ -3,6 +3,8 @@
     import CodeButton from '$lib/components/studio/preview/code/CodeButton.svelte'
     import MobileButton from '$lib/components/studio/preview/mobile/MobileButton.svelte'
 
+    const dev = import.meta.env.DEV
+
     export let view: 'desktop'|'mobile'|'code' = 'desktop'
 </script>
 
@@ -14,8 +16,10 @@
 
         <MobileButton active={view === 'mobile'} onclick={() => view = 'mobile'}/>
 
-        <span class="w-px h-3.5 bg-ink-accent"></span>
+        {#if dev}
+            <span class="w-px h-3.5 bg-ink-accent"></span>
 
-        <CodeButton active={view === 'code'} onclick={() => view = 'code'}/>
+            <CodeButton active={view === 'code'} onclick={() => view = 'code'}/>
+        {/if}
     </div>
 </div>
