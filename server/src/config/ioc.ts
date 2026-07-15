@@ -5,6 +5,7 @@ import InviteKeyMiddleware from '../middlewares/InviteKeyMiddleware'
 import MomentLimitMiddleware from '../middlewares/MomentLimitMiddleware'
 import DownloadFormSubmissionsMiddleware from '../middlewares/DownloadFormSubmissionsMiddleware'
 import UploadMiddleware from '../middlewares/UploadMiddleware'
+import PromptSanitizeMiddleware from '../middlewares/PromptSanitizeMiddleware'
 import PromptModerationMiddleware from '../middlewares/PromptModerationMiddleware'
 import PromptClassifierMiddleware from '../middlewares/PromptClassifierMiddleware'
 import GenerationGuardMiddleware from '../middlewares/GenerationGuardMiddleware'
@@ -70,6 +71,7 @@ class Container {
     private _momentLimitMiddleware?: MomentLimitMiddleware
     private _downloadFormSubmissionsMiddleware?: DownloadFormSubmissionsMiddleware
     private _uploadMiddleware?: UploadMiddleware
+    private _promptSanitizeMiddleware?: PromptSanitizeMiddleware
     private _promptModerationMiddleware?: PromptModerationMiddleware
     private _promptClassifierMiddleware?: PromptClassifierMiddleware
     private _generationGuardMiddleware?: GenerationGuardMiddleware
@@ -147,6 +149,10 @@ class Container {
 
     public get uploadMiddleware(): UploadMiddleware {
         return this._uploadMiddleware ??= new UploadMiddleware()
+    }
+
+    public get promptSanitizeMiddleware(): PromptSanitizeMiddleware {
+        return this._promptSanitizeMiddleware ??= new PromptSanitizeMiddleware()
     }
 
     public get promptModerationMiddleware(): PromptModerationMiddleware {
