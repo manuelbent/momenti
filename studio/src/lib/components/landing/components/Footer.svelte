@@ -3,5 +3,5 @@
 
 <p class="text-[11px] text-ink-faint tracking-[0.02em] flex items-center justify-between">
     <span>© 2026 momenti. All rights reserved.</span>
-    <span class="text-[9px]">v{__APP_VERSION__}</span>
+    <span>v{__APP_VERSION__}</span>
 </p>
