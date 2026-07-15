@@ -12,7 +12,7 @@
     import MomentsSidebar from '$lib/components/studio/sidebars/moments/Sidebar.svelte'
     import LidButton from '$lib/components/studio/sidebars/LidButton.svelte'
 
-    let view: 'desktop'|'code' = 'desktop'
+    let view: 'desktop'|'mobile'|'code' = 'desktop'
 
     onMount(() => {
         if (!$inviteKey) {
@@ -32,7 +32,7 @@
     <aside class="w-92 border-l border-ink-accent shrink-0 flex flex-col relative">
         <!-- tab lids -->
         <div class="absolute right-full top-2 flex flex-col">
-            <LidButton icon={SwatchBook} title="Your Moments" active={$sidebarMode === 'moments'} onclick={() => sidebarMode.set('moments')}/>
+            <LidButton icon={SwatchBook} title="Your moments" active={$sidebarMode === 'moments'} onclick={() => sidebarMode.set('moments')}/>
             <LidButton icon={Type} title="Editor" active={$sidebarMode === 'editor'} onclick={() => sidebarMode.set('editor')}/>
             <LidButton icon={PencilLine} title="Changes" active={$sidebarMode === 'changes'} onclick={() => sidebarMode.set('changes')}/>
         </div>

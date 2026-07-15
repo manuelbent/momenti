@@ -31,7 +31,18 @@
             isSaving = false
         }
     }
+
+    function handleKeydown(event: KeyboardEvent) {
+        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
+            event.preventDefault()
+            if ($canSave && !isSaving) {
+                handleSave()
+            }
+        }
+    }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <Button onclick={handleSave} disabled={!$canSave || isSaving}>
     {#if isSaving}
