@@ -5,7 +5,7 @@
     let feedbackOpen = false
 </script>
 
-<header class="flex items-center px-6 md:px-10 py-7 border-b border-ink-accent">
+<header class="flex items-center px-6 md:px-10 py-5 border-b border-ink-accent">
     <a href="/">
         <span class="text-[18px] tracking-[0.12em] font-serif">momenti</span>
     </a>

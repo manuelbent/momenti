@@ -7,8 +7,7 @@
     one message away.
 </h1>
 <p class="text-[14px] leading-[1.75] text-ink-faint font-light">
-    You have an idea and now you need a page.<br>
-    An event, a startup launch, a festival, a personal brand, a side project. Anything.<br>
-    Just write what you want: the style, the mood, the content, the vibe.<br>
-    Let momenti generate it and publish it for you, with <i>one</i> single click.
+    From idea to website in <i>one</i> single click.<br>
+    Whether it’s a party, a launch, a special event or a personal brand, just describe what you have in mind.<br>
+    Let <i>momenti</i> instantly generate, design and publish it for you.
 </p>
