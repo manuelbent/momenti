@@ -17,6 +17,13 @@ module.exports = {
                 RATE_LIMIT_VALIDATE_WINDOW_SEC: 60,
                 ADMIN_TOKEN: 'ADMIN_TOKEN_VALUE'
             }
+        },
+        {
+            name: 'redis',
+            script: 'redis-server',
+            args: '--save "" --appendonly no',
+            watch: false,
+            autorestart: true,
         }
     ]
 }
