@@ -113,7 +113,7 @@ export const patch = async (
         throw new Error(`Unexpected response: ${res.status}`)
     }
 
-    await readStream<MomentContent>(res.body, callbacks)
+    await readStream<Change>(res.body, callbacks)
 }
 
 export const getMomentBySlug = async (slug: string): Promise<Moment|null> => {

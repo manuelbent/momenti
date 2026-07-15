@@ -7,7 +7,7 @@ export default class Change extends Model {
     declare moment_id: number
     declare node_id?: string
     declare prompt: string
-    declare old_content?: object // we can keep track of old content for undo functionality in the future
+    declare old_content?: object
     declare new_content: object
     declare created_at: Date
 

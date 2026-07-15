@@ -7,7 +7,7 @@ interface CaptureCallbacks {
 
 interface PatchCallbacks {
     onChunk: (chunk: string) => void
-    onDone: (data: MomentContent) => void
+    onDone: (data: Change) => void
     onError?: (err: Error) => void
 }
 

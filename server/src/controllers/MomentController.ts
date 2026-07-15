@@ -162,15 +162,13 @@ export default class MomentController {
 
         this.setupStreamListeners(req, res, user.id, {
             onDone: async (data: { momentContent: MomentContent }) => {
-                await this.changeService.store({
+                return this.changeService.store({
                     moment_id: Number(id),
                     node_id: nodeId,
                     prompt,
-                    old_content: undefined, // we don't store it for now
+                    old_content: content,
                     new_content: data.momentContent,
                 })
-
-                return data.momentContent
             },
             onDoneErrorMessage: 'Failed to save the patched Moment.',
             onDoneErrorLogMessage: 'patch update error',

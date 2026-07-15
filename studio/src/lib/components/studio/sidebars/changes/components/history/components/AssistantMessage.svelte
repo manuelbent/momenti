@@ -1,22 +1,38 @@
 <script lang="ts">
-    import { CornerUpLeft } from 'lucide-svelte'
+    import { Undo, Redo } from 'lucide-svelte'
+    import { moment } from '$lib/stores/moment'
+    import { editorState } from '$lib/stores/editorState'
 
-    const { change, onload } = $props()
+    const { change } = $props()
+
+    const loadContent = (content: MomentContent) => {
+        moment.update(m => ({ ...m, content }))
+        editorState.setDirty()
+    }
 </script>
 
 <div class="flex flex-col items-start gap-1" title="{new Date(change.created_at).toLocaleString()}">
     <div class="max-w-[85%] bg-ink-accent/50 border border-ink-accent rounded-xl rounded-tl-xs px-3 py-2 flex items-center gap-2">
-                    <span class="font-serif text-xs text-ink leading-snug flex-1">
-                        {#if change.node_id}
-                            Changes applied to <span class="font-bold">{change.node_id}</span>.
-                        {:else}
-                            Changes applied to your moment.
-                        {/if}
-                    </span>
-        <button onclick={() => onload(change)}
+        <span class="font-serif text-xs text-ink leading-snug flex-1">
+            {#if change.node_id}
+                Changes applied to <span class="font-bold">{change.node_id}</span>.
+            {:else}
+                Changes applied to your moment.
+            {/if}
+        </span>
+
+        {#if change.old_content}
+            <button onclick={() => loadContent(change.old_content)}
+                    class="shrink-0 p-1 rounded-md text-ink bg-canvas border border-ink-accent hover:border-ink-accent-hover transition-all duration-150 cursor-pointer"
+                    title="Undo the change">
+                <Undo size={10}/>
+            </button>
+        {/if}
+
+        <button onclick={() => loadContent(change.new_content)}
                 class="shrink-0 p-1 rounded-md text-ink bg-canvas border border-ink-accent hover:border-ink-accent-hover transition-all duration-150 cursor-pointer"
-                title="Load this version into the editor">
-            <CornerUpLeft size={10}/>
+                title="Apply the change">
+            <Redo size={10}/>
         </button>
     </div>
 </div>

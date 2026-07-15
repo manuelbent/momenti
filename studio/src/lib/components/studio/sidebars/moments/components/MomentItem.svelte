@@ -21,7 +21,7 @@
         {isActive ? 'bg-ink/50' : 'bg-ink/15 group-hover:bg-ink/30'}">
     </span>
 
-    <span class="text-[12px] truncate text-ink-faint hover:text-ink-faint-hover transition-colors duration-150
+    <span class="text-[12px] truncate text-ink-faint group-hover:text-ink-faint-hover transition-colors duration-150
         {isActive ? 'text-ink!' : ''}">
         {moment.slug}
     </span>

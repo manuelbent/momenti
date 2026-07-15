@@ -13,11 +13,6 @@
 
     const isStreaming = $derived($patchState === 'streaming')
 
-    const loadChange = (change: Change) => {
-        moment.update(m => ({ ...m, content: change.new_content }))
-        editorState.setDirty()
-    }
-
     const submit = async (submittedPrompt: string) => {
         if (isStreaming) {
             return
@@ -48,22 +43,14 @@
                         pendingPrompt = null
                         showToast('Could not process the prompt. Please try again.', 'error')
                     },
-                    onDone: (updatedContent: MomentContent) => {
-                        moment.update(m => ({ ...m, content: updatedContent }))
+                    onDone: (change: Change) => {
+                        moment.update(m => ({ ...m, content: change.new_content }))
                         editorState.setDirty()
                         selectedSection.set(null)
                         patchState.set('idle')
                         patchChunk.set('')
 
-                        appendChange({
-                            id: Date.now(),
-                            moment_id: $moment.id,
-                            node_id: submittedNodeId,
-                            old_content: undefined,
-                            new_content: updatedContent,
-                            prompt: submittedPrompt,
-                            created_at: new Date().toISOString(),
-                        })
+                        appendChange(change)
 
                         // Clear pending message after change is added
                         pendingPrompt = null
@@ -82,7 +69,7 @@
 <div class="flex flex-col h-full">
     <Counter used={$changes.length}/>
 
-    <History onload={loadChange} {isStreaming} {pendingPrompt}/>
+    <History {isStreaming} {pendingPrompt}/>
 
     <PromptInput selectedSection={$selectedSection} {isStreaming} onsubmit={submit}/>
 </div>

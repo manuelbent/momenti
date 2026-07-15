@@ -7,11 +7,9 @@
     import Typing from '$lib/components/studio/sidebars/changes/components/history/components/Typing.svelte'
 
     let {
-        onload,
         isStreaming,
         pendingPrompt,
     }: {
-        onload: (change: Change) => void,
         historyEl?: HTMLDivElement|null
         isStreaming: boolean,
         pendingPrompt?: string|null,
@@ -40,7 +38,7 @@
             <UserMessage message={change.prompt}/>
 
             <!-- assistant response -->
-            <AssistantMessage {change} {onload}/>
+            <AssistantMessage {change}/>
         {/each}
 
         {#if pendingPrompt}
