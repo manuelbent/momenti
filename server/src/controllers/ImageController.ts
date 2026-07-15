@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import logger from '../config/logger'
 import R2Service from '../services/R2Service'
 
 /**
@@ -28,7 +29,7 @@ export default class ImageController {
             const url = await this.r2Service.upload(file.buffer, file.mimetype, file.originalname)
             res.status(201).json({ url })
         } catch (err) {
-            console.error('[ImageController] upload error:', err)
+            logger.error({ err }, '[ImageController] upload error')
             res.status(500).json({ error: 'Failed to upload image.' })
         }
     }

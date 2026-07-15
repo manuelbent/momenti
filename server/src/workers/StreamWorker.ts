@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events'
+import logger from '../config/logger'
 import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
@@ -100,7 +101,7 @@ export default class StreamWorker implements StreamWorkerInterface {
                 }
             }
         } catch (err) {
-            console.error(`[StreamWorker] Generation loop error for user with ID ${userId}:`, err)
+            logger.error({ err, userId }, '[StreamWorker] Generation loop error')
             this.emit(userId, emitter, 'error', { error: 'Failed to generate the Moment. Please try again.' })
         } finally {
             this.finalize(userId)
@@ -132,7 +133,7 @@ export default class StreamWorker implements StreamWorkerInterface {
                 }
             }
         } catch (err) {
-            console.error(`[StreamWorker] Patch loop error for user with ID ${userId}:`, err)
+            logger.error({ err, userId }, '[StreamWorker] Patch loop error')
             this.emit(userId, emitter, 'error', { error: 'Failed to patch the Moment. Please try again.' })
         } finally {
             this.finalize(userId)

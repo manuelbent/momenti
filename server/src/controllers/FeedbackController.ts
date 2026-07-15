@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import logger from '../config/logger'
 import FeedbackServiceInterface from '../interfaces/FeedbackServiceInterface'
 import User from '../models/User'
 import { FeedbackType } from '../models/Feedback'
@@ -25,7 +26,7 @@ export default class FeedbackController {
             await this.feedbackService.store(user.id, type, message)
             res.status(201).send()
         } catch (err) {
-            console.error('[FeedbackController] store error:', err)
+            logger.error({ err }, '[FeedbackController] store error')
             res.status(500).json({ error: 'Internal server error.' })
         }
     }

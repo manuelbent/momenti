@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import logger from '../config/logger'
 import User from '../models/User'
 
 /**
@@ -20,7 +21,7 @@ export default class DownloadFormSubmissionsMiddleware {
 
         const user: User = res.locals.user
         if (!user) {
-            console.error('[DownloadFormSubmissionMiddleware] could not get user from locals.')
+            logger.error('[DownloadFormSubmissionMiddleware] could not get user from locals.')
             res.status(422).json({ error: 'Unprocessable request.' })
             return
         }

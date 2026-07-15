@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import logger from '../config/logger'
 import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
 import UserServiceInterface from '../interfaces/UserServiceInterface'
 
@@ -35,7 +36,7 @@ export default class InviteKeyController {
             const inviteKey = await this.inviteKeyService.generate(user.id)
             res.status(201).send(inviteKey)
         } catch (err) {
-            console.error('[InviteKeyController] generate error:', err)
+            logger.error({ err }, '[InviteKeyController] generate error')
             res.status(500).json({ error: 'Internal server error.' })
         }
     }
@@ -51,7 +52,7 @@ export default class InviteKeyController {
             const isValid = await this.inviteKeyService.validate(invite_key)
             res.status(200).json({ isValid })
         } catch (err) {
-            console.error('[InviteKeyController] validate error:', err)
+            logger.error({ err }, '[InviteKeyController] validate error')
             res.status(500).json({ error: 'Internal server error.' })
         }
     }

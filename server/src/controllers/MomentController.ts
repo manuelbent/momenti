@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import logger from '../config/logger'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
 import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
@@ -31,7 +32,7 @@ export default class MomentController {
             const moments = await user.getMoments({ order: [['created_at', 'DESC']] })
             res.json(moments)
         } catch (err) {
-            console.error('[MomentController] load all moments error:', err)
+            logger.error({ err }, '[MomentController] load all moments error')
             res.status(500).json({ error: 'Internal server error.' })
         }
     }
@@ -48,7 +49,7 @@ export default class MomentController {
             const moment = await this.momentService.getPublishedBySlug(slug)
             res.json(moment)
         } catch (err) {
-            console.error('[MomentController] load moment by slug:', err)
+            logger.error({ err }, '[MomentController] load moment by slug')
             res.status(500).json({ error: 'Internal server error.' })
         }
     }
@@ -64,7 +65,7 @@ export default class MomentController {
             const changes = await this.changeService.getAll(Number(id))
             res.json(changes)
         } catch (err) {
-            console.error('[MomentController] load changes error:', err)
+            logger.error({ err }, '[MomentController] load changes error')
             res.status(500).json({ error: 'Internal server error.' })
         }
     }
@@ -80,7 +81,7 @@ export default class MomentController {
             const moment = await this.momentService.update(id, req.body)
             res.json(moment)
         } catch (err) {
-            console.error('[MomentController] update error:', err)
+            logger.error({ err }, '[MomentController] update error')
             res.status(404).json({ error: 'Moment not found.' })
         }
     }
@@ -96,7 +97,7 @@ export default class MomentController {
             const exists = await this.momentService.slugExists(String(slug), Number(excludedId))
             res.json({ isAvailable: !exists })
         } catch (err) {
-            console.error('[MomentController] check slug error:', err)
+            logger.error({ err }, '[MomentController] check slug error')
             res.status(500).json({ error: 'Internal server error.' })
         }
     }
@@ -152,7 +153,7 @@ export default class MomentController {
             const changes = await this.changeService.getAll(Number(id))
             history = changes.map(change => change.prompt)
         } catch (err) {
-            console.error('[MomentController] patch: failed to load change history:', err)
+            logger.error({ err }, '[MomentController] patch: failed to load change history')
             res.status(500).json({ error: 'Internal server error.' })
             return
         }
@@ -172,7 +173,7 @@ export default class MomentController {
                 return data.momentContent
             },
             onDoneErrorMessage: 'Failed to save the patched Moment.',
-            onDoneErrorLogPrefix: '[MomentController] patch update error:',
+            onDoneErrorLogMessage: 'patch update error',
         })
     }
 
@@ -191,7 +192,7 @@ export default class MomentController {
             replayBuffer?: boolean
             onDone?: (data: { prompt: string; momentContent: MomentContent }) => Promise<unknown>
             onDoneErrorMessage?: string
-            onDoneErrorLogPrefix?: string
+            onDoneErrorLogMessage?: string
         } = {}
     ): void {
         const emitter = this.streamWorker.getEmitter(userId)!
@@ -205,7 +206,7 @@ export default class MomentController {
                     const result = await options.onDone(data)
                     this.sendSseEvent(res, 'done', result)
                 } catch (err) {
-                    console.error(options.onDoneErrorLogPrefix ?? '[MomentController] done error:', err)
+                    logger.error({ err }, options.onDoneErrorLogMessage ?? 'done error')
                     this.sendSseEvent(res, 'error', { error: options.onDoneErrorMessage ?? 'Failed to save the Moment.' })
                 } finally {
                     res.end()
@@ -219,7 +220,7 @@ export default class MomentController {
                     const stored = await this.momentService.pollMomentBySlug(data.momentContent.slug)
                     this.sendSseEvent(res, 'done', stored)
                 } catch (err) {
-                    console.error('[MomentController] resume: moment not found after polling:', err)
+                    logger.error({ err }, '[MomentController] resume: moment not found after polling')
                     this.sendSseEvent(res, 'error', { error: 'Failed to retrieve the saved Moment.' })
                 } finally {
                     res.end()
@@ -236,7 +237,7 @@ export default class MomentController {
                 })
                 this.sendSseEvent(res, 'done', stored)
             } catch (err) {
-                console.error('[MomentController] store moment error:', err)
+                logger.error({ err }, '[MomentController] store moment error')
                 this.sendSseEvent(res, 'error', { error: 'Failed to save the Moment.' })
             } finally {
                 res.end()

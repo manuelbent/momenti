@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import logger from '../config/logger'
 import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
 import Moment from '../models/Moment'
 
@@ -23,7 +24,7 @@ export default class FormSubmissionController {
             await this.formSubmissionService.store(moment.id, form_id, data)
             res.status(204).send()
         } catch (err) {
-            console.error('[FormSubmissionController] store error:', err)
+            logger.error({ err }, '[FormSubmissionController] store error')
             res.status(500).json({ error: 'Internal server error.' })
         }
     }
@@ -47,7 +48,7 @@ export default class FormSubmissionController {
             res.setHeader('Content-Disposition', `attachment; filename="${moment.slug}-responses.csv"`)
             res.status(200).send(csv)
         } catch (err) {
-            console.error('[FormSubmissionController] download form submissions error:', err)
+            logger.error({ err }, '[FormSubmissionController] download form submissions error')
             res.status(500).json({ error: 'Internal server error.' })
         }
     }

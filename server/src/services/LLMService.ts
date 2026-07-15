@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import OpenAI from 'openai'
+import logger from '../config/logger'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 
 /**
@@ -86,7 +87,7 @@ export default class LLMService implements LLMServiceInterface {
         try {
             return JSON.parse(response.choices[0].message.content ?? '{}')
         } catch {
-            console.error('[LLMService] classifyPrompt: malformed JSON response')
+            logger.error('[LLMService] classifyPrompt: malformed JSON response')
             return { valid: false, reason: 'Classification failed.' }
         }
     }
@@ -124,14 +125,14 @@ export default class LLMService implements LLMServiceInterface {
         try {
             const momentContent: MomentContent = JSON.parse(accumulated)
             if (!momentContent.slug || !momentContent.root) {
-                console.error('[LLMService] captureMoment: invalid moment structure:', momentContent)
+                logger.error({ momentContent }, '[LLMService] captureMoment: invalid moment structure')
                 yield { error: 'Invalid Moment structure.' }
                 return
             }
 
             yield { done: true, momentContent }
         } catch {
-            console.error('[LLMService] captureMoment: malformed JSON:', accumulated)
+            logger.error({ accumulated }, '[LLMService] captureMoment: malformed JSON')
             yield { error: 'Failed to generate a valid Moment.' }
         }
     }
@@ -192,14 +193,14 @@ export default class LLMService implements LLMServiceInterface {
         try {
             const momentContent: MomentContent = JSON.parse(accumulated)
             if (!momentContent.slug || !momentContent.root) {
-                console.error('[LLMService] patchMoment: invalid moment structure:', momentContent)
+                logger.error({ momentContent }, '[LLMService] patchMoment: invalid moment structure')
                 yield { error: 'Invalid Moment structure.' }
                 return
             }
 
             yield { done: true, momentContent }
         } catch {
-            console.error('[LLMService] patchMoment: malformed JSON:', accumulated)
+            logger.error({ accumulated }, '[LLMService] patchMoment: malformed JSON')
             yield { error: 'Failed to generate a valid Moment.' }
         }
     }

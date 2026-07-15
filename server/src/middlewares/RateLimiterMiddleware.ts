@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible'
 import redis from '../config/redis'
+import logger from '../config/logger'
 
 /**
  * IP-based sliding-window rate limiter backed by Redis.
@@ -54,7 +55,7 @@ export default class RateLimiterMiddleware {
             }
 
             // redis unavailable, continue
-            console.error('[RateLimiterMiddleware] Redis error, failing open:', (err as Error).message)
+            logger.error({ err }, '[RateLimiterMiddleware] Redis error, failing open')
             next()
         }
     }
