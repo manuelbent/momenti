@@ -26,6 +26,11 @@
             <a href="#_" onclick={(e) => e.preventDefault()}>{link.label}</a>
         {/each}
     </div>
+
+    <input type="checkbox" class="hidden" aria-label="Toggle menu" />
+    <label for={`nav-toggle-${node.id}`} class="hamburger" aria-hidden="true">
+        <span></span><span></span><span></span>
+    </label>
 </nav>
 
 <style>
@@ -53,5 +58,42 @@
         transition: opacity 0.2s;
         padding: 0 0.75rem;
         color: inherit;
+    }
+
+    a:hover {
+        opacity: 1;
+    }
+
+    /* ── hamburger icon (3 bars) ── */
+    .hamburger {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 2rem;
+        height: 2rem;
+        cursor: pointer;
+        margin-left: auto;
+        padding: 0 0.25rem;
+    }
+
+    .hamburger span {
+        display: block;
+        height: 2px;
+        width: 100%;
+        background: currentColor; /* inherits navbar color */
+        border-radius: 2px;
+        transition: transform 0.25s, opacity 0.25s;
+    }
+
+    /* ── responsive breakpoint ── */
+    @container (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .hamburger {
+            display: flex;
+        }
     }
 </style>
