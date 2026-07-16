@@ -18,10 +18,7 @@
     }
 </script>
 
-<Button onclick={handleUnpublish}
-        className="bg-ink-faint hover:bg-ink-faint-hover
-        border-ink-faint hover:border-ink-faint-hover
-        text-canvas!">
+<Button onclick={handleUnpublish}>
     <GlobeX size={12} strokeWidth={1.8}/>
     Unpublish
 </Button>
