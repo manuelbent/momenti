@@ -88,27 +88,6 @@ export default class LLMService implements LLMServiceInterface {
         this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     }
 
-    private async createArtDirection(prompt: string): Promise<ArtDirectionBrief> {
-        const response = await this.openai.chat.completions.create({
-            model: 'gpt-5.4',
-            messages: [
-                { role: 'system', content: this.artDirectionPrompt },
-                { role: 'user', content: `<PROMPT>${prompt.trim()}</PROMPT>` },
-            ],
-            response_format: { type: 'json_object' },
-            temperature: 1.15,
-        })
-
-        const raw = response.choices[0].message.content ?? ''
-        const parsed = artDirectionSchema.safeParse(JSON.parse(raw))
-        if (!parsed.success) {
-            logger.error({ issues: parsed.error.issues }, '[LLMService] createArtDirection: invalid response')
-            throw new Error('Invalid art direction response.')
-        }
-
-        return parsed.data
-    }
-
     /**
      * Check whether the given prompt contains harmful or prohibited content.
      * Returns `true` if the prompt is flagged, `false` otherwise.
@@ -155,18 +134,45 @@ export default class LLMService implements LLMServiceInterface {
      * @param {string} prompt
      */
     public async* captureMoment(prompt: string): AsyncGenerator<{
+        phase?: 'art' | 'capture';
         chunk?: string;
         done?: boolean;
         momentContent?: MomentContent;
         error?: string;
     }> {
-        let artDirection: ArtDirectionBrief
+        const artStream = await this.openai.chat.completions.create({
+            model: 'gpt-5.4',
+            messages: [
+                { role: 'system', content: this.artDirectionPrompt },
+                { role: 'user', content: `<PROMPT>${prompt.trim()}</PROMPT>` },
+            ],
+            response_format: { type: 'json_object' },
+            temperature: 1.15,
+            stream: true,
+        })
+
+        let artRaw = ''
+
+        for await (const part of artStream) {
+            const delta = part.choices[0]?.delta?.content ?? ''
+            if (delta) {
+                artRaw += delta
+                yield { phase: 'art', chunk: delta }
+            }
+        }
+
+        let artDirection: z.infer<typeof artDirectionSchema>
         try {
-            artDirection = await this.createArtDirection(prompt)
-        } catch (error) {
-            logger.error({ error }, '[LLMService] captureMoment: art direction failed')
-            yield { error: 'Failed to develop a visual direction.' }
-            return
+            const { data, success, error } = artDirectionSchema.safeParse(JSON.parse(artRaw))
+            if (!success) {
+                logger.error({ issues: error.issues }, '[LLMService] createArtDirection: invalid response')
+                yield { error: 'Invalid art direction response.' }
+                return
+            }
+            artDirection = data
+        } catch {
+            logger.error({ artRaw }, '[LLMService] createArtDirection: malformed or invalid response')
+            throw new Error('Invalid art direction response.')
         }
 
         const stream = await this.openai.chat.completions.create({
@@ -191,7 +197,7 @@ export default class LLMService implements LLMServiceInterface {
             const delta = part.choices[0]?.delta?.content ?? ''
             if (delta) {
                 accumulated += delta
-                yield { chunk: delta }
+                yield { phase: 'capture', chunk: delta }
             }
         }
 

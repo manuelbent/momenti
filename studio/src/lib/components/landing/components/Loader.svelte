@@ -1,40 +1,78 @@
 <script lang="ts">
     import { fade } from 'svelte/transition'
 
-    const { streamText = '' }: { streamText?: string } = $props()
+    const { streamText = '', phase = 'capture' }: { streamText?: string; phase?: 'art' | 'capture' } = $props()
 
     // progress ring
     const CIRCUMFERENCE = 2 * Math.PI * 50
-    const ESTIMATED_CHARS = 7_000
-    const progress = $derived(Math.min(0.9, streamText.length / ESTIMATED_CHARS))
+
+    type PhaseConfig = { estimatedChars: number; labels: string[] }
+
+    const PHASE_CONFIG: Record<'art' | 'capture', PhaseConfig> = {
+        art: {
+            estimatedChars: 1_200,
+            labels: [
+                'Imagining your moment...',
+                'Setting the mood...',
+                'Choosing a palette...',
+                'Planning the motion...',
+            ],
+        },
+        capture: {
+            estimatedChars: 7_000,
+            labels: [
+                'Composing your moment...',
+                'Defining the structure...',
+                'Composing the layout...',
+                'Adding visuals...',
+                'Polishing the details...',
+            ],
+        },
+    }
+
+    const config = $derived(PHASE_CONFIG[phase])
+
+    // Completion ratio of the current phase (0 → 1), driven purely by streamed length.
+    const ratio = $derived(Math.min(1, streamText.length / config.estimatedChars))
+
+    // The ring represents the whole generation as one continuous process:
+    // the art phase fills 0 → ART_FRACTION, the capture phase fills ART_FRACTION → MAX.
+    const ART_FRACTION = 0.18
+    const MAX = 0.9
+
+    const progress = $derived(
+        phase === 'art' ?
+            ratio * ART_FRACTION :
+            ART_FRACTION + ratio * (MAX - ART_FRACTION)
+    )
     const dashOffset = $derived(CIRCUMFERENCE * (1 - progress))
 
-    // messages
-    const milestones: Array<{ test: (t: string) => boolean; label: string }> = [
-        { test: () => true, label: 'Imagining your moment...' },
-        { test: t => t.includes('"slug"'), label: 'Naming your moment...' },
-        { test: t => t.includes('"root"'), label: 'Defining the structure...' },
-        { test: t => t.includes('"children"'), label: 'Composing the layout...' },
-        { test: t => t.includes('"image"'), label: 'Adding visuals...' },
-        { test: t => t.length > 5000, label: 'Polishing the details...' },
-    ]
-
-    function deriveStatus(text: string): string {
-        let label = milestones[0].label
-        for (const m of milestones) {
-            if (m.test(text)) label = m.label
-        }
-        return label
-    }
+    // Labels advance by progress band, not by content sniffing — a JSON value that
+    // happens to contain a key name can never jump the label forward.
+    const status = $derived.by(() => {
+        const idx = Math.min(config.labels.length - 1, Math.floor(ratio * config.labels.length))
+        return config.labels[idx]
+    })
 
     // Throttle: each label must be visible for at least MIN_DURATION ms.
     const MIN_DURATION = 1100
     let displayedStatus = $state('Imagining your moment...')
     let lastUpdate = 0
     let pendingTimer: ReturnType<typeof setTimeout>|undefined
+    let prevPhase: 'art' | 'capture' = 'art'
 
     $effect(() => {
-        const next = deriveStatus(streamText)
+        const next = status
+
+        // On phase change, switch label immediately (no throttle).
+        if (phase !== prevPhase) {
+            prevPhase = phase
+            clearTimeout(pendingTimer)
+            displayedStatus = next
+            lastUpdate = Date.now()
+            return
+        }
+
         if (next === displayedStatus) return
 
         const elapsed = Date.now() - lastUpdate
@@ -82,9 +120,9 @@
     </div>
 
     <!-- status label -->
-    <div class="h-4 overflow-hidden">
+    <div class="relative h-4 w-full">
         {#key displayedStatus}
-            <p class="text-[11px] tracking-widest text-ink"
+            <p class="absolute inset-0 flex items-center justify-center whitespace-nowrap text-[11px] tracking-widest text-ink"
                in:fade={{ duration: 500, delay: 80 }}
                out:fade={{ duration: 250 }}
             >{displayedStatus}</p>

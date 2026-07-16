@@ -32,7 +32,7 @@ export const resume = async (callbacks: CaptureCallbacks): Promise<void> => {
 const readStream = async <T>(
     body: ReadableStream<Uint8Array>,
     callbacks: {
-        onChunk: (chunk: string) => void
+        onChunk: (chunk: string, phase?: 'art' | 'capture') => void
         onDone: (data: T) => void
         onError?: (err: Error) => void
         onIdle?: () => void
@@ -67,9 +67,11 @@ const readStream = async <T>(
                 case 'idle':
                     callbacks.onIdle?.()
                     return
-                case 'chunk':
-                    callbacks.onChunk((data as { chunk: string }).chunk)
+                case 'chunk': {
+                    const payload = data as { chunk: string; phase?: 'art' | 'capture' }
+                    callbacks.onChunk(payload.chunk, payload.phase)
                     break
+                }
                 case 'done':
                     callbacks.onDone(data as T)
                     return

@@ -92,7 +92,7 @@ export default class StreamWorker implements StreamWorkerInterface {
                 }
 
                 if (payload.chunk) {
-                    this.emit(userId, emitter, 'chunk', { chunk: payload.chunk })
+                    this.emit(userId, emitter, 'chunk', { chunk: payload.chunk, phase: payload.phase })
                 }
 
                 if (payload.done) {

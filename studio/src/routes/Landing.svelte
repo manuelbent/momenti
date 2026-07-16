@@ -16,8 +16,17 @@
     let isCapturing = $state(false)
     let error = $state('')
     let streamText = $state('')
+    let phase = $state<'art' | 'capture'>('art')
     let showInviteModal = $state(false)
     let loading = $state(true)
+
+    function appendChunk(chunk: string, chunkPhase?: 'art' | 'capture') {
+        if (chunkPhase && chunkPhase !== phase) {
+            phase = chunkPhase
+            streamText = ''
+        }
+        streamText += chunk
+    }
 
     onMount(async () => {
         if (!$inviteKey) {
@@ -30,10 +39,10 @@
                 onIdle: () => {
                     loading = false
                 },
-                onChunk: (chunk) => {
+                onChunk: (chunk, chunkPhase) => {
                     loading = false
                     isCapturing = true
-                    streamText += chunk
+                    appendChunk(chunk, chunkPhase)
                 },
                 onDone: (data) => {
                     moment.set(data)
@@ -71,11 +80,12 @@
         isCapturing = true
         error = ''
         streamText = ''
+        phase = 'art'
 
         try {
             await capture(prompt.trim(), {
-                onChunk: (chunk) => {
-                    streamText += chunk
+                onChunk: (chunk, chunkPhase) => {
+                    appendChunk(chunk, chunkPhase)
                 },
                 onDone: (data) => {
                     moment.set(data)
@@ -103,7 +113,7 @@
                 {:else if isCapturing}
                     <div class="[grid-area:1/1] h-full flex items-center justify-center"
                          transition:fade={{ duration: 400 }}>
-                        <Loader {streamText}/>
+                        <Loader {streamText} {phase}/>
                     </div>
                 {:else}
                     <div class="[grid-area:1/1] h-full" transition:fade={{ duration: 400 }}>

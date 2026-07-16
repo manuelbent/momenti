@@ -1,12 +1,12 @@
 interface CaptureCallbacks {
-    onChunk: (chunk: string) => void
+    onChunk: (chunk: string, phase?: 'art' | 'capture') => void
     onDone: (data: Moment) => void
     onError?: (err: Error) => void
     onIdle?: () => void
 }
 
 interface PatchCallbacks {
-    onChunk: (chunk: string) => void
+    onChunk: (chunk: string, phase?: 'art' | 'capture') => void
     onDone: (data: Change) => void
     onError?: (err: Error) => void
 }
