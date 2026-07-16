@@ -43,13 +43,13 @@ describe('PromptSanitizeMiddleware', () => {
 
     it('strips every known control tag case-insensitively and with inner whitespace', () => {
         const req = makeReq(
-            'a<CHANGE>b</ change >c<Current_Content>d<TARGET_NODE_ID>e</CHANGE_HISTORY>f',
+            'a<CHANGE>b</ change >c<Current_Content>d<TARGET_NODE_ID>e</CHANGE_HISTORY>f<ART_DIRECTION>g',
         )
         const res = makeRes()
 
         middleware.handle(req as Request, res as unknown as Response, next)
 
-        expect(req.body.prompt).toBe('abcdef')
+        expect(req.body.prompt).toBe('abcdefg')
         expect(next).toHaveBeenCalledOnce()
     })
 

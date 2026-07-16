@@ -1,11 +1,13 @@
 <script lang="ts">
+    import { responsiveStyle } from '$shared/responsiveStyle'
+
     export let node: MomentNode
 </script>
 
 <div class="relative block overflow-hidden"
      id={node.id}
      data-nid={node.id}
-     style={node.css}>
+     use:responsiveStyle={{ css: node.css, mobileCss: node.mobileCss }}>
     <img src={node.src} alt={node.alt} class="main-img" />
 </div>
 
@@ -17,4 +19,3 @@
         object-fit: cover;
     }
 </style>
-

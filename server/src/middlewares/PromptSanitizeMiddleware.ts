@@ -24,6 +24,7 @@ export default class PromptSanitizeMiddleware {
         'CHANGE',
         'TARGET_NODE_ID',
         'CHANGE_HISTORY',
+        'ART_DIRECTION',
     ]
 
     /**

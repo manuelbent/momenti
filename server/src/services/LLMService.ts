@@ -1,8 +1,23 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import OpenAI from 'openai'
+import { z } from 'zod'
 import logger from '../config/logger'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
+
+const artDirectionSchema = z.object({
+    mood: z.string().min(1),
+    narrative: z.string().min(1),
+    composition: z.string().min(1),
+    focalPoint: z.string().min(1),
+    typography: z.string().min(1),
+    palette: z.string().min(1),
+    imageTreatment: z.string().min(1),
+    motion: z.string().min(1),
+    mobileInterpretation: z.string().min(1),
+    distinctiveMove: z.string().min(1),
+    avoid: z.array(z.string().min(1)).min(2).max(6),
+})
 
 /**
  * Service responsible for all LLM interactions.
@@ -11,6 +26,22 @@ import LLMServiceInterface from '../interfaces/LLMServiceInterface'
  * @implements {LLMServiceInterface}
  */
 export default class LLMService implements LLMServiceInterface {
+    private hasValidNodeIds(root: MomentNode): boolean {
+        const seen = new Set<string>()
+        const stack = [root]
+
+        while (stack.length > 0) {
+            const node = stack.pop()!
+            if (typeof node.id !== 'string' || !node.id.trim() || seen.has(node.id)) {
+                return false
+            }
+            seen.add(node.id)
+            stack.push(...(node.children ?? []))
+        }
+
+        return true
+    }
+
     /**
      * System prompt for the classifier model.
      * Loaded once at instance creation from `prompts/classifier-prompt.txt`.
@@ -24,6 +55,12 @@ export default class LLMService implements LLMServiceInterface {
      * @private
      */
     private readonly capturePrompt: string
+
+    /**
+     * System prompt for the creative art-direction pass.
+     * @private
+     */
+    private readonly artDirectionPrompt: string
 
     /**
      * Patch system prompt for the Art Director model.
@@ -45,9 +82,31 @@ export default class LLMService implements LLMServiceInterface {
      */
     constructor() {
         this.classifierPrompt = readFileSync(join(join(__dirname, 'prompts'), 'classifier-prompt.txt'), 'utf-8')
+        this.artDirectionPrompt = readFileSync(join(join(__dirname, 'prompts'), 'art-direction-prompt.txt'), 'utf-8')
         this.capturePrompt = readFileSync(join(join(__dirname, 'prompts'), 'capture-prompt.txt'), 'utf-8')
         this.patchPrompt = readFileSync(join(join(__dirname, 'prompts'), 'patch-prompt.txt'), 'utf-8')
         this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    }
+
+    private async createArtDirection(prompt: string): Promise<ArtDirectionBrief> {
+        const response = await this.openai.chat.completions.create({
+            model: 'gpt-5.4',
+            messages: [
+                { role: 'system', content: this.artDirectionPrompt },
+                { role: 'user', content: `<PROMPT>${prompt.trim()}</PROMPT>` },
+            ],
+            response_format: { type: 'json_object' },
+            temperature: 1.15,
+        })
+
+        const raw = response.choices[0].message.content ?? ''
+        const parsed = artDirectionSchema.safeParse(JSON.parse(raw))
+        if (!parsed.success) {
+            logger.error({ issues: parsed.error.issues }, '[LLMService] createArtDirection: invalid response')
+            throw new Error('Invalid art direction response.')
+        }
+
+        return parsed.data
     }
 
     /**
@@ -101,11 +160,25 @@ export default class LLMService implements LLMServiceInterface {
         momentContent?: MomentContent;
         error?: string;
     }> {
+        let artDirection: ArtDirectionBrief
+        try {
+            artDirection = await this.createArtDirection(prompt)
+        } catch (error) {
+            logger.error({ error }, '[LLMService] captureMoment: art direction failed')
+            yield { error: 'Failed to develop a visual direction.' }
+            return
+        }
+
         const stream = await this.openai.chat.completions.create({
             model: 'gpt-5.4',
             messages: [
                 { role: 'system', content: this.capturePrompt },
-                { role: 'user', content: `<PROMPT>${prompt.trim()}</PROMPT>` },
+                {
+                    role: 'user',
+                    content:
+                        `<PROMPT>${prompt.trim()}</PROMPT>\n` +
+                        `<ART_DIRECTION>${JSON.stringify(artDirection)}</ART_DIRECTION>`,
+                },
             ],
             response_format: { type: 'json_object' },
             temperature: 0.95,
@@ -123,14 +196,14 @@ export default class LLMService implements LLMServiceInterface {
         }
 
         try {
-            const momentContent: MomentContent = JSON.parse(accumulated)
-            if (!momentContent.slug || !momentContent.root) {
-                logger.error({ momentContent }, '[LLMService] captureMoment: invalid moment structure')
+            const parsed: MomentContent = JSON.parse(accumulated)
+            if (!parsed.slug || !parsed.root || !this.hasValidNodeIds(parsed.root)) {
+                logger.error({ momentContent: parsed }, '[LLMService] captureMoment: invalid moment structure')
                 yield { error: 'Invalid Moment structure.' }
                 return
             }
 
-            yield { done: true, momentContent }
+            yield { done: true, momentContent: parsed }
         } catch {
             logger.error({ accumulated }, '[LLMService] captureMoment: malformed JSON')
             yield { error: 'Failed to generate a valid Moment.' }
@@ -191,14 +264,14 @@ export default class LLMService implements LLMServiceInterface {
         }
 
         try {
-            const momentContent: MomentContent = JSON.parse(accumulated)
-            if (!momentContent.slug || !momentContent.root) {
-                logger.error({ momentContent }, '[LLMService] patchMoment: invalid moment structure')
+            const parsed: MomentContent = JSON.parse(accumulated)
+            if (!parsed.slug || !parsed.root || !this.hasValidNodeIds(parsed.root)) {
+                logger.error({ momentContent: parsed }, '[LLMService] patchMoment: invalid moment structure')
                 yield { error: 'Invalid Moment structure.' }
                 return
             }
 
-            yield { done: true, momentContent }
+            yield { done: true, momentContent: parsed }
         } catch {
             logger.error({ accumulated }, '[LLMService] patchMoment: malformed JSON')
             yield { error: 'Failed to generate a valid Moment.' }

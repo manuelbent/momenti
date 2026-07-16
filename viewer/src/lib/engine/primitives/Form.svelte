@@ -1,5 +1,6 @@
 <script lang="ts">
     import { submitForm } from '$lib/api/moments'
+    import { responsiveStyle } from '$shared/responsiveStyle'
 
     export let node: MomentNode
 
@@ -22,7 +23,7 @@
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
-<form style={node.css ?? ''} onsubmit={handleSubmit}>
+<form use:responsiveStyle={{ css: node.css, mobileCss: node.mobileCss }} onsubmit={handleSubmit}>
     {#each node.fields ?? [] as field}
         {#if field.type === 'subject'}
             <p>{field.text}</p>
@@ -49,7 +50,6 @@
             <label>
                 {#if field.label}<span>{field.label}</span>{/if}
                 <input style={node.inputCss ?? ''}
-                       class="my-2"
                        type="text"
                        name={field.name}
                        placeholder={field.placeholder ?? ''}

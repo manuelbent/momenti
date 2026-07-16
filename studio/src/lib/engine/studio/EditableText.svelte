@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte'
+    import { responsiveStyle } from '$shared/responsiveStyle'
     import { updateNode } from '$lib/stores/momentContent'
 
     export let node: MomentNode
@@ -35,7 +36,7 @@
     id={node.id}
     data-nid={node.id}
     bind:this={element}
-    style={node.css}
+    use:responsiveStyle={{ css: node.css, mobileCss: node.mobileCss }}
     contenteditable="false"
     onmousedown={handleMouseDown}
     onkeydown={() => {}}

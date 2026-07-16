@@ -20,7 +20,9 @@
 {#if loading}
     <!--  -->
 {:else if moment}
-    <Renderer node={moment.content.root}/>
+    <div data-moment-viewport style="container-type: inline-size;">
+        <Renderer node={moment.content.root}/>
+    </div>
 {:else}
     <NotFound/>
 {/if}

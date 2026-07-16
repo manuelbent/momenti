@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { responsiveStyle } from '$shared/responsiveStyle'
     import { updateNode } from '$lib/stores/momentContent'
     import { registerImage } from '$lib/utils/imageUpload'
 
@@ -18,7 +19,7 @@
      id={node.id}
      data-nid={node.id}
      role="presentation"
-     style={node.css}
+     use:responsiveStyle={{ css: node.css, mobileCss: node.mobileCss }}
      onclick={() => fileInput.click()}
      onkeydown={() => {}}>
     <img src={node.src} alt={node.alt} class="main-img"/>

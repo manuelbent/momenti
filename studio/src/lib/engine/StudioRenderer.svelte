@@ -50,4 +50,3 @@
 {:else}
     <svelte:component this={component} {node}/>
 {/if}
-

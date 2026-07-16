@@ -13,7 +13,7 @@
 
     <!-- scrollable content — rendered at real iPhone width (390 px) then zoomed to fit the frame -->
     <div class="overflow-y-auto bg-white overflow-x-hidden">
-        <div style="width: 390px; zoom: {288 / 390}; container-type: inline-size;">
+        <div data-moment-viewport style="width: 390px; zoom: {288 / 390}; container-type: inline-size;">
             {#if $moment}
                 <Renderer node={$moment.content.root}/>
             {:else}

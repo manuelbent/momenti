@@ -30,6 +30,7 @@ interface MomentNode {
   animationDelay?: number; // milliseconds, 0–1200
   aspectRatio?: 'square' | 'portrait' | 'landscape' | 'wide'; // carousel slides
   css?: string;
+  mobileCss?: string; // declaration overrides below 640px
   tag?: string;
   html?: string;
   src?: string;
@@ -69,20 +70,21 @@ interface MomentContent {
 - "fonts" is required — return an empty array if no Google Fonts are used.
 
 **typography**
-- font sizes must adapt to the parent container, not the viewport;
-- use container-based scaling with clamp() and relative units (e.g. font-size: clamp(1.5rem, 5cqw, 3rem));
-- text inside constrained containers must scale proportionally with container width;
+- font sizes must adapt to the overall moment canvas, not repeatedly shrink inside nested boxes;
+- use canvas-based scaling with clamp() and cqw (e.g. font-size: clamp(1.5rem, 5cqw, 4.5rem)); cqw resolves against the moment canvas;
+- maintain readable minimum sizes: body copy at least 1rem, controls at least 0.9rem, and supporting labels at least 0.7rem;
 - headings must shrink gracefully on smaller containers.
 - preserve or strengthen the existing hierarchy: tight display line-height and letter-spacing, tracked labels, and relaxed body line-height;
 - keep copy concise and avoid flattening distinct display, heading, body, label, and caption styles.
 
 **layout**
+- layout is functional: 'row' creates a horizontal flex container, 'column' creates a vertical flex container, and 'grid' creates an equal-column grid using 'columns'; do not repeat display or flex-direction in css unless intentionally overriding it;
 - compose the page as a readable scrolling narrative; major sections will usually stack vertically, while their internal composition may be horizontal, gridded, overlapping, or asymmetric;
 - keep gaps between sections;
 - prefer one strong element per horizontal row;
 - use horizontal layouts only for small supporting elements;
 - when in doubt, stack vertically;
-- use vw, cqw, or rem (e.g. gap:4vw, gap:2rem) for gap;
+- use rem or clamp() for dependable gaps; avoid tiny gaps derived from narrow nested content;
 - use percentage for padding;
 - never use max-width or fixed pixel widths for containers.
 - preserve the page's compositional idea and section rhythm; when adding a section, vary its scale or alignment without breaking the established design system;
@@ -90,14 +92,29 @@ interface MomentContent {
 - choose mobileLayout intentionally for important rows and grids based on readability and the existing creative concept;
 - location + RSVP, map + details, image + copy, and multi-card compositions will usually benefit from mobileLayout: 'column', but may remain a row or grid when their content fits and stays legible;
 - treat 'row', 'grid', and 'column' as responsive creative controls rather than mandatory patterns.
+- for horizontal rows, sibling widths plus gaps must fit within the parent; prefer flex:1 1 0 over incompatible percentage widths;
+- never place a width:100% child beside another substantial child in a row.
 
 **variant: hero**
-- use layout: 'column' for the hero;
-- the hero box must have position:relative;
-- if the hero has a background image, give that image node css: "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" — never aspect-ratio, never flex sizing;
-- place the overlay (text contents) as a sibling; you can decide where to place the text overlay inside the hero;
-- the hero text must NEVER be placed on more than 1 column;
-- the hero must feel spacious, readable, and focused around a single narrative flow.
+- preserve the hero's existing compositional idea unless the user asks to redesign it;
+- heroes may use row, column, grid, layering, overlap, unusual alignment, image omission, or image prominence;
+- background images are optional and may be full-bleed, framed, cropped, offset, layered, or secondary;
+- preserve readability and a clear focal point without normalizing the hero into a centered title over a darkened photograph.
+
+**layering and collision safety**
+- treat positioned elements as one coordinated composition; do not place independent panels, badges, and CTAs on the same edge or corner;
+- keep copy and controls in normal flow or together inside one intentional overlay group;
+- decorative absolute elements may overlap imagery or empty background, but never headings, body copy, controls, or information-bearing panels;
+- nest a CTA in the panel it belongs to rather than positioning it independently over another element;
+- use position:fixed only when explicitly requested;
+- on mobile, return content overlays to normal flow unless the requested composition has clearly reserved space;
+- before returning JSON, audit containing blocks, occupied edges, text growth, sibling positions, and mobile overrides for collisions.
+
+**responsive styling**
+- 'css' defines base/desktop declarations; optional 'mobileCss' contains declaration overrides at a moment viewport width of 640px or narrower;
+- mobileCss is supported on box, text, image, link, and form nodes;
+- use mobileCss to purposefully recompose mobile layout, focal placement, type scale, image crop, overlap, or rhythm;
+- preserve existing mobileCss on unrelated nodes and avoid mechanically stacking everything.
 
 **variant: card**
 - cards must be side-by-side in a horizontal row on desktop, and stack vertically on mobile;
@@ -117,6 +134,7 @@ interface MomentContent {
 - radio groups must use self-explanatory option strings (e.g. ["Yes", "No"]).
 - use the form 'css' to define intentional field layout and comfortable spacing that matches the existing concept; avoid accidental crowding while allowing deliberate compact or horizontal compositions;
 - use 'inputCss' to keep controls legible and appropriately sized for their composition;
+- when a desktop form uses multiple grid columns or a partial width, provide mobileCss with width:100% and grid-template-columns:1fr;
 - include a 'subject' field when it adds useful context or personality, but avoid labels that merely repeat the event name, section heading, or "RSVP".
 
 **component: image**
@@ -168,6 +186,8 @@ interface MomentContent {
 
 **technical constraints**
 - output raw JSON only — no markdown;
-- css fields contain declaration lists only; never include @media, @keyframes, selectors, pseudo-elements, or JavaScript;
+- every newly added node must have a non-empty globally unique 'id'; preserve all existing IDs and never duplicate one;
+- before output, verify row width budgets, text growth, positioned-node collisions, and mobile recomposition;
+- css and mobileCss fields contain declaration lists only; never include @media, @keyframes, selectors, pseudo-elements, or JavaScript;
 - the output must be the complete, fully valid 'MomentContent' JSON object containing the modification;
 - ensure all brackets and quotes are closed.

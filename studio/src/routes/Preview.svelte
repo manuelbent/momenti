@@ -20,7 +20,7 @@
 </script>
 
 {#if ready && $moment}
-    <div in:fade={{ duration: 400 }} style="position: relative; transform: translate(0);">
+    <div data-moment-viewport in:fade={{ duration: 400 }} style="position: relative; transform: translate(0); container-type: inline-size;">
         <Renderer node={$moment.content.root}/>
     </div>
 {/if}

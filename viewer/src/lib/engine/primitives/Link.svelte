@@ -1,5 +1,6 @@
 <script lang="ts">
     import Icon from '@iconify/svelte'
+    import { responsiveStyle } from '$shared/responsiveStyle'
 
     export let node: MomentNode
 
@@ -23,7 +24,7 @@
     href={node.href || '#'}
     target="_blank"
     rel="noopener noreferrer"
-    style={node.css ?? ''}
+    use:responsiveStyle={{ css: node.css, mobileCss: node.mobileCss }}
 >
     {#if icon}
         <Icon {icon} width="1.4em" height="1.4em" />

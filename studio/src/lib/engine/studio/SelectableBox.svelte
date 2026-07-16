@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte'
+    import { layoutStyle, mobileLayoutStyle, responsiveStyle } from '$shared/responsiveStyle'
     import { selectedSection } from '$lib/stores/section'
     import { sidebarMode } from '$lib/stores/sidebarMode'
 
@@ -13,7 +14,8 @@
     $: isChangesMode = $sidebarMode === 'changes'
     $: isSelected = isSection && isChangesMode && $selectedSection?.id === node.id
     $: delay = Math.max(0, Math.min(node.animationDelay ?? 0, 1200))
-    $: style = `${node.css ?? ''};container-type:inline-size;--moment-delay:${delay}ms;`
+    $: baseCss = `box-sizing:border-box;min-width:0;${layoutStyle(node.layout, node.columns)}${node.css ?? ''};--moment-delay:${delay}ms;`
+    $: mobileCss = `${mobileLayoutStyle(node.mobileLayout)}${node.mobileCss ?? ''}`
 
     onMount(() => {
         if (!node.animation || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -46,7 +48,7 @@
      data-label={node.id}
      data-animation={node.animation}
      data-mobile-layout={node.mobileLayout}
-     {style}
+     use:responsiveStyle={{ css: baseCss, mobileCss }}
      class:selectable={isSection && isChangesMode}
      class:selected={isSelected}
      class:moment-reveal={Boolean(node.animation)}
@@ -92,22 +94,4 @@
         }
     }
 
-    @media (max-width: 640px) {
-        div[data-mobile-layout='column'] {
-            display: flex !important;
-            flex-direction: column !important;
-            grid-template-columns: minmax(0, 1fr) !important;
-            align-items: stretch !important;
-        }
-
-        div[data-mobile-layout='row'] {
-            display: flex !important;
-            flex-direction: row !important;
-        }
-
-        div[data-mobile-layout='grid'] {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        }
-    }
 </style>

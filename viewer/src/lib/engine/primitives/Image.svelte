@@ -1,8 +1,10 @@
 <script lang="ts">
+    import { responsiveStyle } from '$shared/responsiveStyle'
+
     export let node: MomentNode
 </script>
 
-<div class="momenti-img-container" style={node.css ?? ''}>
+<div class="momenti-img-container" use:responsiveStyle={{ css: node.css, mobileCss: node.mobileCss }}>
     <img src={node.src ?? ''} alt={node.alt ?? ''} class="main-img" />
 </div>
 

@@ -9,6 +9,20 @@ interface MomentContent {
     root: MomentNode;
 }
 
+interface ArtDirectionBrief {
+    mood: string;
+    narrative: string;
+    composition: string;
+    focalPoint: string;
+    typography: string;
+    palette: string;
+    imageTreatment: string;
+    motion: string;
+    mobileInterpretation: string;
+    distinctiveMove: string;
+    avoid: string[];
+}
+
 interface MomentNode {
     id: string;
     type: 'box'|'text'|'image'|'form'|'map'|'countdown'|'link'|'navbar'|'footer'|'carousel';
@@ -20,6 +34,7 @@ interface MomentNode {
     animationDelay?: number;
     aspectRatio?: 'square'|'portrait'|'landscape'|'wide';
     css?: string;
+    mobileCss?: string;
     tag?: string;
     html?: string;
     src?: string;
