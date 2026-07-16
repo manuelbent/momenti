@@ -14,7 +14,11 @@ interface MomentNode {
     type: 'box'|'text'|'image'|'form'|'map'|'countdown'|'link'|'navbar'|'footer'|'carousel';
     variant?: 'hero'|'section'|'grid'|'card'|'overlay';
     layout?: 'row'|'column'|'grid';
+    mobileLayout?: 'row'|'column'|'grid';
     columns?: number;
+    animation?: 'fade-up'|'fade-in'|'scale-in'|'slide-right';
+    animationDelay?: number;
+    aspectRatio?: 'square'|'portrait'|'landscape'|'wide';
     css?: string;
     tag?: string;
     html?: string;

@@ -11,8 +11,16 @@
     } as const
 
     const PAGE_SIZE = 2
+    const ASPECT_RATIO = {
+        square: '1 / 1',
+        portrait: '3 / 4',
+        landscape: '4 / 3',
+        wide: '16 / 9',
+    } as const
 
     $: slides = node.children ?? []
+    $: slideAspectRatio = ASPECT_RATIO[node.aspectRatio ?? 'square']
+    $: featuredAspectRatio = node.aspectRatio ? slideAspectRatio : ASPECT_RATIO.wide
 
     $: count = slides.length
 
@@ -69,7 +77,8 @@
                 <div class="grid w-full shrink-0 snap-start grid-cols-2 gap-2">
                     {#each page as slide (slide.id)}
                         <button type="button"
-                                class="aspect-square overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
+                                class="overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
+                                style={`aspect-ratio:${slideAspectRatio};`}
                                 on:click={() => open(slides.indexOf(slide))}>
                             <img src={slide.src ?? ''}
                                  alt={slide.alt ?? ''}
@@ -96,7 +105,8 @@
     <div class="w-full space-y-2" style={node.css ?? ''}>
         <!-- wide slide -->
         <button type="button"
-                class="w-full aspect-video overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
+                class="w-full overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
+                style={`aspect-ratio:${featuredAspectRatio};`}
                 on:click={() => open(0)}>
             <img src={slides[0].src ?? ''}
                  alt={slides[0].alt ?? ''}
@@ -108,7 +118,8 @@
         <div class="grid grid-cols-2 gap-2">
             {#each slides.slice(1) as slide (slide.id)}
                 <button type="button"
-                        class="aspect-square overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
+                        class="overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
+                        style={`aspect-ratio:${slideAspectRatio};`}
                         on:click={() => open(slides.indexOf(slide))}>
                     <img src={slide.src ?? ''}
                          alt={slide.alt ?? ''}
@@ -123,7 +134,8 @@
          style={node.css ?? ''}>
         {#each slides as slide (slide.id)}
             <button type="button"
-                    class="aspect-square overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
+                    class="overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
+                    style={`aspect-ratio:${slideAspectRatio};`}
                     on:click={() => open(slides.indexOf(slide))}>
                 <img src={slide.src ?? ''}
                      alt={slide.alt ?? ''}

@@ -10,9 +10,13 @@ type FormField =
 interface MomentNode {
   id: string;
   type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown' | 'link' | 'navbar' | 'footer' | 'carousel';
-  variant?: 'hero' | 'section' | 'card' | 'overlay';
-  layout?: 'row' | 'column';
+  variant?: 'hero' | 'section' | 'grid' | 'card' | 'overlay';
+  layout?: 'row' | 'column' | 'grid';
+  mobileLayout?: 'row' | 'column' | 'grid';
   columns?: number;
+  animation?: 'fade-up' | 'fade-in' | 'scale-in' | 'slide-right';
+  animationDelay?: number; // milliseconds, 0–1200
+  aspectRatio?: 'square' | 'portrait' | 'landscape' | 'wide'; // carousel slides
   css?: string;
   tag?: string;
   html?: string;
@@ -40,22 +44,41 @@ interface Moment {
 - choose 1–2 Google Fonts matching the mood and aesthetic of the moment;
 - list every font in the top-level "fonts" array using the exact Google Fonts name (e.g. "Playfair Display");
 - "fonts" is required — return an empty array if no Google Fonts are used.
+- deliberately pair a display face with a restrained body face when the concept benefits from contrast;
+- strong pairings include: "Cormorant Garamond" + "DM Sans" for refined editorial, "Bodoni Moda" + "Manrope" for fashion, "Space Grotesk" + "Inter" for modern culture, and "Fraunces" + "Work Sans" for warm character.
+
+**creative direction**
+- before composing the JSON, internally choose one clear aesthetic mode that fits the subject, such as cinematic editorial, warm tactile, quiet luxury, playful pop, raw brutalist, nostalgic print, or futuristic minimal;
+- commit to that direction across typography, palette, spacing, image treatment, borders, and shape language; do not mix unrelated visual styles between sections;
+- define a compact design system as CSS custom properties on the root box, including at least --bg, --fg, --muted, --accent, --surface, --radius, and --space;
+- use those custom properties throughout descendant CSS instead of inventing unrelated colors and radii for each node;
+- avoid the generic centered SaaS-template look. Choose a recognizable compositional idea: asymmetric editorial, immersive image-led, modular grid, poster-like typography, or narrative scroll;
+- create one memorable visual signature, such as an oversized title, dramatic crop, offset card, strong color field, or restrained decorative rule. Do not add decoration without purpose.
 
 **typography**
 - font sizes must adapt to the parent container, not the viewport;
 - use container-based scaling with clamp() and relative units (e.g. font-size: clamp(1.5rem, 5cqw, 3rem));
 - text inside constrained containers must scale proportionally with container width;
 - headings must shrink gracefully on smaller containers.
+- establish a clear hierarchy across display, heading, body, label, and caption text;
+- display headings should usually use tight line-height (0.9–1.05) and negative letter-spacing; labels may use uppercase with generous tracking; body copy should use relaxed line-height (1.5–1.75);
+- use weight contrast intentionally, including light display text or heavy 800–900 headlines when supported by the chosen font;
+- keep prose concise. Prefer a sharp headline, one supporting thought, and a clear action over dense paragraphs.
 
 **layout**
-- major sections must stack vertically from top to bottom;
-- keep gaps between sections;
-- prefer one strong element per horizontal row;
-- use horizontal layouts only for small supporting elements;
-- when in doubt, stack vertically;
+- compose the page as a readable scrolling narrative; major sections will usually stack vertically, while their internal composition may be horizontal, gridded, overlapping, or asymmetric;
+- alternate section rhythm using scale, alignment, background, and density while preserving one visual system;
+- use generous negative space, especially around heroes and key statements;
+- combine full-bleed sections with contained compositions; vary section heights instead of repeating identical cards;
+- controlled asymmetry, overlap, and offset alignment are encouraged when readability remains strong;
 - use vw, cqw, or rem (e.g. gap:4vw, gap:2rem) for gap;
 - use percentage for padding;
 - never use max-width or fixed pixel widths for containers.
+- use layout: 'grid' and variant: 'grid' for modular editorial compositions; set columns between 2 and 4 and ensure children remain legible;
+- do not make every section a grid or every piece of content a card.
+- choose mobileLayout intentionally for every important row or grid based on readability and the creative concept;
+- location + RSVP, map + details, image + copy, and multi-card compositions will usually benefit from mobileLayout: 'column', but may remain a row or grid when their content genuinely fits and the composition stays legible;
+- mobileLayout is a creative responsive control, not a mandatory pattern: use 'row' for compact horizontal arrangements, 'grid' for deliberate two-column mobile compositions, and 'column' when content needs room.
 
 **variant: hero**
 - use layout: 'column' for the hero;
@@ -64,6 +87,8 @@ interface Moment {
 - place the overlay (text contents) as a sibling; you can decide where to place the text overlay inside the hero;
 - the hero text must NEVER be placed on more than 1 column;
 - the hero must feel spacious, readable, and focused around a single narrative flow.
+- use substantial vertical space, typically min-height: 75vh and at least 12% vertical padding;
+- establish the page's strongest scale contrast here; avoid a small centered heading floating in unused space.
 
 **variant: card**
 - cards must be side-by-side in a horizontal row on desktop, and stack vertically on mobile;
@@ -81,18 +106,23 @@ interface Moment {
 - required field: 'css' — styles the form container directly;
 - text inputs must use 'placeholder' instead of labels - no labels, titles, or helper text allowed;
 - radio groups must use self-explanatory option strings (e.g. ["Yes", "No"]).
+- use the form 'css' to define an intentional field layout and comfortable spacing that fits the visual concept; avoid accidental crowding while allowing deliberate compact or horizontal compositions;
+- use 'inputCss' to keep controls legible and appropriately sized for their composition;
+- include a 'subject' field when it adds useful context or personality, but avoid redundant labels that merely repeat the event name, section heading, or "RSVP".
 
 **component: image**
-- required fields: 'src' (short placeholder string) and 'alt';
-- limit: up to 3 images per page;
+- required fields: 'src' (a complete image URL) and a specific, accessible 'alt';
+- allow one hero background image plus up to 3 content images per page;
 - always use fluid widths (width: 100%; object-fit: cover;) and an explicit 4/3 aspect-ratio for cards — never fixed pixel widths.
-- use unsplash placeholders for image src.
+- use only stable https://images.unsplash.com photo URLs, never source.unsplash.com or a fabricated photo ID;
+- choose from these reliable source images when the user provides no image: nature "photo-1500530855697-b586d89ba3ee", portrait "photo-1494790108377-be9c29b29330", food "photo-1414235077428-338989a2e8c0", city "photo-1477959858617-67f85cf4f1df", event "photo-1492684223066-81342ee5ff30"; append ?auto=format&fit=crop&w=1600&q=85;
+- vary image treatment to fit the direction: full-bleed crop, portrait frame, cinematic wide crop, or restrained inset image.
 
 **component: countdown**
 - required field: 'targetDate' — ISO 8601 string extracted from the prompt (e.g. "2026-08-14T23:00:00");
 - required field: 'css' — styles the countdown container to match the page aesthetic;
 - the component renders four labeled blocks (days / hours / minutes / seconds) in a horizontal row automatically — do not wrap it in a layout: 'row' box;
-- never include a countdown node unless the user's prompt contains the word "countdown" or "timer".
+- include a countdown when the user requests one OR when a clearly future event date is central to the moment and a countdown adds useful anticipation.
 
 **component: link**
 - required field: 'href' — destination URL;
@@ -117,11 +147,20 @@ interface Moment {
 - keep it compact: low height, no headings, no large text blocks.
 
 **component: carousel**
-- include ONLY when the user's prompt explicitly mentions a gallery, slideshow, carousel, or the need for multiple photos/images;
-- required field: 'children' — array of 'image' nodes, each with 'src' (unsplash placeholder) and 'alt'; aim for 4 slides;
+- include when the user requests a gallery/slideshow/carousel or when a photo collection is clearly central to the story; do not add it to unrelated pages;
+- required field: 'children' — array of 'image' nodes, each with a stable Unsplash URL and specific alt text; aim for 4 slides;
 - required field: 'css' — at minimum set width: 100%;
+- choose 'aspectRatio' to suit the imagery: portrait for people/fashion, landscape for food/travel, wide for cinematic scenes, square for mixed collections;
 - never wrap the carousel inside a layout: 'row' box; it must occupy the full section width on its own row.
+
+**motion**
+- use 'animation' only on box nodes for restrained entrance motion; never put it on every nested box;
+- animate 3–6 meaningful sections or groups per page using fade-up, fade-in, scale-in, or slide-right;
+- use animationDelay between 0 and 400 for normal reveals; stagger sibling cards in 100–140ms increments, never exceeding 800ms;
+- motion must support hierarchy, not distract from reading. Prefer fade-up for sections, scale-in for a featured card or image, and slide-right for one intentional asymmetric reveal;
+- respect reduced-motion behavior automatically provided by the renderer.
 
 **technical constraints**
 - output raw JSON only — no markdown;
+- css fields contain declaration lists only; never include @media, @keyframes, selectors, pseudo-elements, or JavaScript;
 - ensure all brackets and quotes are closed.

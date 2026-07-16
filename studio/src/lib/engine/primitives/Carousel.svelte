@@ -11,8 +11,16 @@
     } as const
 
     const PAGE_SIZE = 2
+    const ASPECT_RATIO = {
+        square: '1 / 1',
+        portrait: '3 / 4',
+        landscape: '4 / 3',
+        wide: '16 / 9',
+    } as const
 
     $: slides = node.children ?? []
+    $: slideAspectRatio = ASPECT_RATIO[node.aspectRatio ?? 'square']
+    $: featuredAspectRatio = node.aspectRatio ? slideAspectRatio : ASPECT_RATIO.wide
     $: count = slides.length
     $: isPaginated = count > PAGE_SIZE
     $: pages = isPaginated
@@ -41,7 +49,8 @@
                 <div class="grid w-full shrink-0 snap-start grid-cols-2 gap-2">
                     {#each page as slide (slide.id)}
                         <button type="button"
-                                class="aspect-square overflow-hidden rounded cursor-default focus:outline-none">
+                                class="overflow-hidden rounded cursor-default focus:outline-none"
+                                style={`aspect-ratio:${slideAspectRatio};`}>
                             <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover"
                                  loading="lazy"/>
                         </button>
@@ -63,12 +72,14 @@
     </div>
 {:else if isWideSlideNeeded}
     <div id={node.id} data-nid={node.id} class="w-full space-y-2" style={node.css ?? ''}>
-        <button type="button" class="w-full aspect-video overflow-hidden rounded cursor-default focus:outline-none">
+        <button type="button" class="w-full overflow-hidden rounded cursor-default focus:outline-none"
+                style={`aspect-ratio:${featuredAspectRatio};`}>
             <img src={slides[0].src ?? ''} alt={slides[0].alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
         </button>
         <div class="grid grid-cols-2 gap-2">
             {#each slides.slice(1) as slide (slide.id)}
-                <button type="button" class="aspect-square overflow-hidden rounded cursor-default focus:outline-none">
+                <button type="button" class="overflow-hidden rounded cursor-default focus:outline-none"
+                        style={`aspect-ratio:${slideAspectRatio};`}>
                     <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
                 </button>
             {/each}
@@ -77,7 +88,8 @@
 {:else}
     <div id={node.id} data-nid={node.id} class={`grid w-full gap-2 ${gridClass}`} style={node.css ?? ''}>
         {#each slides as slide (slide.id)}
-            <button type="button" class="aspect-square overflow-hidden rounded cursor-default focus:outline-none">
+            <button type="button" class="overflow-hidden rounded cursor-default focus:outline-none"
+                    style={`aspect-ratio:${slideAspectRatio};`}>
                 <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
             </button>
         {/each}

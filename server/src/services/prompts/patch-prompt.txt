@@ -24,7 +24,11 @@ interface MomentNode {
   type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown' | 'link' | 'navbar' | 'footer' | 'carousel';
   variant?: 'hero' | 'section' | 'grid' | 'card' | 'overlay';
   layout?: 'row' | 'column' | 'grid';
+  mobileLayout?: 'row' | 'column' | 'grid';
   columns?: number;
+  animation?: 'fade-up' | 'fade-in' | 'scale-in' | 'slide-right';
+  animationDelay?: number; // milliseconds, 0–1200
+  aspectRatio?: 'square' | 'portrait' | 'landscape' | 'wide'; // carousel slides
   css?: string;
   tag?: string;
   html?: string;
@@ -57,6 +61,7 @@ interface MomentContent {
 - Preserve all existing node 'id' values for nodes that are not being modified.
 - If the user asks to "add" something to the selected section, append it as a valid 'MomentNode' child within the target node or its immediate parent layout, ensuring it strictly follows the component interfaces.
 - Maintain a consistent aesthetic. If you introduce new elements, ensure their CSS (colors, spacing, fonts) matches the design system of the surrounding components.
+- Reuse existing root CSS custom properties and surrounding visual motifs. Do not introduce a second palette, radius system, or unrelated typography style.
 
 **fonts**
 - choose 1–2 Google Fonts matching the mood and aesthetic of the moment;
@@ -68,9 +73,11 @@ interface MomentContent {
 - use container-based scaling with clamp() and relative units (e.g. font-size: clamp(1.5rem, 5cqw, 3rem));
 - text inside constrained containers must scale proportionally with container width;
 - headings must shrink gracefully on smaller containers.
+- preserve or strengthen the existing hierarchy: tight display line-height and letter-spacing, tracked labels, and relaxed body line-height;
+- keep copy concise and avoid flattening distinct display, heading, body, label, and caption styles.
 
 **layout**
-- major sections must stack vertically from top to bottom;
+- compose the page as a readable scrolling narrative; major sections will usually stack vertically, while their internal composition may be horizontal, gridded, overlapping, or asymmetric;
 - keep gaps between sections;
 - prefer one strong element per horizontal row;
 - use horizontal layouts only for small supporting elements;
@@ -78,6 +85,11 @@ interface MomentContent {
 - use vw, cqw, or rem (e.g. gap:4vw, gap:2rem) for gap;
 - use percentage for padding;
 - never use max-width or fixed pixel widths for containers.
+- preserve the page's compositional idea and section rhythm; when adding a section, vary its scale or alignment without breaking the established design system;
+- use layout: 'grid' for intentional modular compositions, not as a default replacement for every row.
+- choose mobileLayout intentionally for important rows and grids based on readability and the existing creative concept;
+- location + RSVP, map + details, image + copy, and multi-card compositions will usually benefit from mobileLayout: 'column', but may remain a row or grid when their content fits and stays legible;
+- treat 'row', 'grid', and 'column' as responsive creative controls rather than mandatory patterns.
 
 **variant: hero**
 - use layout: 'column' for the hero;
@@ -103,18 +115,22 @@ interface MomentContent {
 - required field: 'css' — styles the form container directly;
 - text inputs must use 'placeholder' instead of labels - no labels, titles, or helper text allowed;
 - radio groups must use self-explanatory option strings (e.g. ["Yes", "No"]).
+- use the form 'css' to define intentional field layout and comfortable spacing that matches the existing concept; avoid accidental crowding while allowing deliberate compact or horizontal compositions;
+- use 'inputCss' to keep controls legible and appropriately sized for their composition;
+- include a 'subject' field when it adds useful context or personality, but avoid labels that merely repeat the event name, section heading, or "RSVP".
 
 **component: image**
-- required fields: 'src' (descriptive placeholder string) and 'alt';
-- limit: up to 3 images per page;
+- required fields: 'src' (a complete image URL) and a specific, accessible 'alt';
+- allow one hero background image plus up to 3 content images per page;
 - always use fluid widths (width: 100%; object-fit: cover;) and an explicit 4/3 aspect-ratio for cards — never fixed pixel widths.
-- use unsplash placeholders for image src.
+- use only stable https://images.unsplash.com photo URLs, never source.unsplash.com or a fabricated photo ID;
+- reliable fallbacks are nature "photo-1500530855697-b586d89ba3ee", portrait "photo-1494790108377-be9c29b29330", food "photo-1414235077428-338989a2e8c0", city "photo-1477959858617-67f85cf4f1df", and event "photo-1492684223066-81342ee5ff30"; append ?auto=format&fit=crop&w=1600&q=85.
 
 **component: countdown**
 - required field: 'targetDate' — ISO 8601 string extracted from the prompt (e.g. "2026-08-14T23:00:00");
 - required field: 'css' — styles the countdown container to match the page aesthetic;
 - the component renders four labeled blocks (days / hours / minutes / seconds) in a horizontal row automatically — do not wrap it in a layout: 'row' box;
-- never include a countdown node unless the user's prompt contains the word "countdown" or "timer".
+- include a countdown when explicitly requested or when a clearly future event date is central and the requested change calls for more anticipation.
 
 **component: link**
 - required field: 'href' — destination URL;
@@ -139,12 +155,19 @@ interface MomentContent {
 - keep it compact: low height, no headings, no large text blocks.
 
 **component: carousel**
-- include ONLY when the user's prompt explicitly mentions a gallery, slideshow, carousel, or the need for multiple photos/images;
-- required field: 'children' — array of 'image' nodes, each with 'src' (unsplash placeholder) and 'alt'; aim for 4 slides;
+- include when the change requests a gallery/slideshow/carousel or when a photo collection is clearly central to the requested story;
+- required field: 'children' — array of 'image' nodes, each with a stable Unsplash URL and specific alt text; aim for 4 slides;
 - required field: 'css' — at minimum set width: 100%;
+- choose 'aspectRatio' to suit the imagery: portrait, landscape, wide, or square;
 - never wrap the carousel inside a layout: 'row' box; it must occupy the full section width on its own row.
+
+**motion**
+- use 'animation' only on box nodes and only when the requested change benefits from motion;
+- use fade-up, fade-in, scale-in, or slide-right; use animationDelay from 0–400 normally and up to 800 for staggered siblings;
+- preserve existing animation values on unrelated nodes and do not animate every nested box.
 
 **technical constraints**
 - output raw JSON only — no markdown;
+- css fields contain declaration lists only; never include @media, @keyframes, selectors, pseudo-elements, or JavaScript;
 - the output must be the complete, fully valid 'MomentContent' JSON object containing the modification;
 - ensure all brackets and quotes are closed.

@@ -16,7 +16,9 @@
     {#if links.length > 0}
         <nav class="flex flex-wrap justify-center gap-x-1">
             {#each links as link}
-                <a href={`#${link.href}`}
+                <a href={link.href}
+                   target="_blank"
+                   rel="noopener noreferrer"
                    class="inline-block px-2.5 py-0.5 text-[0.78rem] tracking-wide opacity-70 hover:opacity-100 transition-opacity no-underline text-inherit">
                     {link.label}
                 </a>
