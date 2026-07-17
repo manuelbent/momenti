@@ -82,9 +82,9 @@
     </div>
 
     <!-- status label -->
-    <div class="h-4 overflow-hidden">
+    <div class="relative h-4 w-full">
         {#key displayedStatus}
-            <p class="text-[11px] tracking-widest text-ink"
+            <p class="absolute inset-0 flex items-center justify-center whitespace-nowrap text-[11px] tracking-widest text-ink"
                in:fade={{ duration: 500, delay: 80 }}
                out:fade={{ duration: 250 }}
             >{displayedStatus}</p>
