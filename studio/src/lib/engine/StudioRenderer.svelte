@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Component } from 'svelte'
     import { sidebarMode } from '$lib/stores/sidebarMode'
+    import { effects } from '$lib/engine/effects'
 
     // pure primitives
     import Box        from '$lib/engine/primitives/Box.svelte'
@@ -41,7 +42,19 @@
     $: component = componentsMap[$sidebarMode]?.[node.type]
 </script>
 
-{#if node.type === 'box'}
+{#if node.effects?.length && $sidebarMode === 'moments'}
+    <div style="display:contents" use:effects={node.effects}>
+        {#if node.type === 'box'}
+            <svelte:component this={component} {node}>
+                {#each node.children ?? [] as child (child.id)}
+                    <svelte:self node={child}/>
+                {/each}
+            </svelte:component>
+        {:else}
+            <svelte:component this={component} {node}/>
+        {/if}
+    </div>
+{:else if node.type === 'box'}
     <svelte:component this={component} {node}>
         {#each node.children ?? [] as child (child.id)}
             <svelte:self node={child}/>

@@ -3,6 +3,10 @@ type FormField =
     |{ type: 'radio'; name: string; label?: string; options: { label: string; value: string }[] }
     |{ type: 'input'; name: string; label?: string; placeholder?: string }
 
+type NodeEffect =
+    |{ on?: 'view'|'load'; type: 'fade-in'|'slide-up'|'slide-left'|'slide-right'|'scale-in'; duration?: number; delay?: number }
+    |{ on: 'always'; type: 'float'|'pulse'; duration?: number; delay?: number }
+
 interface MomentContent {
     slug: string;
     fonts?: string[];
@@ -29,6 +33,7 @@ interface MomentNode {
     href?: string;
     platform?: string;
     links?: { label: string; anchor: string }[];
+    effects?: NodeEffect[];
     children?: MomentNode[];
 }
 

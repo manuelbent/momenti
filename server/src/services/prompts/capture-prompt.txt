@@ -7,6 +7,10 @@ type FormField =
   | { type: 'radio';   name: string; label?: string; options: { label: string; value: string }[] }
   | { type: 'input';   name: string; label?: string; placeholder?: string }
 
+type NodeEffect =
+  | { on?: 'view' | 'load'; type: 'fade-in' | 'slide-up' | 'slide-left' | 'slide-right' | 'scale-in'; duration?: number; delay?: number }
+  | { on: 'always'; type: 'float' | 'pulse'; duration?: number; delay?: number }
+
 interface MomentNode {
   id: string;
   type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown' | 'link' | 'navbar' | 'footer' | 'carousel';
@@ -27,6 +31,7 @@ interface MomentNode {
   href?: string;
   platform?: 'instagram' | 'tiktok' | 'facebook' | 'twitter' | 'linkedin' | 'youtube' | 'pinterest' | 'snapchat' | 'github' | 'website';
   links?: { label: string; anchor: string }[]; // navbar anchor links
+  effects?: NodeEffect[]; // optional tasteful animations, see **effects**
   children?: MomentNode[];
 }
 
@@ -121,6 +126,13 @@ interface Moment {
 - required field: 'children' — array of 'image' nodes, each with 'src' (unsplash placeholder) and 'alt'; aim for 4 slides;
 - required field: 'css' — at minimum set width: 100%;
 - never wrap the carousel inside a layout: 'row' box; it must occupy the full section width on its own row.
+
+**effects** (optional)
+- 'effects' adds tasteful motion to a node; use sparingly on hero text/images and key section headings, never on every node;
+- entrance effects (fire once when scrolled into view, default 'on': 'view'): 'fade-in', 'slide-up', 'slide-left', 'slide-right', 'scale-in';
+- idle effects (loop continuously, require 'on': 'always'): 'float', 'pulse' — reserve for a single accent element at most;
+- optional 'duration' (ms) and 'delay' (ms); stagger sibling reveals with small incremental delays (e.g. 0, 100, 200);
+- keep it elegant and editorial: prefer 1–3 subtle entrance effects per page over heavy animation.
 
 **technical constraints**
 - output raw JSON only — no markdown;
