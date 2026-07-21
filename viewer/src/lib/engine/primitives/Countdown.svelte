@@ -43,21 +43,20 @@
     }
 </script>
 
-<div class="flex items-center justify-center gap-1 [font-variant-numeric:tabular-nums]" style={node.css ?? ''}>
+<div class="flex items-center justify-center gap-1 [font-variant-numeric:tabular-nums]" style={node.css ?? ''} id={node.id} data-nid={node.id}>
     {#if timeLeft.expired}
-        <span class="opacity-40 text-2xl">—</span>
+        <span class="text-[clamp(2rem,6cqw,4rem)] font-bold leading-none tracking-wide">00:00:00:00</span>
     {:else}
         {#each [
-            { value: timeLeft.days,    label: 'DAYS' },
-            { value: timeLeft.hours,   label: 'HRS' },
-            { value: timeLeft.minutes, label: 'MIN' },
-            { value: timeLeft.seconds, label: 'SEC' },
+            { value: timeLeft.days,    label: 'days' },
+            { value: timeLeft.hours,   label: 'hrs' },
+            { value: timeLeft.minutes, label: 'min' },
+            { value: timeLeft.seconds, label: 'sec' },
         ] as unit}
             <div class="flex flex-col items-center min-w-[2.5em]">
                 <span class="text-[clamp(2rem,6cqw,4rem)] font-bold leading-none tracking-wide">{pad(unit.value)}</span>
-                <span class="text-[clamp(0.55rem,1.2cqw,0.75rem)] tracking-widest opacity-60 mt-1">{unit.label}</span>
             </div>
-            {#if unit.label !== 'SEC'}
+            {#if unit.label !== 'sec'}
                 <span class="text-[clamp(2rem,6cqw,4rem)] font-light leading-none self-start pt-[0.05em] opacity-50">:</span>
             {/if}
         {/each}

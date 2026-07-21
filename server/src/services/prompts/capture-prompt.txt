@@ -130,12 +130,16 @@ interface Moment {
 - required field: 'css' — at minimum set width: 100%;
 - never wrap the carousel inside a layout: 'row' box; it must occupy the full section width on its own row.
 
-**effects** (optional)
-- 'effects' adds tasteful motion to a node; use sparingly on hero text/images and key section headings, never on every node;
+**effects** (encouraged — every page should feel gently alive)
+- always include a few tasteful entrance effects so the page comes to life as guests scroll; a page with zero motion feels flat and unfinished;
+- reveal each major section as the guest reaches it: give the section's lead element (its heading or lead image) one gentle entrance effect;
+- HARD LIMIT: at most ONE effect per node — never stack multiple effects on the same node (e.g. never fade-in + slide-up on one element);
 - entrance effects (fire once when scrolled into view, default 'on': 'view'): 'fade-in', 'slide-up', 'slide-left', 'slide-right', 'scale-in';
-- idle effects (loop continuously, require 'on': 'always'): 'float', 'pulse' — reserve for a single accent element at most;
-- optional 'duration' (ms) and 'delay' (ms); stagger sibling reveals with small incremental delays (e.g. 0, 100, 200);
-- keep it elegant and editorial: prefer 1–3 subtle entrance effects per page over heavy animation.
+- idle effects (loop continuously, require 'on': 'always'): 'float', 'pulse' — at most ONE idle element on the whole page, and never on a node that also has an entrance effect;
+- per section, animate only 1–2 key elements — never every child; a section where everything moves looks chaotic;
+- HERO: animate at most ONE element (normally the headline). The hero is above the fold, so all its entrance effects fire at the same instant — more than one animated hero element looks messy;
+- when animating sibling elements, stagger them with small incremental delays (e.g. 0, 100, 200) so they reveal in sequence, not all together;
+- aim for roughly 3–6 subtle entrance effects across the whole page — enough to feel alive, never busy.
 
 **technical constraints**
 - output raw JSON only — no markdown;

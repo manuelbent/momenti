@@ -152,6 +152,15 @@ interface MomentContent {
 - required field: 'css' — at minimum set width: 100%;
 - never wrap the carousel inside a layout: 'row' box; it must occupy the full section width on its own row.
 
+**effects** (welcome, but applied with restraint)
+- effects add tasteful motion and every page should feel gently alive; when you add or restyle a section, giving its lead element one subtle entrance effect is encouraged;
+- HARD LIMIT: at most ONE effect per node — never stack multiple effects on the same node;
+- entrance effects (fire once when scrolled into view, default 'on': 'view'): 'fade-in', 'slide-up', 'slide-left', 'slide-right', 'scale-in';
+- idle effects (loop continuously, require 'on': 'always'): 'float', 'pulse' — at most ONE idle element on the whole page, and never on a node that also has an entrance effect;
+- per section animate only 1–2 key elements — never every child; in the hero animate at most ONE element (normally the headline), since above-the-fold effects all fire at once and look messy;
+- preserve existing effects on nodes you are not modifying, and do not sprinkle effects onto unrelated nodes the user did not ask about; keep the whole page around 3–6 subtle entrance effects total;
+- when animating siblings, stagger them with small incremental delays (e.g. 0, 100, 200).
+
 **technical constraints**
 - output raw JSON only — no markdown;
 - the output must be the complete, fully valid 'MomentContent' JSON object containing the modification;
