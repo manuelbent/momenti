@@ -27,7 +27,7 @@ export default class PromptClassifierMiddleware {
 
         if (!classification.valid) {
             return res.status(422).json({
-                error: classification.reason ?? 'Your prompt does not describe a valid moment. Please provide more context.',
+                error: classification.reason ?? 'Your prompt does not describe an event. momenti builds a page for a specific event. Try describing your wedding, party, reunion, or celebration.',
             })
         }
 

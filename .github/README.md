@@ -1,14 +1,15 @@
 # momenti
 
-Momenti is a tool for generating landing pages from a single prompt and make them publicly accessible in literally one click.  
-Describe your event in natural language and an AI model generates a fully structured page with sections, typography, images, forms, and more.  
-The result can be refined in a visual editor, previewed an published.
+Momenti is a tool for generating a single page for your event from one prompt, and making it publicly accessible in literally one click.
+Weddings, birthdays, reunions, parties, concerts — any occasion that needs a page.
+Describe your event in natural language and an AI model generates a fully structured page with sections, typography, images, an RSVP form, a venue map, a countdown, and more.
+No domains, no hosting, no hassle — the result can be refined in a visual editor, previewed and published.
 
 ## How it works
 
-A user writes a prompt — *"A cherry blossom wedding at Villa Camilla on Lake Como, elegant and romantic"* — and the server calls an LLM to produce a structured `MomentContent` tree.  
-That tree is a composition of typed nodes (hero, text, image, form, map, countdown, carousel, etc.) each carrying its own CSS and content.  
-The studio lets the author edit any node directly; the viewer renders it for visitors.
+A user describes their event — *"A cherry blossom wedding at Villa Camilla on Lake Como, July 23rd, elegant and romantic, with an RSVP section"* — and the server calls an LLM to produce a structured `MomentContent` tree.
+That tree is a composition of typed nodes (hero, text, image, form, map, countdown, carousel, etc.) each carrying its own CSS and content — the building blocks of an event page.
+The studio lets the host edit any node directly; the viewer renders it for guests.
 
 ## Structure
 

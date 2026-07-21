@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte'
 
-    const words = ['moment', 'event', 'page', 'story', 'identity', 'chapter']
+    const words = ['event', 'wedding', 'party', 'celebration', 'reunion', 'moment']
 
     interface Props {
         pauseMs?: number

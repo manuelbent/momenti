@@ -15,32 +15,27 @@
     let textarea: HTMLTextAreaElement
 
     const placeholders: string[] = [
-        // Existing ones...
+        // Weddings & formal celebrations
         'A wedding in Lake Como, July 23th, address to confirm, with soft floral aesthetics, light palette and RSVP section...',
+        'An elegant 50th anniversary dinner at Villa Rosa, September 12th, gold and ivory tones, schedule of the evening and RSVP...',
+        'A garden engagement party, cream and sage green, photo gallery, venue map and a kind note asking guests to confirm...',
 
-        // The "Just the Facts" user
-        'im starting a dog walking business in austin. need a page to show prices and a way to text me...',
-        'landing page for an ebook im writing about remote work. just a big headline, a summary, and an email signup box...',
-        'portfolio page for a freelance backend dev. very clean, links to github, dark mode, no fluff...',
+        // Birthdays & personal parties
+        'Surprise 30th birthday party in Brooklyn, August 9th at 8pm, bold and playful, neon colors, countdown and address...',
+        'A 1st birthday party with a soft pastel bear theme, Sunday afternoon, cozy vibe, RSVP and directions to the house...',
+        'A retro 90s themed birthday bash, bright neon on black, pixel fonts, playlist link, countdown to the night...',
 
-        // The "I know what I want it to look like" user
-        'A minimalist portfolio for an architect. Huge images, lots of white space, clean lines, muted gray colors...',
-        'Retro 90s gaming aesthetic for a indie game launch. Pixel art fonts, bright neon green on black, very nostalgic...',
-        'A landing page that looks like a high-end fashion magazine. Big bold serif fonts, cream background, elegant...',
+        // Reunions & gatherings
+        'Family reunion this summer at the lake house, warm rustic feel, weekend schedule, photo gallery and headcount form...',
+        'A 10 year high school class reunion, September 20th, nostalgic and fun, venue map, ticket link and RSVP...',
+        'A big Sunday family lunch to celebrate grandma, cozy and warm, address, time and a form to know who is coming...',
 
-        // The "SaaS Founder in a hurry" user
-        'SaaS landing page for an AI social media scheduler. Hero section with a mockup, feature grid, testimonial cards, and a pricing table...',
-        'Waitlist page for a new fintech app. Sleek, dark mode, glowing blue accents, and a giant "Join the Waitlist" input field...',
-        'A clean B2B landing page for a cybersecurity consulting firm. Professional, trustworthy blue tones, logos of past clients...',
-
-        // The "Local Business / Side Hustle" user
-        'I need a page for my local ceramic studio. Want a cozy, earthy vibe, a gallery of my bowls, and a section for upcoming workshops...',
-        'A simple one-page site for a personal trainer. Energetic vibe, client before/after photos, and a link to book a free intro call...',
-        'Home cleaning service in chicago. Clean blue and white colors, list of services, and a big "Get a Free Quote" form right at the top...',
-
-        // The "Conversational / Rambling" user
-        'Can you make a cool landing page for a underground techno party in Berlin? Needs to feel dark, mysterious, with a countdown timer and ticket link...',
-        'I want a website for my matcha brand. Super clean, soft green tones, peaceful vibe, showing off the ingredients and a "Shop Now" button...',
+        // Cultural & public events
+        'An underground techno night in Berlin, dark and mysterious, countdown timer, lineup and ticket link...',
+        'A summer art exhibition opening, minimal and editorial, big images, date, gallery address and guest list form...',
+        'A charity gala dinner for a local shelter, refined navy and gold, program of the evening, venue map and RSVP...',
+        'An open-air acoustic concert in the park, warm golden hour vibe, set times, location map and free entry note...',
+        'A neighborhood street food festival, vibrant and colorful, date, map, vendor lineup and a countdown to opening...',
     ]
 
     const placeholder = placeholders[Math.floor(Math.random() * placeholders.length)]

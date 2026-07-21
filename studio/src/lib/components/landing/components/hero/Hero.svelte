@@ -7,7 +7,7 @@
     one message away.
 </h1>
 <p class="text-[14px] leading-[1.75] text-ink-faint font-light">
-    From idea to website in <i>one</i> single click.<br>
-    Whether it’s a party, a launch, a special event or a personal brand, just describe what you have in mind.<br>
-    Let <i>momenti</i> instantly generate, design and publish it for you.
+    Describe your event, in your own words.<br>
+    A wedding, a birthday, a reunion, or anything you're celebrating.<br>
+    Get a web page, ready to be published with <i>one</i> single click.
 </p>
