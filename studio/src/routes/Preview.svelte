@@ -3,7 +3,7 @@
     import { fade } from 'svelte/transition'
     import { loadFonts } from '$shared/loadFonts'
     import { moment } from '$lib/stores/moment'
-    import Renderer from '$lib/engine/Renderer.svelte'
+    import Renderer from '$lib/engine/PreviewRenderer.svelte'
 
     let ready = false
 
