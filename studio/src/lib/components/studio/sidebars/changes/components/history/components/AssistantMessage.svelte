@@ -14,9 +14,8 @@
     let isSaving = $state(false)
 
     const handleSave = async () => {
-        isSaving = true
         try {
-            loadContent(change.new_content)
+            isSaving = true
             await saveMoment()
         } finally {
             isSaving = false
