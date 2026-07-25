@@ -9,10 +9,13 @@
     $: isChangesMode = $sidebarMode === 'changes'
     $: isSelected = isSection && isChangesMode && $selectedSection?.id === node.id
 
-    function handleClick() {
+    function handleClick(event: MouseEvent) {
         if (!isSection || !isChangesMode) {
             return
         }
+
+        // prevent outer selectable sections from also handling this click
+        event.stopPropagation()
 
         selectedSection.set($selectedSection?.id === node.id ? null : node)
     }

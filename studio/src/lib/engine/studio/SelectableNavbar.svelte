@@ -7,7 +7,10 @@
 
     $: isSelected = $selectedSection?.id === node.id
 
-    function handleClick() {
+    function handleClick(event: MouseEvent) {
+        // prevent the surrounding selectable section from also handling this click
+        event.stopPropagation()
+
         selectedSection.set($selectedSection?.id === node.id ? null : node)
     }
 </script>
