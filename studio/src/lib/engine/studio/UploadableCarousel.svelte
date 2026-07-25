@@ -1,7 +1,6 @@
 <script lang="ts">
     import { updateNode } from '$lib/stores/momentContent'
     import { registerImage } from '$lib/utils/imageUpload'
-    import { ChevronLeft, ChevronRight } from 'lucide-svelte'
 
     export let node: MomentNode
 
@@ -68,17 +67,6 @@
                 </div>
             {/each}
         </div>
-
-        <button type="button" aria-label="Previous"
-                class="absolute left-1 top-1/2 z-10 grid -translate-y-1/2 place-items-center rounded-full bg-black/45 p-1  cursor-pointer hover:bg-black/65"
-                onclick={() => scrollByPage(-1)}>
-            <ChevronLeft size={18}/>
-        </button>
-        <button type="button" aria-label="Next"
-                class="absolute right-1 top-1/2 z-10 grid -translate-y-1/2 place-items-center rounded-full bg-black/45 p-1  cursor-pointer hover:bg-black/65"
-                onclick={() => scrollByPage(1)}>
-            <ChevronRight size={18}/>
-        </button>
     </div>
 {:else if isWideSlideNeeded}
     <div id={node.id} data-nid={node.id} class="w-full space-y-2" style={node.css ?? ''}>

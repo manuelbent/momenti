@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { ChevronLeft, ChevronRight, X } from 'lucide-svelte'
     import { onDestroy } from 'svelte'
 
     export let node: MomentNode
@@ -37,10 +36,6 @@
 
     let trackEl: HTMLDivElement
 
-    function scrollByPage(dir: -1 | 1) {
-        trackEl?.scrollBy({ left: dir * trackEl.clientWidth, behavior: 'smooth' })
-    }
-
     const open  = (i: number) => { lightboxIndex = i }
     const close = () => { lightboxIndex = null }
 
@@ -51,6 +46,13 @@
     const next = () => {
         if (lightboxIndex === null) return
         lightboxIndex = (lightboxIndex + 1) % slides.length
+    }
+
+    const onImageTap = (e: MouseEvent) => {
+        if (slides.length <= 1) return
+        const { left, width } = (e.currentTarget as HTMLElement).getBoundingClientRect()
+        if (e.clientX - left < width / 2) prev()
+        else next()
     }
 
     const onKeydown = (e: KeyboardEvent) => {
@@ -89,17 +91,6 @@
                 </div>
             {/each}
         </div>
-
-        <button type="button" aria-label="Previous"
-                class="absolute left-1 top-1/2 z-10 grid -translate-y-1/2 place-items-center rounded-full bg-black/45 p-1 cursor-pointer hover:bg-black/65"
-                on:click={() => scrollByPage(-1)}>
-            <ChevronLeft size={18}/>
-        </button>
-        <button type="button" aria-label="Next"
-                class="absolute right-1 top-1/2 z-10 grid -translate-y-1/2 place-items-center rounded-full bg-black/45 p-1 cursor-pointer hover:bg-black/65"
-                on:click={() => scrollByPage(1)}>
-            <ChevronRight size={18}/>
-        </button>
     </div>
 {:else if isWideSlideNeeded}
     <div class="w-full space-y-2" style={node.css ?? ''}>
@@ -153,25 +144,19 @@
             aria-modal="true"
             tabindex="-1"
     >
-        <button class="absolute top-4 right-4 bg-black/40 rounded-full p-1 cursor-pointer" on:click={close} aria-label="Close">
-            <X size={18} />
-        </button>
-
-        {#if slides.length > 1}
-            <button class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 rounded-full p-1 cursor-pointer" on:click={prev} aria-label="Previous">
-                <ChevronLeft size={18} />
-            </button>
-            <button class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 rounded-full p-1 cursor-pointer" on:click={next} aria-label="Next">
-                <ChevronRight size={18} />
-            </button>
-        {/if}
-
         {#if slides[lightboxIndex].type === 'image'}
-            <img
-                    src={slides[lightboxIndex].src ?? ''}
-                    alt={slides[lightboxIndex].alt ?? ''}
-                    class="max-w-[90vw] max-h-[90vh] object-contain rounded shadow-2xl"
-            />
+            <button
+                    type="button"
+                    class="block cursor-default"
+                    on:click|stopPropagation={onImageTap}
+                    aria-label={slides.length > 1 ? 'Tap left or right to navigate' : undefined}
+            >
+                <img
+                        src={slides[lightboxIndex].src ?? ''}
+                        alt={slides[lightboxIndex].alt ?? ''}
+                        class="max-w-[90vw] max-h-[90vh] object-contain rounded shadow-2xl {slides.length > 1 ? 'cursor-pointer' : ''}"
+                />
+            </button>
         {:else if slides[lightboxIndex].html}
             <div class="max-w-[90vw] max-h-[90vh] overflow-auto">{@html slides[lightboxIndex].html}</div>
         {/if}

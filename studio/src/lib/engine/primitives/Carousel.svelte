@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { ChevronLeft, ChevronRight } from 'lucide-svelte'
-
     export let node: MomentNode
 
     const COL_CLASS = {
@@ -27,10 +25,6 @@
     ].join(' ')
 
     let trackEl: HTMLDivElement
-
-    function scrollByPage(dir: -1|1) {
-        trackEl?.scrollBy({ left: dir * trackEl.clientWidth, behavior: 'smooth' })
-    }
 </script>
 
 {#if isPaginated}
@@ -49,17 +43,6 @@
                 </div>
             {/each}
         </div>
-
-        <button type="button" aria-label="Previous"
-                class="absolute left-1 top-1/2 z-10 grid -translate-y-1/2 place-items-center rounded-full bg-black/45 p-1 cursor-pointer hover:bg-black/65"
-                on:click={() => scrollByPage(-1)}>
-            <ChevronLeft size={18}/>
-        </button>
-        <button type="button" aria-label="Next"
-                class="absolute right-1 top-1/2 z-10 grid -translate-y-1/2 place-items-center rounded-full bg-black/45 p-1 cursor-pointer hover:bg-black/65"
-                on:click={() => scrollByPage(1)}>
-            <ChevronRight size={18}/>
-        </button>
     </div>
 {:else if isWideSlideNeeded}
     <div id={node.id} data-nid={node.id} class="w-full space-y-2" style={node.css ?? ''}>
