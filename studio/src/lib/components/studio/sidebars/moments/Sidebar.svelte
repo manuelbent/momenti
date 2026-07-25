@@ -11,10 +11,21 @@
         const list = await getMoments()
         moments.set(list)
 
-        // if the store has no moment defined (new session)
-        // use the first (most recent) one
+        // if the store has no moment defined (e.g. after a page refresh),
+        // restore the previously previewed moment from local storage,
+        // falling back to the first (most recent) one
         if (!$moment) {
-            moment.set($moments[0])
+            let current: Moment | null = null
+            try {
+                const stored = localStorage.getItem('momenti__preview')
+                if (stored) {
+                    current = JSON.parse(stored) as Moment
+                }
+            } catch (err) {
+                console.error('[Sidebar] Could not parse previewed moment.', err)
+            }
+
+            moment.set(current ?? $moments[0])
         }
 
         isLoading.set(false)

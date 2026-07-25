@@ -9,7 +9,7 @@
 
     onMount(async () => {
         try {
-            const m: Moment = JSON.parse(localStorage.getItem('moment__preview')!)
+            const m: Moment = JSON.parse(localStorage.getItem('momenti__preview')!)
             moment.set(m)
             loadFonts(m.content.fonts)
         } catch (err) {

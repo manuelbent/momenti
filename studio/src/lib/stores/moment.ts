@@ -8,7 +8,7 @@ const useMomentStore = () => {
         subscribe,
         set: (moment: Moment)=> {
             try {
-                localStorage.setItem('moment__preview', JSON.stringify(moment))
+                localStorage.setItem('momenti__preview', JSON.stringify(moment))
             } catch (err) {
                 console.error('[Store] Could not store moment for preview.')
             }
