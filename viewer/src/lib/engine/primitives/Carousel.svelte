@@ -1,5 +1,6 @@
 <script lang="ts">
     import { ChevronLeft, ChevronRight, X } from 'lucide-svelte'
+    import { onDestroy } from 'svelte'
 
     export let node: MomentNode
 
@@ -57,6 +58,14 @@
         if (e.key === 'ArrowLeft') prev()
         if (e.key === 'ArrowRight') next()
     }
+
+    $: if (typeof document !== 'undefined') {
+        document.body.style.overflow = lightboxIndex !== null ? 'hidden' : ''
+    }
+
+    onDestroy(() => {
+        if (typeof document !== 'undefined') document.body.style.overflow = ''
+    })
 </script>
 
 <svelte:window on:keydown={onKeydown} />
