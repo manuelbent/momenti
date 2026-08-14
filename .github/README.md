@@ -3,7 +3,11 @@
 Momenti generates a single page for your event from one prompt and publishes it in one click.
 Weddings, birthdays, reunions, parties, concerts, or any occasion that needs a page.
 Describe your event in natural language and the model produces a structured page with sections, typography, images, an RSVP form, a venue map, and a countdown.
-You don't need domains or hosting. The result can be refined in a visual editor, previewed, and published.
+
+Every page gets its own subdomain on `momenti.cc`. 
+The moment starts with a subdomain derived from its title (for example `your-event.momenti.cc`), and you can change it to any name you like, with availability checked live as you type.
+There are no domains to buy and no hosting to set up.
+The moment you publish, the page is live at `https://your-event.momenti.cc`, ready to share immediately.
 
 ## How it works
 
