@@ -11,7 +11,10 @@
     onMount(async () => {
         const [slug] = window.location.hostname.split('.')
         moment = await getMomentBySlug(slug)
-        document.title = moment?.content.slug || document.title
+
+        console.log(moment)
+
+        document.title = moment?.slug || document.title
         loadFonts(moment?.content.fonts)
         loading = false
     })

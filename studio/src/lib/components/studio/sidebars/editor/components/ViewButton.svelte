@@ -3,7 +3,7 @@
     import { moment } from '$lib/stores/moment'
     import Button from '$lib/components/ui/Button.svelte'
 
-    const href = import.meta.env.VITE_ENV === 'local' ?
+    $: href = import.meta.env.VITE_ENV === 'local' ?
         `http://${$moment.slug}.localhost:5174` :
         `https://${$moment.slug}.momenti.cc`
 </script>
