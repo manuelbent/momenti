@@ -12,6 +12,7 @@ The moment you publish, the page is live at `https://your-event.momenti.cc`, rea
 ## How it works
 
 A user describes their event, for example *"A cherry blossom wedding at Villa Camilla on Lake Como, July 23rd, elegant and romantic, with an RSVP section"*, and the server calls an LLM to produce a structured `MomentContent` tree.
+While its JSON is streaming, the studio incrementally parses complete nodes and renders them in a non-interactive preview that automatically follows the page as it is assembled.
 That tree is a composition of typed nodes (hero, text, image, form, map, countdown, carousel, and so on), each carrying its own CSS and content.
 The studio lets the host edit any node directly, and the viewer renders it for guests.
 
@@ -41,7 +42,7 @@ Node.js / Express written in TypeScript. Responsibilities:
 ### studio
 
 Svelte 5 single-page application.  
-Lets authenticated users prompt for a new moment, watch generation stream in, then edit every node in the tree (text, styles, images, links, forms) before saving and publishing.
+Lets authenticated users prompt for a new moment, watch its page assemble in a live streaming preview, then edit every node in the tree (text, styles, images, links, forms) before saving and publishing.
 
 ### viewer
 
@@ -68,4 +69,3 @@ Sequelize migrations and seeders. The default database is SQLite, configured via
 | Frontend | Svelte 5, Vite, Tailwind CSS 4 |
 | Testing | Vitest, Supertest |
 | Process manager | PM2 |
-
