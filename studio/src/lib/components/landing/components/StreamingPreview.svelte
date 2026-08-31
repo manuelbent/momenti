@@ -36,7 +36,7 @@
     })
 </script>
 
-<div class="preview-wrap relative block w-full min-w-0">
+<div class="preview-wrap relative w-full min-w-0">
     <div
         class="preview-shell relative h-[clamp(18rem,42vh,27rem)] w-full overflow-hidden rounded-2xl border border-white/80 bg-white/75"
         aria-label="Your moment is being assembled"
@@ -55,7 +55,7 @@
         </div>
 
         <div
-            class="preview-scroll h-[calc(100%-2rem)] overflow-hidden"
+            class="h-[calc(100%-2rem)] overflow-hidden"
             bind:this={previewScroll}
             bind:clientWidth={containerWidth}
         >
@@ -104,14 +104,6 @@
             0 1px 0 rgba(255, 255, 255, 0.9) inset,
             0 24px 60px -38px rgba(13, 13, 13, 0.32),
             0 8px 24px -18px rgba(13, 13, 13, 0.14);
-    }
-
-    .preview-scroll {
-        scrollbar-width: none;
-    }
-
-    .preview-scroll::-webkit-scrollbar {
-        display: none;
     }
 
     .live-dot {

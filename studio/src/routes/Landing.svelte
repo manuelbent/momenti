@@ -13,41 +13,32 @@
     import Footer from '$lib/components/landing/components/Footer.svelte'
 
     let prompt = $state('')
-    let isCapturing = $state(false)
     let error = $state('')
     let streamText = $state('')
     let showInviteModal = $state(false)
     let loading = $state(true)
     let generationStage = $state<'form'|'empty'|'resizing'|'preview'>('form')
-    let transitionRun = 0
-    const isMockCapture = import.meta.env.DEV && new URLSearchParams(window.location.search).has('mock-capture')
 
+    const FORM_FADE_DURATION = 350
+    const TRANSITION_PAUSE = 100
+    const RESIZE_DURATION = 700
     const wait = (duration: number) => new Promise(resolve => setTimeout(resolve, duration))
 
     async function showStreamingPreview() {
-        const run = ++transitionRun
-        generationStage = 'empty'
-        await wait(450)
-        if (run !== transitionRun) return
+        const steps = [
+            ['empty', FORM_FADE_DURATION + TRANSITION_PAUSE],
+            ['resizing', RESIZE_DURATION],
+        ] as const
 
-        generationStage = 'resizing'
-        await wait(650)
-        if (run !== transitionRun) return
-
+        for (const [stage, duration] of steps) {
+            generationStage = stage
+            await wait(duration)
+            if (generationStage !== stage) return
+        }
         generationStage = 'preview'
     }
 
-    function showForm() {
-        transitionRun++
-        generationStage = 'form'
-    }
-
     onMount(async () => {
-        if (isMockCapture) {
-            loading = false
-            return
-        }
-
         if (!$inviteKey) {
             loading = false
             return
@@ -60,7 +51,6 @@
                 },
                 onChunk: (chunk) => {
                     loading = false
-                    isCapturing = true
                     generationStage = 'preview'
                     streamText += chunk
                 },
@@ -79,7 +69,7 @@
             return
         }
 
-        if (!$inviteKey && !isMockCapture) {
+        if (!$inviteKey) {
             showInviteModal = true
             return
         }
@@ -97,35 +87,11 @@
             return
         }
 
-        isCapturing = true
         error = ''
         streamText = ''
         void showStreamingPreview()
 
         try {
-            if (isMockCapture) {
-                const stored = localStorage.getItem('momenti__preview')
-                if (!stored) {
-                    error = 'No saved moment found to replay.'
-                    isCapturing = false
-                    showForm()
-                    return
-                }
-
-                const mockMoment = JSON.parse(stored) as Moment
-                const content = JSON.stringify(mockMoment.content)
-                const chunkSize = Math.ceil(content.length / 180)
-
-                for (let index = 0; index < content.length; index += chunkSize) {
-                    streamText += content.slice(index, index + chunkSize)
-                    await new Promise(resolve => setTimeout(resolve, 25))
-                }
-
-                moment.set(mockMoment)
-                setTimeout(() => push('/studio'), 450)
-                return
-            }
-
             await capture(prompt.trim(), {
                 onChunk: (chunk) => {
                     streamText += chunk
@@ -137,8 +103,7 @@
             })
         } catch (e) {
             error = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
-            isCapturing = false
-            showForm()
+            generationStage = 'form'
         }
     }
 </script>
@@ -148,31 +113,23 @@
     <Navbar/>
 
     <main class="flex-1 flex items-center justify-center px-6 py-10">
-        <div
-            class="w-full max-w-180 flex flex-col gap-5"
-        >
+        <div class="w-full max-w-180 flex flex-col gap-5">
             <Hero/>
 
-            <div
-                class="grid w-full min-w-0 transition-[height] duration-700 ease-out"
-                class:h-57.5={generationStage === 'form' || generationStage === 'empty'}
-                class:h-[clamp(18rem,42vh,27rem)]={generationStage === 'resizing' || generationStage === 'preview'}
-            >
+            <div class="grid w-full min-w-0 transition-[height] duration-700 ease-out"
+                 class:h-57.5={generationStage === 'form' || generationStage === 'empty'}
+                 class:h-[clamp(18rem,42vh,27rem)]={generationStage === 'resizing' || generationStage === 'preview'}>
                 {#if loading}
                     <!-- -->
                 {:else if generationStage === 'preview'}
-                    <div
-                        class="[grid-area:1/1] flex h-full w-full min-w-0 items-center justify-center pt-2"
-                        in:fade={{ duration: 550 }}
-                    >
+                    <div class="[grid-area:1/1] flex h-full w-full min-w-0 items-center justify-center pt-2"
+                         in:fade={{ duration: 550 }}>
                         <StreamingPreview {streamText}/>
                     </div>
                 {:else if generationStage === 'form'}
-                    <div
-                        class="[grid-area:1/1] h-full"
-                        in:fade={{ duration: 400 }}
-                        out:fade={{ duration: 350 }}
-                    >
+                    <div class="[grid-area:1/1] h-full"
+                         in:fade={{ duration: 400 }}
+                         out:fade={{ duration: FORM_FADE_DURATION }}>
                         <FormCard bind:prompt {error} onCapture={handleCapture}/>
                     </div>
                 {/if}
