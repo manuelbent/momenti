@@ -9,5 +9,5 @@
 <p class="text-[14px] leading-[1.75] text-ink-faint font-light">
     Describe your event, in your own words.<br>
     A wedding, a birthday, a reunion, or anything you're celebrating.<br>
-    Get a web page, ready to be published with <i>one</i> single click.
+    Watch your web page come to life, and publish it with <i>one</i> single click.
 </p>
