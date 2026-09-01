@@ -89,12 +89,18 @@
 
         error = ''
         streamText = ''
-        void showStreamingPreview()
+        generationStage = 'empty'
 
         try {
             await capture(prompt.trim(), {
                 onChunk: (chunk) => {
+                    if (generationStage === 'empty') {
+                        showStreamingPreview()
+                    }
                     streamText += chunk
+                },
+                onError: (error) => {
+                    throw error
                 },
                 onDone: (data) => {
                     moment.set(data)
