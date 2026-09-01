@@ -50,7 +50,7 @@
             </div>
             <div class="mx-auto flex items-center gap-2 pr-7 text-[9px] tracking-[0.12em] text-black/25">
                 <span class="live-dot h-1 w-1 rounded-full bg-black/35"></span>
-                {content?.slug || 'taking shape'}
+                https://{content?.slug || ''}.momenti.cc
             </div>
         </div>
 
