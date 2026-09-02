@@ -4,11 +4,9 @@
 
     let {
         prompt = $bindable(''),
-        error = '',
         onCapture,
     }: {
         prompt?: string
-        error?: string
         onCapture: () => void
     } = $props()
 
@@ -58,10 +56,6 @@
             bind:value={prompt}
             rows={5}
             onkeydown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) onCapture() }}></textarea>
-
-    {#if error}
-        <p class="text-xs text-error px-5.5 py-2">{error}</p>
-    {/if}
 
     <div class="flex justify-end p-3 border-t border-ink-accent">
         <RoundButton onclick={onCapture} disabled={!prompt.trim()}>

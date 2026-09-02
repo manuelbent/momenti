@@ -5,29 +5,27 @@
     import { capture, resume } from '$lib/api/moments'
     import { moment } from '$lib/stores/moment'
     import { inviteKey } from '$lib/stores/auth'
+    import { showToast } from '$lib/stores/toast'
     import Navbar from '$lib/components/landing/components/Navbar.svelte'
     import Hero from '$lib/components/landing/components/hero/Hero.svelte'
     import StreamingPreview from '$lib/components/landing/components/StreamingPreview.svelte'
     import FormCard from '$lib/components/landing/components/FormCard.svelte'
     import InviteModal from '$lib/components/landing/InviteModal.svelte'
     import Footer from '$lib/components/landing/components/Footer.svelte'
+    import Toast from '$lib/components/ui/Toast.svelte'
 
     let prompt = $state('')
-    let error = $state('')
     let streamText = $state('')
     let showInviteModal = $state(false)
     let loading = $state(true)
     let generationStage = $state<'form'|'empty'|'resizing'|'preview'>('form')
 
-    const FORM_FADE_DURATION = 350
-    const TRANSITION_PAUSE = 100
-    const RESIZE_DURATION = 700
     const wait = (duration: number) => new Promise(resolve => setTimeout(resolve, duration))
 
     async function showStreamingPreview() {
         const steps = [
-            ['empty', FORM_FADE_DURATION + TRANSITION_PAUSE],
-            ['resizing', RESIZE_DURATION],
+            ['empty', 450],
+            ['resizing', 700],
         ] as const
 
         for (const [stage, duration] of steps) {
@@ -59,8 +57,9 @@
                     setTimeout(() => push('/studio'), 450)
                 },
             })
-        } catch {
+        } catch (e) {
             loading = false
+            showToast(e instanceof Error ? e.message : 'Something went wrong. Please try again.', 'error')
         }
     })
 
@@ -87,7 +86,6 @@
             return
         }
 
-        error = ''
         streamText = ''
         generationStage = 'empty'
 
@@ -108,8 +106,8 @@
                 },
             })
         } catch (e) {
-            error = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
             generationStage = 'form'
+            showToast(e instanceof Error ? e.message : 'Something went wrong. Please try again.', 'error')
         }
     }
 </script>
@@ -129,14 +127,14 @@
                     <!-- -->
                 {:else if generationStage === 'preview'}
                     <div class="[grid-area:1/1] flex h-full w-full min-w-0 items-center justify-center pt-2"
-                         in:fade={{ duration: 550 }}>
+                         in:fade={{ duration: 450 }}>
                         <StreamingPreview {streamText}/>
                     </div>
                 {:else if generationStage === 'form'}
                     <div class="[grid-area:1/1] h-full"
-                         in:fade={{ duration: 400 }}
-                         out:fade={{ duration: FORM_FADE_DURATION }}>
-                        <FormCard bind:prompt {error} onCapture={handleCapture}/>
+                         in:fade={{ duration: 450 }}
+                         out:fade={{ duration: 450 }}>
+                        <FormCard bind:prompt onCapture={handleCapture}/>
                     </div>
                 {/if}
             </div>
@@ -149,3 +147,5 @@
 {#if showInviteModal}
     <InviteModal {onUnlock} onClose={() => (showInviteModal = false)}/>
 {/if}
+
+<Toast/>

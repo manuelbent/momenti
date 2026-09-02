@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { MAX_PROMPT_LENGTH, MIN_PROMPT_LENGTH } from '../config/constants'
+import { MIN_PROMPT_LENGTH } from '../config/constants'
 
 /**
  * @class GenerateMomentRequestValidator
@@ -15,11 +15,6 @@ export default class GenerateMomentRequestValidator {
 
         if (typeof prompt !== 'string' || prompt.length < MIN_PROMPT_LENGTH) {
             res.status(400).json({ error: `Prompt must be at least ${MIN_PROMPT_LENGTH} characters.` })
-            return
-        }
-
-        if (prompt.length > MAX_PROMPT_LENGTH) {
-            res.status(400).json({ error: `Prompt must be at most ${MAX_PROMPT_LENGTH} characters.` })
             return
         }
 
