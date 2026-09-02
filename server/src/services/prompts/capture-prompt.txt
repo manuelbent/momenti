@@ -100,7 +100,7 @@ interface Moment {
 - required field: 'targetDate' — ISO 8601 string extracted from the prompt (e.g. "2026-08-14T23:00:00");
 - required field: 'css' — styles the countdown container to match the page aesthetic;
 - the component renders four labeled blocks (days / hours / minutes / seconds) in a horizontal row automatically — do not wrap it in a layout: 'row' box;
-- include a countdown whenever the prompt states an event date or time, or when it mentions a "countdown" or "timer"; omit it only when no date/time is known.
+- include a countdown only when it mentions a "countdown" or "timer".
 
 **component: link**
 - required field: 'href' — destination URL;
