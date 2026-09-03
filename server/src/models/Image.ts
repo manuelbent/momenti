@@ -9,8 +9,8 @@ export default class Image extends Model {
     declare type: ImageType
     declare moment_id: number|null
     declare moment_node_id: string|null
-    declare purpose: string
-    declare prompt: string
+    declare purpose: string|null
+    declare prompt: string|null
     declare error: string|null
     declare created_at: Date
 
@@ -44,11 +44,11 @@ Image.init({
     },
     purpose: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     prompt: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     error: {
         type: DataTypes.STRING,

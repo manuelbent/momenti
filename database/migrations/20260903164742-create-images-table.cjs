@@ -30,11 +30,11 @@ module.exports = {
             },
             purpose: {
                 type: Sequelize.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             prompt: {
                 type: Sequelize.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             error: {
                 type: Sequelize.STRING,
