@@ -10,6 +10,10 @@ module.exports = {
                 autoIncrement: true,
                 allowNull: false,
             },
+            url: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
             type: {
                 type: Sequelize.ENUM('uploaded', 'generated'),
                 allowNull: false,

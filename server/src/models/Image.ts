@@ -24,6 +24,10 @@ Image.init({
         primaryKey: true,
         allowNull: false
     },
+    url: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     type: {
         type: DataTypes.ENUM('uploaded', 'generated'),
         allowNull: false
