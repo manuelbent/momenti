@@ -87,11 +87,6 @@ router.post('/invite-keys/validate',
 )
 
 // image upload route
-router.post('/images',
-    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
-    (req, res) => ioc.imageController.generate(req, res)
-)
-
 router.put('/images',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.uploadMiddleware.handle(req, res, next),

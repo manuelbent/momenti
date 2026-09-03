@@ -43,23 +43,4 @@ export default class ImageController {
             res.status(500).json({ error: 'Failed to upload image.' })
         }
     }
-
-    /**
-     * Generates an image from a given prompt.
-     * The image is then uploaded to R2 and stored in the DB.
-     * @param {Request} req
-     * @param {Response} res
-     */
-    public async generate(req: Request, res: Response): Promise<void> {
-        try {
-            const { prompt } = req.body
-            const image = await this.imageService.generate(prompt)
-            const url = await this.r2Service.upload(image, 'image/png', 'generated.png')
-            await this.imageService.store({ url, type: 'generated' })
-            res.status(201).json({ url })
-        } catch (err) {
-            logger.error({ err }, '[ImageController] generate error')
-            res.status(500).json({ error: 'Failed to generate image.' })
-        }
-    }
 }
