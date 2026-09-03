@@ -51,6 +51,15 @@ export default class ImageController {
      * @param {Response} res
      */
     public async generate(req: Request, res: Response): Promise<void> {
-        res.status(200).send()
+        try {
+            const { prompt } = req.body
+            const image = await this.imageService.generate(prompt)
+            const url = await this.r2Service.upload(image, 'image/png', 'generated.png')
+            await this.imageService.store({ url, type: 'generated' })
+            res.status(201).json({ url })
+        } catch (err) {
+            logger.error({ err }, '[ImageController] generate error')
+            res.status(500).json({ error: 'Failed to generate image.' })
+        }
     }
 }
