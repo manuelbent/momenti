@@ -3,11 +3,15 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('generated_images', {
+        await queryInterface.createTable('images', {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
                 autoIncrement: true,
+                allowNull: false,
+            },
+            type: {
+                type: Sequelize.ENUM('uploaded', 'generated'),
                 allowNull: false,
             },
             moment_id: {
@@ -43,10 +47,10 @@ module.exports = {
             },
         })
 
-        await queryInterface.addIndex('generated_images', ['moment_id'])
+        await queryInterface.addIndex('images', ['moment_id'])
     },
 
     async down(queryInterface) {
-        await queryInterface.dropTable('generated_images')
+        await queryInterface.dropTable('images')
     }
 }

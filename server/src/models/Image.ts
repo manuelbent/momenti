@@ -2,8 +2,11 @@ import { Model, DataTypes, BelongsToGetAssociationMixin } from 'sequelize'
 import sequelize from '../config/sequelize'
 import Moment from './Moment'
 
-export default class GeneratedImage extends Model {
+export type ImageType = 'uploaded'|'generated'
+
+export default class Image extends Model {
     declare id: number
+    declare type: ImageType
     declare moment_id: number|null
     declare moment_node_id: string|null
     declare purpose: string
@@ -14,11 +17,15 @@ export default class GeneratedImage extends Model {
     declare getMoment: BelongsToGetAssociationMixin<Moment>
 }
 
-GeneratedImage.init({
+Image.init({
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
+        allowNull: false
+    },
+    type: {
+        type: DataTypes.ENUM('uploaded', 'generated'),
         allowNull: false
     },
     moment_id: {
@@ -54,8 +61,8 @@ GeneratedImage.init({
     }
 }, {
     sequelize,
-    modelName: 'GeneratedImage',
-    tableName: 'generated_images',
+    modelName: 'Image',
+    tableName: 'images',
     timestamps: false,
     indexes: [
         {
@@ -64,10 +71,10 @@ GeneratedImage.init({
     ]
 })
 
-GeneratedImage.belongsTo(Moment, {
+Image.belongsTo(Moment, {
     foreignKey: 'moment_id'
 })
 
-Moment.hasMany(GeneratedImage, {
+Moment.hasMany(Image, {
     foreignKey: 'moment_id'
 })

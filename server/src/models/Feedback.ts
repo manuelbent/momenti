@@ -2,7 +2,7 @@ import { Model, DataTypes, BelongsToGetAssociationMixin } from 'sequelize'
 import sequelize from '../config/sequelize'
 import User from './User'
 
-export type FeedbackType = 'bug' | 'suggestion' | 'other'
+export type FeedbackType = 'bug'|'suggestion'|'other'
 
 export default class Feedback extends Model {
     declare id: number
