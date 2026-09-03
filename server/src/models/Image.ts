@@ -6,6 +6,7 @@ export type ImageType = 'uploaded'|'generated'
 
 export default class Image extends Model {
     declare id: number
+    declare url: string
     declare type: ImageType
     declare moment_id: number|null
     declare moment_node_id: string|null
