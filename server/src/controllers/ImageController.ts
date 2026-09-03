@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import R2Service from '../services/R2Service'
 import ImageServiceInterface from '../interfaces/ImageServiceInterface'
+import R2ServiceInterface from '../interfaces/R2ServiceInterface'
 import logger from '../config/logger'
 
 /**
@@ -10,11 +10,11 @@ export default class ImageController {
     /**
      * @constructor
      * @param {ImageServiceInterface} imageService
-     * @param {R2Service} r2Service
+     * @param {R2ServiceInterface} r2Service
      */
     constructor(
         private imageService: ImageServiceInterface,
-        private r2Service: R2Service
+        private r2Service: R2ServiceInterface
     ) {}
 
     /**
@@ -39,4 +39,3 @@ export default class ImageController {
         }
     }
 }
-

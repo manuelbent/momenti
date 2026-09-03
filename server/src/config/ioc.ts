@@ -19,6 +19,7 @@ import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
+import R2ServiceInterface from '../interfaces/R2ServiceInterface'
 import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
 import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
 import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
@@ -108,7 +109,7 @@ class Container {
     private _changeService?: ChangeServiceInterface
     private _imageService?: ImageServiceInterface
     // services (non-orm)
-    private _r2Service?: R2Service
+    private _r2Service?: R2ServiceInterface
     private _llmService?: LLMServiceInterface
     // workers
     private _streamWorker?: StreamWorkerInterface
@@ -245,7 +246,7 @@ class Container {
         return this._imageService ??= new ImageService(this.imageRepository)
     }
 
-    public get r2Service(): R2Service {
+    public get r2Service(): R2ServiceInterface {
         return this._r2Service ??= new R2Service()
     }
 

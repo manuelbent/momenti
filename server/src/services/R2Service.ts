@@ -1,12 +1,13 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { randomUUID } from 'crypto'
 import path from 'path'
+import R2ServiceInterface from '../interfaces/R2ServiceInterface'
 
 /**
  * Thin wrapper around the Cloudflare R2 bucket.
  * @class R2Service
  */
-export default class R2Service {
+export default class R2Service implements R2ServiceInterface {
     /**
      * @private {S3Client}
      */
@@ -50,7 +51,7 @@ export default class R2Service {
      * @param originalName Original filename (used to preserve the extension)
      * @returns The permanent public URL of the stored object
      */
-    async upload(buffer: Buffer, mimetype: string, originalName: string): Promise<string> {
+    public async upload(buffer: Buffer, mimetype: string, originalName: string): Promise<string> {
         const ext = path.extname(originalName) || ''
         const key = `images/${randomUUID()}${ext}`
 
@@ -64,4 +65,3 @@ export default class R2Service {
         return `${this.publicUrl}/${key}`
     }
 }
-
