@@ -113,10 +113,9 @@ interface MomentContent {
 - radio groups must use self-explanatory option strings (e.g. ["Yes", "No"]).
 
 **component: image**
-- required fields: 'src' (descriptive placeholder string) and 'alt';
+- required fields: 'src' and 'alt'; always set src to "https://placehold.co/1200x800?text=Image";
 - limit: up to 3 images per page;
 - always use fluid widths (width: 100%; object-fit: cover;) and an explicit 4/3 aspect-ratio for cards — never fixed pixel widths.
-- use unsplash placeholders for image src.
 
 **component: countdown**
 - required field: 'targetDate' — ISO 8601 string extracted from the prompt (e.g. "2026-08-14T23:00:00");
@@ -148,7 +147,7 @@ interface MomentContent {
 
 **component: carousel**
 - include ONLY when the user's prompt explicitly mentions a gallery, slideshow, carousel, or the need for multiple photos/images;
-- required field: 'children' — array of 'image' nodes, each with 'src' (unsplash placeholder) and 'alt'; aim for 4 slides;
+- required field: 'children' — array of 'image' nodes using the placeholder src above and an 'alt'; aim for 4 slides;
 - required field: 'css' — at minimum set width: 100%;
 - never wrap the carousel inside a layout: 'row' box; it must occupy the full section width on its own row.
 
