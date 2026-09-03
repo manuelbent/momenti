@@ -14,7 +14,7 @@ export const uploadImage = async (file: File): Promise<string> => {
     body.append('file', file)
 
     const res = await fetch(`${API_URL}/images`, {
-        method: 'POST',
+        method: 'PUT',
         headers,
         body,
     })
@@ -27,4 +27,3 @@ export const uploadImage = async (file: File): Promise<string> => {
     const { url } = await res.json()
     return url
 }
-

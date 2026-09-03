@@ -44,4 +44,3 @@ export const resolvePendingImages = async (content: MomentContent): Promise<Mome
         root: await resolveNode(content.root),
     }
 }
-

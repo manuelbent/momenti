@@ -31,7 +31,12 @@ export default class ImageController {
                 return
             }
 
+            // upload to R2
             const url = await this.r2Service.upload(file.buffer, file.mimetype, file.originalname)
+
+            // store in DB
+            await this.imageService.store({ url, type: 'uploaded' })
+
             res.status(201).json({ url })
         } catch (err) {
             logger.error({ err }, '[ImageController] upload error')
