@@ -57,6 +57,7 @@ import ChangeRepository from '../repositories/ChangeRepository'
 import ChangeRepositoryInterface from '../interfaces/ChangeRepositoryInterface'
 import ChangeLimitMiddleware from '../middlewares/ChangeLimitMiddleware'
 import MomentOwnershipMiddleware from '../middlewares/MomentOwnershipMiddleware'
+import MomentContentModerationMiddleware from '../middlewares/MomentContentModerationMiddleware'
 
 /**
  * Dependency injection container.
@@ -77,7 +78,8 @@ class Container {
     private _generationGuardMiddleware?: GenerationGuardMiddleware
     private _rateLimiterMiddleware?: RateLimiterMiddleware
     private _changeLimitMiddleware?: ChangeLimitMiddleware
-    private __momentOwnershipMiddleware?: MomentOwnershipMiddleware
+    private _momentOwnershipMiddleware?: MomentOwnershipMiddleware
+    private _momentContentModerationMiddleware?: MomentContentModerationMiddleware
     // repositories
     private _userRepository?: UserRepositoryInterface
     private _momentRepository?: MomentRepositoryInterface
@@ -140,7 +142,7 @@ class Container {
     }
 
     public get momentOwnerShipMiddleware(): MomentOwnershipMiddleware {
-        return this.__momentOwnershipMiddleware ??= new MomentOwnershipMiddleware(this.momentService)
+        return this._momentOwnershipMiddleware ??= new MomentOwnershipMiddleware(this.momentService)
     }
 
     public get downloadFormSubmissionsMiddleware(): DownloadFormSubmissionsMiddleware {
@@ -157,6 +159,10 @@ class Container {
 
     public get promptModerationMiddleware(): PromptModerationMiddleware {
         return this._promptModerationMiddleware ??= new PromptModerationMiddleware(this.llmService)
+    }
+
+    public get momentContentModerationMiddleware(): MomentContentModerationMiddleware {
+        return this._momentContentModerationMiddleware ??= new MomentContentModerationMiddleware(this.llmService)
     }
 
     public get promptClassifierMiddleware(): PromptClassifierMiddleware {

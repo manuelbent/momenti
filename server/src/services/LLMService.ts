@@ -51,17 +51,15 @@ export default class LLMService implements LLMServiceInterface {
     }
 
     /**
-     * Check whether the given prompt contains harmful or prohibited content.
-     * Returns `true` if the prompt is flagged, `false` otherwise.
-     * Fails open (returns `false`) if the Moderation API is unavailable.
-     * @param {string} prompt - The raw user prompt to moderate.
-     * @returns {Promise<boolean>} `true` if flagged, `false` if safe or API is down.
+     * Check whether the given text contains harmful or prohibited content.
+     * @param {string} text - The text to moderate.
+     * @returns {Promise<boolean>} `true` if flagged, `false` otherwise.
      */
-    public async moderatePrompt(prompt: string): Promise<boolean> {
+    public async moderateText(text: string): Promise<boolean> {
         try {
             const moderation = await this.openai.moderations.create({
                 model: 'omni-moderation-latest',
-                input: prompt,
+                input: text,
             })
             return moderation.results[0].flagged
         } catch {

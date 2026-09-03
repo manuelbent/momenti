@@ -2,7 +2,7 @@
  * @interface LLMServiceInterface
  */
 export default interface LLMServiceInterface {
-    moderatePrompt(prompt: string): Promise<boolean>
+    moderateText(text: string): Promise<boolean>
     classifyPrompt(prompt: string): Promise<{ valid: boolean; reason?: string }>
     captureMoment(markdownCopy: string): AsyncGenerator<{
         chunk?: string;

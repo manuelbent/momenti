@@ -21,7 +21,7 @@ export default class PromptModerationMiddleware {
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void|Response> {
         const { prompt } = req.body
 
-        const flagged = await this.llmService.moderatePrompt(prompt)
+        const flagged = await this.llmService.moderateText(prompt)
 
         if (flagged) {
             return res.status(422).json({ error: 'Your message contains harmful or prohibited content and cannot be processed.' })

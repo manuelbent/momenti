@@ -140,7 +140,13 @@ export const updateMoment = async (id: number, data: Partial<Moment>): Promise<M
         headers: authHeaders(),
         body: JSON.stringify(data),
     })
-    if (!res.ok) throw new Error(`Failed to update moment: ${res.status}`)
+    if (!res.ok) {
+        const body: unknown = await res.json()
+        if (typeof body === 'object' && body !== null && 'error' in body && typeof body.error === 'string') {
+            throw new Error(body.error)
+        }
+        throw new Error(`Failed to update moment: ${res.status}`)
+    }
     return res.json()
 }
 
@@ -161,4 +167,3 @@ export const getChanges = async (momentId: number): Promise<Change[]> => {
     if (!res.ok) throw new Error(`Failed to fetch changes: ${res.status}`)
     return res.json()
 }
-

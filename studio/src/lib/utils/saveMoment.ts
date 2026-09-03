@@ -27,8 +27,8 @@ export async function saveMoment(): Promise<Moment | null> {
         savedAt.set(Date.now())
         showToast('Moment updated.')
         return updated
-    } catch {
-        showToast('Something went wrong.', 'error')
+    } catch (err) {
+        showToast(err instanceof Error ? err.message : 'Something went wrong.', 'error')
         return null
     }
 }
