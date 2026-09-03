@@ -22,6 +22,7 @@ interface MomentNode {
   html?: string;
   src?: string;
   alt?: string;
+  generationPrompt?: string;
   address?: string;
   targetDate?: string; // ISO 8601
   fields?: FormField[];
@@ -92,6 +93,8 @@ interface Moment {
 
 **component: image**
 - required fields: 'src' (short placeholder string) and 'alt';
+- for a hero image that should be generated, set src to "pending" and include a detailed 'generationPrompt' describing its subject, composition, mood, and colors;
+- only hero images may include 'generationPrompt'; omit it when the chosen hero does not need an image;
 - limit: up to 3 images per page;
 - always use fluid widths (width: 100%; object-fit: cover;) and an explicit 4/3 aspect-ratio for cards — never fixed pixel widths.
 - use unsplash placeholders for image src.

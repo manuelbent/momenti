@@ -24,6 +24,7 @@ interface MomentNode {
     html?: string;
     src?: string;
     alt?: string;
+    generationPrompt?: string;
     address?: string;
     targetDate?: string;
     fields?: FormField[];
