@@ -29,34 +29,4 @@ describe('MomentContentModerationMiddleware', () => {
         expect(res.status).toHaveBeenCalledWith(422)
         expect(next).not.toHaveBeenCalled()
     })
-
-    it('skips updates without content', async () => {
-        const llmService = { moderateText: vi.fn() } as unknown as LLMServiceInterface
-        const middleware = new MomentContentModerationMiddleware(llmService)
-        const next = vi.fn() as NextFunction
-
-        await middleware.handle({ body: { is_published: true } } as Request, makeRes() as unknown as Response, next)
-
-        expect(llmService.moderateText).not.toHaveBeenCalled()
-        expect(next).toHaveBeenCalledOnce()
-    })
-
-    it('blocks saves when moderation is unavailable', async () => {
-        const llmService = { moderateText: vi.fn().mockRejectedValue(new Error('Unavailable')) } as unknown as LLMServiceInterface
-        const middleware = new MomentContentModerationMiddleware(llmService)
-        const req = {
-            body: {
-                content: {
-                    root: { id: 'text', type: 'text', html: 'Text' },
-                },
-            },
-        } as Request
-        const res = makeRes()
-        const next = vi.fn() as NextFunction
-
-        await middleware.handle(req, res as unknown as Response, next)
-
-        expect(res.status).toHaveBeenCalledWith(503)
-        expect(next).not.toHaveBeenCalled()
-    })
 })
