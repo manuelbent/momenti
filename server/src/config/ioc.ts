@@ -1,63 +1,73 @@
-import MalformedDataMiddleware from '../middlewares/MalformedDataMiddleware'
-import ValidationErrorMiddleware from '../middlewares/ValidationErrorMiddleware'
-import SseMiddleware from '../middlewares/SseMiddleware'
-import InviteKeyMiddleware from '../middlewares/InviteKeyMiddleware'
-import MomentLimitMiddleware from '../middlewares/MomentLimitMiddleware'
-import DownloadFormSubmissionsMiddleware from '../middlewares/DownloadFormSubmissionsMiddleware'
-import UploadMiddleware from '../middlewares/UploadMiddleware'
-import PromptSanitizeMiddleware from '../middlewares/PromptSanitizeMiddleware'
-import PromptModerationMiddleware from '../middlewares/PromptModerationMiddleware'
-import PromptClassifierMiddleware from '../middlewares/PromptClassifierMiddleware'
-import GenerationGuardMiddleware from '../middlewares/GenerationGuardMiddleware'
-import RateLimiterMiddleware from '../middlewares/RateLimiterMiddleware'
-import SystemController from '../controllers/SystemController'
-import MomentController from '../controllers/MomentController'
-import InviteKeyController from '../controllers/InviteKeyController'
-import UserController from '../controllers/UserController'
-import FormSubmissionController from '../controllers/FormSubmissionController'
 import FeedbackController from '../controllers/FeedbackController'
-import MomentService from '../services/MomentService'
-import InviteKeyService from '../services/InviteKeyService'
-import UserService from '../services/UserService'
-import FormSubmissionService from '../services/FormSubmissionService'
-import FeedbackService from '../services/FeedbackService'
-import R2Service from '../services/R2Service'
-import StreamCacheService from '../services/StreamCacheService'
-import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
-import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
-import StreamWorker from '../workers/StreamWorker'
+import FormSubmissionController from '../controllers/FormSubmissionController'
 import ImageController from '../controllers/ImageController'
-import MomentServiceInterface from '../interfaces/MomentServiceInterface'
-import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
-import UserServiceInterface from '../interfaces/UserServiceInterface'
-import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
+import InviteKeyController from '../controllers/InviteKeyController'
+import MomentController from '../controllers/MomentController'
+import SystemController from '../controllers/SystemController'
+import UserController from '../controllers/UserController'
+
+import ChangeRepositoryInterface from '../interfaces/ChangeRepositoryInterface'
+import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
 import FeedbackServiceInterface from '../interfaces/FeedbackServiceInterface'
 import FeedbackRepositoryInterface from '../interfaces/FeedbackRepositoryInterface'
-import GenerateMomentRequestValidator from '../validators/GenerateMomentRequestValidator'
-import ValidateInviteKeyRequestValidator from '../validators/ValidateInviteKeyRequestValidator'
-import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
-import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
-import InviteKeyRepositoryInterface from '../interfaces/InviteKeyRepositoryInterface'
 import FormSubmissionRepositoryInterface from '../interfaces/FormSubmissionRepositoryInterface'
-import UserRepository from '../repositories/UserRepository'
-import MomentRepository from '../repositories/MomentRepository'
-import InviteKeyRepository from '../repositories/InviteKeyRepository'
-import FormSubmissionRepository from '../repositories/FormSubmissionRepository'
-import FeedbackRepository from '../repositories/FeedbackRepository'
-import UpdateMomentRequestValidator from '../validators/UpdateMomentRequestValidator'
-import SubmitFormDataRequestValidator from '../validators/SubmitFormDataRequestValidator'
-import SubmitFeedbackRequestValidator from '../validators/SubmitFeedbackRequestValidator'
-import LLMService from '../services/LLMService'
+import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
+import ImageRepositoryInterface from '../interfaces/ImageRepositoryInterface'
+import ImageServiceInterface from '../interfaces/ImageServiceInterface'
+import InviteKeyRepositoryInterface from '../interfaces/InviteKeyRepositoryInterface'
+import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
-import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
-import PatchMomentRequestValidator from '../validators/PatchMomentRequestValidator'
-import ChangeService from '../services/ChangeService'
-import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
-import ChangeRepository from '../repositories/ChangeRepository'
-import ChangeRepositoryInterface from '../interfaces/ChangeRepositoryInterface'
+import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
+import MomentServiceInterface from '../interfaces/MomentServiceInterface'
+import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
+import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
+import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
+import UserServiceInterface from '../interfaces/UserServiceInterface'
+
 import ChangeLimitMiddleware from '../middlewares/ChangeLimitMiddleware'
-import MomentOwnershipMiddleware from '../middlewares/MomentOwnershipMiddleware'
+import DownloadFormSubmissionsMiddleware from '../middlewares/DownloadFormSubmissionsMiddleware'
+import GenerationGuardMiddleware from '../middlewares/GenerationGuardMiddleware'
+import InviteKeyMiddleware from '../middlewares/InviteKeyMiddleware'
+import MalformedDataMiddleware from '../middlewares/MalformedDataMiddleware'
 import MomentContentModerationMiddleware from '../middlewares/MomentContentModerationMiddleware'
+import MomentLimitMiddleware from '../middlewares/MomentLimitMiddleware'
+import MomentOwnershipMiddleware from '../middlewares/MomentOwnershipMiddleware'
+import PromptClassifierMiddleware from '../middlewares/PromptClassifierMiddleware'
+import PromptModerationMiddleware from '../middlewares/PromptModerationMiddleware'
+import PromptSanitizeMiddleware from '../middlewares/PromptSanitizeMiddleware'
+import RateLimiterMiddleware from '../middlewares/RateLimiterMiddleware'
+import SseMiddleware from '../middlewares/SseMiddleware'
+import UploadMiddleware from '../middlewares/UploadMiddleware'
+import ValidationErrorMiddleware from '../middlewares/ValidationErrorMiddleware'
+
+import ChangeRepository from '../repositories/ChangeRepository'
+import FeedbackRepository from '../repositories/FeedbackRepository'
+import FormSubmissionRepository from '../repositories/FormSubmissionRepository'
+import ImageRepository from '../repositories/ImageRepository'
+import InviteKeyRepository from '../repositories/InviteKeyRepository'
+import MomentRepository from '../repositories/MomentRepository'
+import UserRepository from '../repositories/UserRepository'
+
+import ChangeService from '../services/ChangeService'
+import FeedbackService from '../services/FeedbackService'
+import FormSubmissionService from '../services/FormSubmissionService'
+import ImageService from '../services/ImageService'
+import InviteKeyService from '../services/InviteKeyService'
+import LLMService from '../services/LLMService'
+import MomentService from '../services/MomentService'
+import R2Service from '../services/R2Service'
+import StreamCacheService from '../services/StreamCacheService'
+import UserService from '../services/UserService'
+
+import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
+import GenerateMomentRequestValidator from '../validators/GenerateMomentRequestValidator'
+import PatchMomentRequestValidator from '../validators/PatchMomentRequestValidator'
+import SubmitFeedbackRequestValidator from '../validators/SubmitFeedbackRequestValidator'
+import SubmitFormDataRequestValidator from '../validators/SubmitFormDataRequestValidator'
+import UpdateMomentRequestValidator from '../validators/UpdateMomentRequestValidator'
+import ValidateInviteKeyRequestValidator from '../validators/ValidateInviteKeyRequestValidator'
+
+import StreamWorker from '../workers/StreamWorker'
 
 /**
  * Dependency injection container.
@@ -87,6 +97,7 @@ class Container {
     private _formSubmissionRepository?: FormSubmissionRepositoryInterface
     private _feedbackRepository?: FeedbackRepositoryInterface
     private _changeRepository?: ChangeRepositoryInterface
+    private _imageRepository?: ImageRepositoryInterface
     // services
     private _momentService?: MomentServiceInterface
     private _inviteKeyService?: InviteKeyServiceInterface
@@ -95,6 +106,7 @@ class Container {
     private _feedbackService?: FeedbackServiceInterface
     private _streamCacheService?: StreamCacheServiceInterface
     private _changeService?: ChangeServiceInterface
+    private _imageService?: ImageServiceInterface
     // services (non-orm)
     private _r2Service?: R2Service
     private _llmService?: LLMServiceInterface
@@ -201,6 +213,10 @@ class Container {
         return this._feedbackRepository ??= new FeedbackRepository()
     }
 
+    public get imageRepository(): ImageRepositoryInterface {
+        return this._imageRepository ??= new ImageRepository()
+    }
+
     public get momentService(): MomentServiceInterface {
         return this._momentService ??= new MomentService(this.momentRepository)
     }
@@ -223,6 +239,10 @@ class Container {
 
     public get feedbackService(): FeedbackServiceInterface {
         return this._feedbackService ??= new FeedbackService(this.feedbackRepository)
+    }
+
+    public get imageService(): ImageServiceInterface {
+        return this._imageService ??= new ImageService(this.imageRepository)
     }
 
     public get r2Service(): R2Service {
@@ -294,7 +314,7 @@ class Container {
     }
 
     public get imageController(): ImageController {
-        return this._imageController ??= new ImageController(this.r2Service)
+        return this._imageController ??= new ImageController(this.imageService, this.r2Service)
     }
 }
 

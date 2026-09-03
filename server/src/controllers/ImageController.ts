@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
-import logger from '../config/logger'
 import R2Service from '../services/R2Service'
+import ImageServiceInterface from '../interfaces/ImageServiceInterface'
+import logger from '../config/logger'
 
 /**
  * @class ImageController
@@ -8,9 +9,13 @@ import R2Service from '../services/R2Service'
 export default class ImageController {
     /**
      * @constructor
+     * @param {ImageServiceInterface} imageService
      * @param {R2Service} r2Service
      */
-    constructor(private r2Service: R2Service) {}
+    constructor(
+        private imageService: ImageServiceInterface,
+        private r2Service: R2Service
+    ) {}
 
     /**
      * Upload an image to R2 and return its permanent public URL.
