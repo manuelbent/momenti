@@ -6,6 +6,13 @@ interface StreamEvent {
     data: unknown
 }
 
+type StreamType = 'capture' | 'patch'
+
+type LLMStreamPayload =
+    | { chunk: string }
+    | { done: true; momentContent: MomentContent }
+    | { error: string }
+
 /**
  * Parameters required to patch an existing Moment.
  * Grouped into a single object so the patch pipeline stays easy to extend.
