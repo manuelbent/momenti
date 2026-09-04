@@ -132,7 +132,7 @@ export default class StreamWorker implements StreamWorkerInterface {
             logger.error({ err, userId }, '[StreamWorker] Generation loop error')
             this.emit(userId, emitter, 'error', { error: 'Failed to generate the Moment. Please try again.' })
         } finally {
-            this.streamCacheService.complete(userId)
+            this.streamCacheService.clear(userId)
             this.emitters.delete(userId)
         }
     }

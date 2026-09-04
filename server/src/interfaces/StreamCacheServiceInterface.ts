@@ -7,6 +7,5 @@ export default interface StreamCacheServiceInterface {
     hasStream(userId: number, type: StreamType): boolean
     append(userId: number, event: StreamEvent): void
     getAllEvents(userId: number): StreamEvent[]
-    complete(userId: number): void
     clear(userId: number): void
 }
