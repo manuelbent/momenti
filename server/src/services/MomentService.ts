@@ -87,21 +87,4 @@ export default class MomentService implements MomentServiceInterface {
         return true
     }
 
-    /**
-     * Poll for a moment by slug, retrying every 200ms up to 20 times.
-     * @throws {Error} If the moment is not found after polling.
-     * @param {string} slug
-     * @return {Promise<Moment>}
-     */
-    public async pollMomentBySlug(slug: string): Promise<Moment> {
-        for (let i = 0; i < 20; i++) {
-            const moment = await this.getBySlug(slug)
-            if (moment) {
-                return moment
-            }
-
-            await new Promise(resolve => setTimeout(resolve, 200))
-        }
-        throw new Error(`Moment with slug ${slug} not found after polling`)
-    }
 }

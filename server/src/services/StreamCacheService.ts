@@ -5,15 +5,16 @@ import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterfa
  * Its presence in the store means a generation is in progress.
  */
 interface CacheEntry {
+    type: StreamType
     events: StreamEvent[]
+    isGenerating: boolean
     timer: ReturnType<typeof setTimeout>
 }
 
 /**
  * In-memory cache for SSE stream events, keyed by userId.
- * An entry exists only while generation is in progress.
- * Each entry is automatically evicted after the configured TTL
- * as a safety net against entries that never resolve.
+ * Completed capture entries are retained until the configured TTL
+ * so a disconnected client can replay the terminal event.
  * @class StreamCacheService
  */
 export default class StreamCacheService implements StreamCacheServiceInterface {
@@ -32,10 +33,12 @@ export default class StreamCacheService implements StreamCacheServiceInterface {
     /**
      * Initializes a fresh cache entry for the given user.
      * @param {number} userId
+     * @param {StreamType} type
      */
-    public init(userId: number): void {
+    public init(userId: number, type: StreamType): void {
+        this.clear(userId)
         const timer = setTimeout(() => this.store.delete(userId), this.ttlMs)
-        this.store.set(userId, { events: [], timer })
+        this.store.set(userId, { type, events: [], isGenerating: true, timer })
     }
 
     /**
@@ -43,7 +46,16 @@ export default class StreamCacheService implements StreamCacheServiceInterface {
      * @param {number} userId
      */
     public isGenerating(userId: number): boolean {
-        return this.store.has(userId)
+        return this.store.get(userId)?.isGenerating ?? false
+    }
+
+    /**
+     * Checks whether the cached stream has the requested type.
+     * @param {number} userId
+     * @param {StreamType} type
+     */
+    public hasStream(userId: number, type: StreamType): boolean {
+        return this.store.get(userId)?.type === type
     }
 
     /**
@@ -61,6 +73,17 @@ export default class StreamCacheService implements StreamCacheServiceInterface {
      */
     public getAllEvents(userId: number): StreamEvent[] {
         return this.store.get(userId)?.events ?? []
+    }
+
+    /**
+     * Marks a stream as completed while retaining its buffered events.
+     * @param {number} userId
+     */
+    public complete(userId: number): void {
+        const entry = this.store.get(userId)
+        if (entry) {
+            entry.isGenerating = false
+        }
     }
 
     /**

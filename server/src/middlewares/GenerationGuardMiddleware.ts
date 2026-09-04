@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
+import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
 import User from '../models/User'
 
 /**
@@ -12,9 +12,9 @@ import User from '../models/User'
 export default class GenerationGuardMiddleware {
     /**
      * @constructor
-     * @param {StreamWorkerInterface} streamWorker
+     * @param {StreamCacheServiceInterface} streamCacheService
      */
-    constructor(private streamWorker: StreamWorkerInterface) {}
+    constructor(private streamCacheService: StreamCacheServiceInterface) {}
 
     /**
      * @param {Request} _
@@ -24,7 +24,7 @@ export default class GenerationGuardMiddleware {
     public handle(_: Request, res: Response, next: NextFunction): void {
         const user: User = res.locals.user
 
-        if (this.streamWorker.isGenerating(user.id)) {
+        if (this.streamCacheService.isGenerating(user.id)) {
             res.status(409).json({ error: 'A generation is already in progress.' })
             return
         }
@@ -32,4 +32,3 @@ export default class GenerationGuardMiddleware {
         next()
     }
 }
-

@@ -1,10 +1,12 @@
+import CaptureMomentController from '../controllers/CaptureMomentController'
 import FeedbackController from '../controllers/FeedbackController'
 import FormSubmissionController from '../controllers/FormSubmissionController'
 import ImageController from '../controllers/ImageController'
 import InviteKeyController from '../controllers/InviteKeyController'
 import MomentController from '../controllers/MomentController'
+import PatchMomentController from '../controllers/PatchMomentController'
+import ResumeCaptureController from '../controllers/ResumeCaptureController'
 import SystemController from '../controllers/SystemController'
-import UserController from '../controllers/UserController'
 
 import ChangeRepositoryInterface from '../interfaces/ChangeRepositoryInterface'
 import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
@@ -116,8 +118,10 @@ class Container {
     // controllers
     private _systemController?: SystemController
     private _momentController?: MomentController
+    private _captureMomentController?: CaptureMomentController
+    private _resumeCaptureController?: ResumeCaptureController
+    private _patchMomentController?: PatchMomentController
     private _inviteKeyController?: InviteKeyController
-    private _userController?: UserController
     private _formSubmissionController?: FormSubmissionController
     private _feedbackController?: FeedbackController
     private _imageController?: ImageController
@@ -183,7 +187,7 @@ class Container {
     }
 
     public get generationGuardMiddleware(): GenerationGuardMiddleware {
-        return this._generationGuardMiddleware ??= new GenerationGuardMiddleware(this.streamWorker)
+        return this._generationGuardMiddleware ??= new GenerationGuardMiddleware(this.streamCacheService)
     }
 
     public get rateLimiterMiddleware(): RateLimiterMiddleware {
@@ -263,7 +267,19 @@ class Container {
     }
 
     public get momentController(): MomentController {
-        return this._momentController ??= new MomentController(this.momentService, this.changeService, this.streamWorker)
+        return this._momentController ??= new MomentController(this.momentService, this.changeService)
+    }
+
+    public get captureMomentController(): CaptureMomentController {
+        return this._captureMomentController ??= new CaptureMomentController(this.momentService, this.streamWorker)
+    }
+
+    public get resumeCaptureController(): ResumeCaptureController {
+        return this._resumeCaptureController ??= new ResumeCaptureController(this.streamWorker)
+    }
+
+    public get patchMomentController(): PatchMomentController {
+        return this._patchMomentController ??= new PatchMomentController(this.changeService, this.streamWorker)
     }
 
     public get systemController(): SystemController {
@@ -272,10 +288,6 @@ class Container {
 
     public get inviteKeyController(): InviteKeyController {
         return this._inviteKeyController ??= new InviteKeyController(this.inviteKeyService, this.userService)
-    }
-
-    public get userController(): UserController {
-        return this._userController ??= new UserController(this.userService)
     }
 
     public get formSubmissionController(): FormSubmissionController {
