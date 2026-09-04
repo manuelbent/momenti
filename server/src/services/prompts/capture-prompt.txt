@@ -118,7 +118,8 @@ interface Moment {
 - required field: 'css' — must include: position: sticky; top: 0; left: 0; width: 100%; z-index: 10; height: 3rem; display: flex; align-items: center;
 - keep the navbar compact: height must not exceed 3rem; use small, lightweight typography;
 - the navbar must be the first child of the root node;
-- style anchor links to match the page color scheme.
+- style anchor links to match the page color scheme;
+- use only when explicitly requested.
 
 **component: footer**
 - the footer node is MANDATORY — every page must end with a footer as the last child of the root node;
