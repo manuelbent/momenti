@@ -4,16 +4,6 @@
 export default interface LLMServiceInterface {
     moderateText(text: string): Promise<boolean>
     classifyPrompt(prompt: string): Promise<{ valid: boolean; reason?: string }>
-    captureMoment(markdownCopy: string): AsyncGenerator<{
-        chunk?: string;
-        done?: boolean;
-        momentContent?: MomentContent;
-        error?: string;
-    }>
-    patchMoment(params: PatchMomentParams): AsyncGenerator<{
-        chunk?: string;
-        done?: boolean;
-        momentContent?: MomentContent;
-        error?: string;
-    }>
+    captureMoment(markdownCopy: string): AsyncGenerator<LLMStreamPayload>
+    patchMoment(params: PatchMomentParams): AsyncGenerator<LLMStreamPayload>
 }

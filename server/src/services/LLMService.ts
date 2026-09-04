@@ -93,12 +93,7 @@ export default class LLMService implements LLMServiceInterface {
     /**
      * @param {string} prompt
      */
-    public async* captureMoment(prompt: string): AsyncGenerator<{
-        chunk?: string;
-        done?: boolean;
-        momentContent?: MomentContent;
-        error?: string;
-    }> {
+    public async* captureMoment(prompt: string): AsyncGenerator<LLMStreamPayload> {
         const stream = await this.openai.chat.completions.create({
             model: 'gpt-5.4',
             messages: [
@@ -145,12 +140,7 @@ export default class LLMService implements LLMServiceInterface {
      * then returns the full updated MomentContent.
      * @param {PatchMomentParams} params - The patch parameters.
      */
-    public async* patchMoment(params: PatchMomentParams): AsyncGenerator<{
-        chunk?: string;
-        done?: boolean;
-        momentContent?: MomentContent;
-        error?: string;
-    }> {
+    public async* patchMoment(params: PatchMomentParams): AsyncGenerator<LLMStreamPayload> {
         const { prompt, content, nodeId, history } = params
 
         // only the prior prompt strings are sent (no prior contents) to keep token usage low
