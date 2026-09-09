@@ -13,13 +13,13 @@ router.post('/capture',
     (req, res, next) => ioc.promptModerationMiddleware.handle(req, res, next),
     (req, res, next) => ioc.promptClassifierMiddleware.handle(req, res, next),
     (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
-    (req, res) => ioc.captureMomentController.handle(req, res)
+    (req, res) => ioc.momentGenerationController.capture(req, res)
 )
 
 router.get('/capture/resume',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
-    (req, res) => ioc.resumeCaptureController.handle(req, res)
+    (req, res) => ioc.momentGenerationController.resume(req, res)
 )
 
 // moments routes
@@ -55,7 +55,7 @@ router.patch('/moments/:id',
     (req, res, next) => ioc.promptSanitizeMiddleware.handle(req, res, next),
     (req, res, next) => ioc.promptModerationMiddleware.handle(req, res, next),
     (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
-    (req, res) => ioc.patchMomentController.handle(req, res)
+    (req, res) => ioc.momentGenerationController.patch(req, res)
 )
 
 router.get('/moments/:id/changes',

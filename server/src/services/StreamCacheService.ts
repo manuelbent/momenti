@@ -76,6 +76,17 @@ export default class StreamCacheService implements StreamCacheServiceInterface {
     }
 
     /**
+     * Marks a stream as completed while retaining its buffered events.
+     * @param {number} userId
+     */
+    public complete(userId: number): void {
+        const entry = this.store.get(userId)
+        if (entry) {
+            entry.isGenerating = false
+        }
+    }
+
+    /**
      * Clears the cache entry entirely for the given user.
      * @param {number} userId
      */

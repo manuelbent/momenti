@@ -1,11 +1,9 @@
-import CaptureMomentController from '../controllers/CaptureMomentController'
 import FeedbackController from '../controllers/FeedbackController'
 import FormSubmissionController from '../controllers/FormSubmissionController'
 import ImageController from '../controllers/ImageController'
 import InviteKeyController from '../controllers/InviteKeyController'
 import MomentController from '../controllers/MomentController'
-import PatchMomentController from '../controllers/PatchMomentController'
-import ResumeCaptureController from '../controllers/ResumeCaptureController'
+import MomentGenerationController from '../controllers/MomentGenerationController'
 import SystemController from '../controllers/SystemController'
 
 import ChangeRepositoryInterface from '../interfaces/ChangeRepositoryInterface'
@@ -118,9 +116,7 @@ class Container {
     // controllers
     private _systemController?: SystemController
     private _momentController?: MomentController
-    private _captureMomentController?: CaptureMomentController
-    private _resumeCaptureController?: ResumeCaptureController
-    private _patchMomentController?: PatchMomentController
+    private _momentGenerationController?: MomentGenerationController
     private _inviteKeyController?: InviteKeyController
     private _formSubmissionController?: FormSubmissionController
     private _feedbackController?: FeedbackController
@@ -270,16 +266,12 @@ class Container {
         return this._momentController ??= new MomentController(this.momentService, this.changeService)
     }
 
-    public get captureMomentController(): CaptureMomentController {
-        return this._captureMomentController ??= new CaptureMomentController(this.momentService, this.streamWorker)
-    }
-
-    public get resumeCaptureController(): ResumeCaptureController {
-        return this._resumeCaptureController ??= new ResumeCaptureController(this.streamWorker)
-    }
-
-    public get patchMomentController(): PatchMomentController {
-        return this._patchMomentController ??= new PatchMomentController(this.changeService, this.streamWorker)
+    public get momentGenerationController(): MomentGenerationController {
+        return this._momentGenerationController ??= new MomentGenerationController(
+            this.momentService,
+            this.changeService,
+            this.streamWorker,
+        )
     }
 
     public get systemController(): SystemController {
