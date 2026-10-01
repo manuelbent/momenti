@@ -95,13 +95,12 @@ export default class LLMService implements LLMServiceInterface {
      */
     public async* captureMoment(prompt: string): AsyncGenerator<LLMStreamPayload> {
         const stream = await this.openai.chat.completions.create({
-            model: 'gpt-5.4',
+            model: 'gpt-6-astra',
             messages: [
                 { role: 'system', content: this.capturePrompt },
                 { role: 'user', content: `<PROMPT>${prompt.trim()}</PROMPT>` },
             ],
             response_format: { type: 'json_object' },
-            temperature: 1.2,
             stream: true,
         })
 
@@ -158,13 +157,12 @@ export default class LLMService implements LLMServiceInterface {
             )
 
         const stream = await this.openai.chat.completions.create({
-            model: 'gpt-5.4',
+            model: 'gpt-6-astra',
             messages: [
                 { role: 'system', content: this.patchPrompt },
                 { role: 'user', content: userMessage },
             ],
             response_format: { type: 'json_object' },
-            temperature: 0.8,
             stream: true,
         })
 

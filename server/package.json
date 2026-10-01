@@ -1,6 +1,6 @@
 {
   "name": "momenti-server",
-  "version": "0.4.1-alpha",
+  "version": "0.4.2-alpha",
   "description": "API layer for momenti.",
   "type": "commonjs",
   "main": "dist/server.js",
@@ -22,7 +22,7 @@
     "express": "^4.19.2",
     "ioredis": "^5.10.1",
     "multer": "^2.1.1",
-    "openai": "^6.35.0",
+    "openai": "^7.25.0",
     "pino": "^10.3.1",
     "rate-limiter-flexible": "^11.1.0",
     "sequelize": "^6.37.8",
