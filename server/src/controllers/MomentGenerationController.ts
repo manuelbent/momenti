@@ -34,12 +34,12 @@ export default class MomentGenerationController {
         const emitter = this.streamWorker.capture(
             user.id,
             prompt,
-            async data => {
+            async ({ prompt, momentContent }) => {
                 return this.momentService.store({
                     user_id: user.id,
-                    slug: data.momentContent.slug,
-                    prompt: data.prompt,
-                    content: data.momentContent,
+                    slug: momentContent.slug,
+                    prompt: prompt,
+                    content: momentContent,
                 })
             },
         )
@@ -99,13 +99,13 @@ export default class MomentGenerationController {
         const emitter = this.streamWorker.patch(
             user.id,
             { nodeId, prompt, content, history },
-            async data => {
+            async ({ momentContent }) => {
                 return this.changeService.store({
                     moment_id: momentId,
                     node_id: nodeId,
                     prompt,
                     old_content: content,
-                    new_content: data.momentContent,
+                    new_content: momentContent,
                 })
             },
         )
