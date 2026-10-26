@@ -271,6 +271,8 @@ class Container {
             this.momentService,
             this.changeService,
             this.streamWorker,
+            this.imageService,
+            this.r2Service,
         )
     }
 

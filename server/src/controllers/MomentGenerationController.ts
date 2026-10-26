@@ -2,9 +2,13 @@ import { Request, Response } from 'express'
 import { EventEmitter } from 'node:events'
 import logger from '../config/logger'
 import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
+import ImageServiceInterface from '../interfaces/ImageServiceInterface'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
+import R2ServiceInterface from '../interfaces/R2ServiceInterface'
 import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
+import Moment from '../models/Moment'
 import User from '../models/User'
+import { findGeneratedHeroImage } from '../utils/heroImage'
 
 /**
  * @class MomentGenerationController
@@ -15,11 +19,15 @@ export default class MomentGenerationController {
      * @param {MomentServiceInterface} momentService
      * @param {ChangeServiceInterface} changeService
      * @param {StreamWorkerInterface} streamWorker
+     * @param {ImageServiceInterface} imageService
+     * @param {R2ServiceInterface} r2Service
      */
     constructor(
         private momentService: MomentServiceInterface,
         private changeService: ChangeServiceInterface,
         private streamWorker: StreamWorkerInterface,
+        private imageService: ImageServiceInterface,
+        private r2Service: R2ServiceInterface,
     ) {}
 
     /**
@@ -34,17 +42,57 @@ export default class MomentGenerationController {
         const emitter = this.streamWorker.capture(
             user.id,
             prompt,
-            async ({ prompt, momentContent }) => {
-                return this.momentService.store({
-                    user_id: user.id,
-                    slug: momentContent.slug,
-                    prompt: prompt,
-                    content: momentContent,
-                })
-            },
+            ({ prompt, momentContent }) => this.storeCapture(user.id, prompt, momentContent),
         )
 
         this.stream(req, res, emitter)
+    }
+
+    private async storeCapture(
+        userId: number,
+        prompt: string,
+        momentContent: MomentContent,
+    ): Promise<unknown> {
+        const moment = await this.momentService.store({
+            user_id: userId,
+            slug: momentContent.slug,
+            prompt,
+            content: momentContent,
+        })
+
+        const imageNode = findGeneratedHeroImage(momentContent.root)
+        if (!imageNode?.generationPrompt) {
+            return moment
+        }
+
+        return this.generateHeroImage(
+            moment,
+            momentContent,
+            imageNode,
+            imageNode.generationPrompt,
+        )
+    }
+
+    private async generateHeroImage(
+        moment: Moment,
+        momentContent: MomentContent,
+        imageNode: MomentNode,
+        generationPrompt: string,
+    ): Promise<Moment> {
+        const buffer = await this.imageService.generate(generationPrompt)
+        const url = await this.r2Service.upload(buffer, 'image/png', 'generated.png')
+
+        await this.imageService.store({
+            url,
+            type: 'generated',
+            moment_id: moment.id,
+            moment_node_id: imageNode.id,
+            purpose: 'hero',
+            prompt: generationPrompt,
+        })
+
+        imageNode.src = url
+        return this.momentService.update(moment.id, { content: momentContent })
     }
 
     /**
