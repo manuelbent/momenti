@@ -3,6 +3,7 @@ import { join } from 'path'
 import OpenAI from 'openai'
 import logger from '../config/logger'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
+import { createCreativeDirection } from '../utils/creativeDirection'
 
 /**
  * Service responsible for all LLM interactions.
@@ -94,11 +95,17 @@ export default class LLMService implements LLMServiceInterface {
      * @param {string} prompt
      */
     public async* captureMoment(prompt: string): AsyncGenerator<LLMStreamPayload> {
+        const creativeDirection = createCreativeDirection()
         const stream = await this.openai.chat.completions.create({
             model: 'gpt-6-astra',
             messages: [
                 { role: 'system', content: this.capturePrompt },
-                { role: 'user', content: `<PROMPT>${prompt.trim()}</PROMPT>` },
+                {
+                    role: 'user',
+                    content:
+                        `<CREATIVE_DIRECTION>${creativeDirection}</CREATIVE_DIRECTION>\n` +
+                        `<PROMPT>${prompt.trim()}</PROMPT>`,
+                },
             ],
             response_format: { type: 'json_object' },
             stream: true,

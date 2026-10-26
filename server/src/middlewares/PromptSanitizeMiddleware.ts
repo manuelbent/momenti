@@ -20,6 +20,7 @@ export default class PromptSanitizeMiddleware {
      */
     private static readonly CONTROL_TAGS = [
         'PROMPT',
+        'CREATIVE_DIRECTION',
         'CURRENT_CONTENT',
         'CHANGE',
         'TARGET_NODE_ID',
