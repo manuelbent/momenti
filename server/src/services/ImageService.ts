@@ -31,15 +31,16 @@ export default class ImageService implements ImageServiceInterface {
             model: 'gpt-image-1',
             prompt,
             output_format: 'png',
-            size: '1024x1024',
+            quality: 'low',
+            size: '1536x1024',
         })
-        const image = response.data?.[0]?.b64_json
+        const encoded = response.data?.[0]?.b64_json
 
-        if (!image) {
+        if (!encoded) {
             throw new Error('OpenAI did not return generated image data.')
         }
 
-        return Buffer.from(image, 'base64')
+        return Buffer.from(encoded, 'base64')
     }
 
     /**
