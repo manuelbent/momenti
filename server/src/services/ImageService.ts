@@ -28,7 +28,7 @@ export default class ImageService implements ImageServiceInterface {
      */
     public async generate(prompt: string): Promise<Buffer> {
         const response = await this.openai.images.generate({
-            model: 'gpt-image-1',
+            model: 'gpt-image-2.5-flare',
             prompt,
             output_format: 'png',
             quality: 'low',
