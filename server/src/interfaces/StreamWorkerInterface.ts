@@ -7,6 +7,7 @@ export default interface StreamWorkerInterface {
     capture(
         userId: number,
         prompt: string,
+        heroImageUrl: string,
         onDone: (data: { prompt: string; momentContent: MomentContent }) => Promise<unknown>,
     ): EventEmitter
     patch(

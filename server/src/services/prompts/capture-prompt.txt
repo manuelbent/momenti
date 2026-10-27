@@ -96,9 +96,9 @@ interface Moment {
 - radio groups must use self-explanatory option strings (e.g. ["Yes", "No"]).
 
 **component: image**
-- required fields: 'src' and 'alt'; always set src to "https://placehold.co/1200x800?text=Image";
-- for a hero image that should be generated, include a detailed 'generationPrompt' describing its subject, composition, mood, and colors;
-- only hero images may include 'generationPrompt'; omit it when the chosen hero does not need an image;
+- required fields: 'src' and 'alt'; use "https://placehold.co/1200x800?text=Image" only when no image URL is provided;
+- the user message includes a HERO_IMAGE_URL; the hero must include one image node whose src is exactly that URL instead of the placeholder;
+- do not include generationPrompt when using the provided HERO_IMAGE_URL;
 - limit: up to 3 images per page;
 - always use fluid widths (width: 100%; object-fit: cover;) and an explicit 4/3 aspect-ratio for cards — never fixed pixel widths.
 

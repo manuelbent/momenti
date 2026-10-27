@@ -20,6 +20,13 @@ export default class LLMService implements LLMServiceInterface {
     private readonly classifierPrompt: string
 
     /**
+     * System prompt for the hero image prompt writer.
+     * Loaded once at instance creation from `prompts/image-prompt.txt`.
+     * @private
+     */
+    private readonly imagePrompt: string
+
+    /**
      * Capture system prompt for the Art Director model.
      * Loaded once at instance creation from `prompts/capture-prompt.txt`.
      * @private
@@ -46,6 +53,7 @@ export default class LLMService implements LLMServiceInterface {
      */
     constructor() {
         this.classifierPrompt = readFileSync(join(join(__dirname, 'prompts'), 'classifier-prompt.txt'), 'utf-8')
+        this.imagePrompt = readFileSync(join(join(__dirname, 'prompts'), 'image-prompt.txt'), 'utf-8')
         this.capturePrompt = readFileSync(join(join(__dirname, 'prompts'), 'capture-prompt.txt'), 'utf-8')
         this.patchPrompt = readFileSync(join(join(__dirname, 'prompts'), 'patch-prompt.txt'), 'utf-8')
         this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
@@ -92,9 +100,35 @@ export default class LLMService implements LLMServiceInterface {
     }
 
     /**
+     * Creates a visual-only prompt for the hero image model.
      * @param {string} prompt
      */
-    public async* captureMoment(prompt: string): AsyncGenerator<LLMStreamPayload> {
+    public async generateImagePrompt(prompt: string): Promise<string> {
+        const response = await this.openai.chat.completions.create({
+            model: 'gpt-4.1-mini',
+            messages: [
+                { role: 'system', content: this.imagePrompt },
+                { role: 'user', content: prompt.trim() },
+            ],
+            temperature: 0.7,
+        })
+        const imagePrompt = response.choices[0]?.message.content?.trim()
+
+        if (!imagePrompt) {
+            throw new Error('OpenAI did not return an image prompt.')
+        }
+
+        return imagePrompt
+    }
+
+    /**
+     * @param {string} prompt
+     * @param {string} heroImageUrl
+     */
+    public async* captureMoment(
+        prompt: string,
+        heroImageUrl: string,
+    ): AsyncGenerator<LLMStreamPayload> {
         const creativeDirection = createCreativeDirection()
         const stream = await this.openai.chat.completions.create({
             model: 'gpt-6-astra',
@@ -104,7 +138,8 @@ export default class LLMService implements LLMServiceInterface {
                     role: 'user',
                     content:
                         `<CREATIVE_DIRECTION>${creativeDirection}</CREATIVE_DIRECTION>\n` +
-                        `<PROMPT>${prompt.trim()}</PROMPT>`,
+                        `<PROMPT>${prompt.trim()}</PROMPT>\n` +
+                        `<HERO_IMAGE_URL>${heroImageUrl}</HERO_IMAGE_URL>`,
                 },
             ],
             response_format: { type: 'json_object' },

@@ -1,6 +1,7 @@
 import FeedbackController from '../controllers/FeedbackController'
 import FormSubmissionController from '../controllers/FormSubmissionController'
 import ImageController from '../controllers/ImageController'
+import ImageGenerationController from '../controllers/ImageGenerationController'
 import InviteKeyController from '../controllers/InviteKeyController'
 import MomentController from '../controllers/MomentController'
 import MomentGenerationController from '../controllers/MomentGenerationController'
@@ -121,6 +122,7 @@ class Container {
     private _formSubmissionController?: FormSubmissionController
     private _feedbackController?: FeedbackController
     private _imageController?: ImageController
+    private _imageGenerationController?: ImageGenerationController
     // validators
     private _generateMomentRequestValidator?: GenerateMomentRequestValidator
     private _updateMomentRequestValidator?: UpdateMomentRequestValidator
@@ -271,8 +273,14 @@ class Container {
             this.momentService,
             this.changeService,
             this.streamWorker,
+        )
+    }
+
+    public get imageGenerationController(): ImageGenerationController {
+        return this._imageGenerationController ??= new ImageGenerationController(
             this.imageService,
             this.r2Service,
+            this.llmService,
         )
     }
 
