@@ -24,7 +24,9 @@
 <div id={node.id}
      data-nid={node.id}
      data-label={node.id}
+     data-layout={node.layout}
      style={node.css}
+     style:--moment-columns={node.columns ?? 2}
      class:selectable={isSection && isChangesMode}
      class:selected={isSelected}
      onclick={handleClick}

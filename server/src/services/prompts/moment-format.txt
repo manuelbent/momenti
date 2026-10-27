@@ -1,0 +1,65 @@
+OUTPUT CONTRACT
+
+interface MomentContent {
+  slug: string;
+  fonts?: string[];
+  stylesheet?: string;
+  root: MomentNode;
+}
+
+interface MomentNode {
+  id: string;
+  type: 'box' | 'text' | 'image' | 'form' | 'map' | 'countdown' | 'link' | 'navbar' | 'footer' | 'carousel';
+  variant?: 'hero' | 'section' | 'grid' | 'card' | 'overlay';
+  layout?: 'row' | 'column' | 'grid';
+  columns?: number;
+  css?: string;
+  tag?: string;
+  html?: string;
+  src?: string;
+  alt?: string;
+  generationPrompt?: string;
+  address?: string;
+  targetDate?: string;
+  fields?: FormField[];
+  buttonLabel?: string;
+  inputCss?: string;
+  buttonCss?: string;
+  href?: string;
+  platform?: string;
+  links?: { label: string; anchor: string }[];
+  effects?: NodeEffect[];
+  children?: MomentNode[];
+}
+
+type FormField =
+  | { type: 'subject'; text: string }
+  | { type: 'radio'; name: string; label?: string; options: { label: string; value: string }[] }
+  | { type: 'input'; name: string; label?: string; placeholder?: string };
+
+type NodeEffect =
+  | { on?: 'view' | 'load'; type: 'fade-in' | 'slide-up' | 'slide-left' | 'slide-right' | 'scale-in'; duration?: number; delay?: number }
+  | { on: 'always'; type: 'float' | 'pulse'; duration?: number; delay?: number };
+
+DOCUMENT AND STYLING
+- For new pages, include fonts (exact Google Fonts family names, or []) and stylesheet (a CSS string). Use a box as root and unique descriptive kebab-case IDs. A new slug is lowercase words separated by hyphens plus a short alphanumeric suffix, at most 50 characters.
+- Every rendered node exposes its ID. Style #node-id and its descendants, including pseudo-elements and hover/focus states. Use root's ID for page colors, typography, and custom properties; do not target html, body, or :root. CSS is automatically scoped to this page.
+- Write flat CSS rules. Supported grouping rules are @container, @media, and @supports. Do not use CSS nesting, @import, @font-face, @keyframes, or CSS resource URLs, including image-set(). Load fonts via fonts and images via image nodes. For motion, use CSS transitions or the optional effects field.
+- Use @container moment (max-width: 40rem) or another appropriate threshold for responsive composition. The named moment container is the rendered page, not the studio browser window. Container units such as cqw scale with that page. @media is useful for preferences such as prefers-reduced-motion.
+- Grid, flex, max-width, clamp(), overlap, aspect-ratio, custom properties, and any appropriate spacing units are available. Choose them to suit the design. Put responsive layout in stylesheet, not inline css, since inline declarations override stylesheet rules.
+- In stylesheet-enabled pages, box layout supplies low-specificity defaults: wrapping flex for row, vertical flex for column, and grid with columns (default 2) for grid. Stylesheet rules can override these defaults. Variant marks selectable sections in the editor; it does not impose a visual template.
+- css contains inline declarations for that node, not a stylesheet. It remains useful for local overrides and legacy pages. Do not use !important, which prevents the editor's inline controls from overriding styles.
+- Keep content inside the page. Use ordinary node content, not scripts, style tags, iframes, event handlers, or external embeds in html.
+
+COMPONENT BEHAVIOR
+- box: children form the editable layout tree. Mark major selectable regions variant: 'hero' or 'section'.
+- text: html contains text with optional inline semantic markup; tag selects its element, such as h1, h2, p, or span. Do not hide an entire layout inside html.
+- image: src and alt are required. The node ID identifies a wrapper containing img. Style the wrapper's dimensions and #image-id img for object-fit or object-position. Choose an intentional crop and proportions.
+- form: fields and buttonLabel define a working RSVP form. Use labels for accessible names; placeholders are optional hints. Name fields uniquely within the form. Style #form-id input, button, label, and fieldset, or use inputCss and buttonCss for inline overrides.
+- map: address is required; use only when useful to the requested page and a location is supplied. Its node wraps the map iframe; size it through CSS.
+- countdown: targetDate must be an unambiguous ISO 8601 date supplied by the user. It renders a numeric countdown. Include only when requested.
+- link: href is required; html is its plain visible label. An optional platform (instagram, tiktok, facebook, twitter, linkedin, youtube, pinterest, snapchat, github, website) renders the social icon instead. Links open in a new tab. Use actual provided destinations, not guessed profiles or platform homepages.
+- navbar: links are { label, anchor }, with anchor matching a section ID. It provides in-page navigation and a mobile menu. Include only if it helps the requested page.
+- footer: optional compact closing content in html with momenti attribution. Omit links; use separate link nodes for external destinations.
+- carousel: children are image nodes with real supplied URLs and alt text. It provides gallery paging and the published viewer's lightbox. Slide IDs identify the img itself rather than an image wrapper.
+- effects: optional animation on the actual node, with duration and delay in milliseconds. Use at most one effect per node; prefer entrance motion to perpetual movement. Effects respect reduced-motion preferences.

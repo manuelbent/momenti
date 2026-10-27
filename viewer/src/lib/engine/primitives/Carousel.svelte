@@ -39,6 +39,11 @@
     const open  = (i: number) => { lightboxIndex = i }
     const close = () => { lightboxIndex = null }
 
+    function openDialog(dialog: HTMLDialogElement) {
+        dialog.showModal()
+        return { destroy: () => dialog.close() }
+    }
+
     const prev = () => {
         if (lightboxIndex === null) return
         lightboxIndex = (lightboxIndex - 1 + slides.length) % slides.length
@@ -73,7 +78,7 @@
 <svelte:window on:keydown={onKeydown} />
 
 {#if isPaginated}
-    <div class="relative w-full" style={node.css ?? ''}>
+    <div id={node.id} data-nid={node.id} class="relative w-full" style={node.css ?? ''}>
         <div bind:this={trackEl}
              class="flex w-full snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth">
             {#each pages as page, p (p)}
@@ -82,7 +87,7 @@
                         <button type="button"
                                 class="aspect-square overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
                                 on:click={() => open(slides.indexOf(slide))}>
-                            <img src={slide.src ?? ''}
+                            <img id={slide.id} data-nid={slide.id} style={slide.css} src={slide.src ?? ''}
                                  alt={slide.alt ?? ''}
                                  class="h-full w-full object-cover"
                                  loading="lazy"/>
@@ -93,12 +98,12 @@
         </div>
     </div>
 {:else if isWideSlideNeeded}
-    <div class="w-full space-y-2" style={node.css ?? ''}>
+    <div id={node.id} data-nid={node.id} class="w-full space-y-2" style={node.css ?? ''}>
         <!-- wide slide -->
         <button type="button"
                 class="w-full aspect-video overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
                 on:click={() => open(0)}>
-            <img src={slides[0].src ?? ''}
+            <img id={slides[0].id} data-nid={slides[0].id} style={slides[0].css} src={slides[0].src ?? ''}
                  alt={slides[0].alt ?? ''}
                  class="h-full w-full object-cover"
                  loading="lazy"/>
@@ -110,7 +115,7 @@
                 <button type="button"
                         class="aspect-square overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
                         on:click={() => open(slides.indexOf(slide))}>
-                    <img src={slide.src ?? ''}
+                    <img id={slide.id} data-nid={slide.id} style={slide.css} src={slide.src ?? ''}
                          alt={slide.alt ?? ''}
                          class="h-full w-full object-cover"
                          loading="lazy"/>
@@ -119,13 +124,13 @@
         </div>
     </div>
 {:else}
-    <div class={`grid w-full gap-2 ${gridClass}`}
+    <div id={node.id} data-nid={node.id} class={`grid w-full gap-2 ${gridClass}`}
          style={node.css ?? ''}>
         {#each slides as slide (slide.id)}
             <button type="button"
                     class="aspect-square overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-white/60 cursor-pointer"
                     on:click={() => open(slides.indexOf(slide))}>
-                <img src={slide.src ?? ''}
+                <img id={slide.id} data-nid={slide.id} style={slide.css} src={slide.src ?? ''}
                      alt={slide.alt ?? ''}
                      class="h-full w-full object-cover"
                      loading="lazy"/>
@@ -136,11 +141,11 @@
 
 <!-- lightbox -->
 {#if lightboxIndex !== null}
-    <div
-            class="fixed inset-0 z-1001 flex items-center justify-center bg-black/85 backdrop-blur-sm"
+    <dialog
+            use:openDialog
+            class="fixed inset-0 m-0 h-full w-full max-h-none max-w-none border-0 p-0 z-1001 flex items-center justify-center bg-black/85 backdrop-blur-sm"
             on:click|self={close}
             on:keydown={() => {}}
-            role="dialog"
             aria-modal="true"
             tabindex="-1"
     >
@@ -162,5 +167,5 @@
         {/if}
 
         <div class="absolute bottom-4 text-xs">{lightboxIndex + 1} / {slides.length}</div>
-    </div>
+    </dialog>
 {/if}

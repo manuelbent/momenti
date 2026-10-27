@@ -5,7 +5,7 @@
     $: mapUrl = `https://www.google.com/maps?q=${encodedAddress}&output=embed`
 </script>
 
-<div class="momenti-map-container" style={node.css ?? ''}>
+<div id={node.id} data-nid={node.id} class="momenti-map-container" style={node.css ?? ''}>
     {#if node.address}
         <iframe
                 title="Map for {node.address}"

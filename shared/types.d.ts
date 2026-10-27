@@ -10,6 +10,7 @@ type NodeEffect =
 interface MomentContent {
     slug: string;
     fonts?: string[];
+    stylesheet?: string;
     root: MomentNode;
 }
 

@@ -2,6 +2,7 @@
     import { onMount } from 'svelte'
     import { fade } from 'svelte/transition'
     import { loadFonts } from '$shared/loadFonts'
+    import MomentPage from '$shared/MomentPage.svelte'
     import { moment } from '$lib/stores/moment'
     import Renderer from '$lib/engine/PreviewRenderer.svelte'
 
@@ -21,6 +22,8 @@
 
 {#if ready && $moment}
     <div in:fade={{ duration: 400 }} style="position: relative; transform: translate(0);">
-        <Renderer node={$moment.content.root}/>
+        <MomentPage stylesheet={$moment.content.stylesheet}>
+            <Renderer node={$moment.content.root}/>
+        </MomentPage>
     </div>
 {/if}

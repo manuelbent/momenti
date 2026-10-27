@@ -15,6 +15,7 @@ const PRESETS: Record<string, Keyframe[]> = {
  * View-triggered effects fire once when the element scrolls into view.
  */
 export function effects(wrapper: HTMLElement, list: NodeEffect[] = []) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const el = wrapper.firstElementChild as HTMLElement|null
     if (!el || !list.length) return
 

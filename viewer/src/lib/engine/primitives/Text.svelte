@@ -16,6 +16,8 @@
 
 <svelte:element
         this={node.tag ?? 'p'}
+        id={node.id}
+        data-nid={node.id}
         bind:this={element}
         style={node.css ?? ''}
 />

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { loadFonts } from '$shared/loadFonts'
+    import MomentPage from '$shared/MomentPage.svelte'
     import { moment } from '$lib/stores/moment'
     import Renderer from '$lib/engine/StudioRenderer.svelte'
     import BrowserChrome from './components/BrowserChrome.svelte'
@@ -19,7 +20,9 @@
     <div class="flex-1 min-h-0 bg-white overflow-y-auto overflow-x-hidden" bind:clientWidth={containerWidth} style="transform: translate(0);">
         <div style="width: {DESKTOP_WIDTH}px; zoom: {scale}; container-type: inline-size;">
             {#if $moment}
-                <Renderer node={$moment.content.root} />
+                <MomentPage stylesheet={$moment.content.stylesheet}>
+                    <Renderer node={$moment.content.root} />
+                </MomentPage>
             {:else}
                 <div class="flex items-center justify-center h-64 text-ink/20 text-sm tracking-wide">
                     no moment yet

@@ -2,7 +2,7 @@
     export let node: MomentNode
 </script>
 
-<div class="momenti-img-container" style={node.css ?? ''}>
+<div id={node.id} data-nid={node.id} class="momenti-img-container" style={node.css ?? ''}>
     <img src={node.src ?? ''} alt={node.alt ?? ''} class="main-img" />
 </div>
 

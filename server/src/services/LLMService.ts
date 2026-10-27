@@ -52,10 +52,11 @@ export default class LLMService implements LLMServiceInterface {
      * @constructor
      */
     constructor() {
+        const momentFormat = readFileSync(join(__dirname, 'prompts', 'moment-format.txt'), 'utf-8')
         this.classifierPrompt = readFileSync(join(join(__dirname, 'prompts'), 'classifier-prompt.txt'), 'utf-8')
         this.imagePrompt = readFileSync(join(join(__dirname, 'prompts'), 'image-prompt.txt'), 'utf-8')
-        this.capturePrompt = readFileSync(join(join(__dirname, 'prompts'), 'capture-prompt.txt'), 'utf-8')
-        this.patchPrompt = readFileSync(join(join(__dirname, 'prompts'), 'patch-prompt.txt'), 'utf-8')
+        this.capturePrompt = `${readFileSync(join(__dirname, 'prompts', 'capture-prompt.txt'), 'utf-8')}\n\n${momentFormat}`
+        this.patchPrompt = `${readFileSync(join(__dirname, 'prompts', 'patch-prompt.txt'), 'utf-8')}\n\n${momentFormat}`
         this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     }
 

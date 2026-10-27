@@ -5,12 +5,13 @@
 
     function scrollTo(e: MouseEvent, anchor: string) {
         e.preventDefault()
-        const target = document.getElementById(anchor)
+        const page = (e.currentTarget as HTMLElement).closest('[data-moment-page]') ?? document
+        const target = page.querySelector(`#${CSS.escape(anchor)}`)
         if (target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'start' })
             // close the drawer after navigation
-            const toggle = document.getElementById(`nav-toggle-${node.id}`) as HTMLInputElement
-            if (toggle) toggle.checked = false
+            const toggle = page.querySelector(`#${CSS.escape(`nav-toggle-${node.id}`)}`)
+            if (toggle instanceof HTMLInputElement) toggle.checked = false
         }
     }
 </script>

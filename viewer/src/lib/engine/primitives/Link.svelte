@@ -20,6 +20,8 @@
 </script>
 
 <a
+    id={node.id}
+    data-nid={node.id}
     href={node.href || '#'}
     target="_blank"
     rel="noopener noreferrer"

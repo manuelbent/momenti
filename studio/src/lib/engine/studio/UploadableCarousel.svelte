@@ -58,7 +58,7 @@
                         <button type="button"
                                 class="container relative aspect-square overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
                                 onclick={(e) => handleSlideClick(e, slide)}>
-                            <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover"
+                            <img id={slide.id} data-nid={slide.id} style={slide.css} src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover"
                                  loading="lazy"/>
                         </button>
                         <input bind:this={fileInputs[slide.id]} type="file" accept="image/*"
@@ -73,7 +73,7 @@
         <button type="button"
                 class="w-full aspect-video overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
                 onclick={(e) => handleSlideClick(e, slides[0])}>
-            <img src={slides[0].src ?? ''} alt={slides[0].alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
+            <img id={slides[0].id} data-nid={slides[0].id} style={slides[0].css} src={slides[0].src ?? ''} alt={slides[0].alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
         </button>
         <input bind:this={fileInputs[slides[0].id]} type="file" accept="image/*"
                onchange={(e) => handleFileSelected(e, slides[0].id)} hidden/>
@@ -83,7 +83,7 @@
                 <button type="button"
                         class="container aspect-square overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
                         onclick={(e) => handleSlideClick(e, slide)}>
-                    <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
+                    <img id={slide.id} data-nid={slide.id} style={slide.css} src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
                 </button>
                 <input bind:this={fileInputs[slide.id]} type="file" accept="image/*"
                        onchange={(e) => handleFileSelected(e, slide.id)} hidden/>
@@ -96,7 +96,7 @@
             <button type="button"
                     class="container relative aspect-square overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
                     onclick={(e) => handleSlideClick(e, slide)}>
-                <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
+                <img id={slide.id} data-nid={slide.id} style={slide.css} src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
             </button>
             <input bind:this={fileInputs[slide.id]} type="file" accept="image/*"
                    onchange={(e) => handleFileSelected(e, slide.id)} hidden/>
@@ -120,7 +120,6 @@
         z-index: 9;
     }
 </style>
-
 
 
 

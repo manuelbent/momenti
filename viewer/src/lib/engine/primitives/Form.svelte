@@ -22,7 +22,7 @@
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
-<form style={node.css ?? ''} onsubmit={handleSubmit}>
+<form id={node.id} data-nid={node.id} style={node.css ?? ''} onsubmit={handleSubmit}>
     {#each node.fields ?? [] as field}
         {#if field.type === 'subject'}
             <p>{field.text}</p>

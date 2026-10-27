@@ -1,5 +1,6 @@
 <script lang="ts">
     import { loadFonts } from '$shared/loadFonts'
+    import MomentPage from '$shared/MomentPage.svelte'
     import { tick } from 'svelte'
     import { fade } from 'svelte/transition'
     import Renderer from '$lib/engine/StudioRenderer.svelte'
@@ -65,7 +66,9 @@
                     style="width: {DESKTOP_WIDTH}px; zoom: {scale}; container-type: inline-size;"
                     in:fade={{ duration: 700 }}
                 >
-                    <Renderer node={content.root}/>
+                    <MomentPage stylesheet={content.stylesheet}>
+                        <Renderer node={content.root}/>
+                    </MomentPage>
                 </div>
             {:else}
                 <div class="flex h-full items-center justify-center">

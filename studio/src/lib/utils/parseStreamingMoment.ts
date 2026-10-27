@@ -13,6 +13,7 @@ const NODE_TYPES = new Set<MomentNode['type']>([
 
 interface ParsedValue {
     value: unknown
+    complete?: boolean
 }
 
 class PartialJsonParser {
@@ -31,7 +32,7 @@ class PartialJsonParser {
 
         if (char === '{') return { value: this.parseObject() }
         if (char === '[') return { value: this.parseArray() }
-        if (char === '"') return { value: this.parseString().value }
+        if (char === '"') return this.parseString()
 
         const remainder = this.input.slice(this.index)
         const literal = /^(true|false|null)\b/.exec(remainder)
@@ -74,7 +75,9 @@ class PartialJsonParser {
 
             const parsed = this.parseValue()
             if (!parsed) break
-            result[key.value] = parsed.value
+            if (key.value !== 'stylesheet' || parsed.complete !== false) {
+                result[key.value] = parsed.value
+            }
         }
 
         return result
@@ -178,6 +181,7 @@ export const parseStreamingMoment = (text: string): Partial<MomentContent>|null 
             ...(Array.isArray(content.fonts)
                 ? { fonts: content.fonts.filter((font): font is string => typeof font === 'string') }
                 : {}),
+            ...(typeof content.stylesheet === 'string' ? { stylesheet: content.stylesheet } : {}),
             ...(root ? { root } : {}),
         }
     } catch {

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { moment } from '$lib/stores/moment'
     import { loadFonts } from '$shared/loadFonts'
+    import MomentPage from '$shared/MomentPage.svelte'
     import Renderer from '$lib/engine/StudioRenderer.svelte'
     import StatusBar from './components/StatusBar.svelte'
 
@@ -15,7 +16,9 @@
     <div class="overflow-y-auto bg-white overflow-x-hidden">
         <div style="width: 390px; zoom: {288 / 390}; container-type: inline-size;">
             {#if $moment}
-                <Renderer node={$moment.content.root}/>
+                <MomentPage stylesheet={$moment.content.stylesheet}>
+                    <Renderer node={$moment.content.root}/>
+                </MomentPage>
             {:else}
                 <div class="flex items-center justify-center h-64 text-ink/20 text-sm tracking-wide">
                     no moment yet

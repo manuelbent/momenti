@@ -4,6 +4,7 @@
     import { getMomentBySlug } from '$lib/api/moments'
     import Renderer from '$lib/engine/Renderer.svelte'
     import NotFound from '$lib/components/NotFound.svelte'
+    import MomentPage from '$shared/MomentPage.svelte'
 
     let moment: Moment|null = null
     let loading = true
@@ -23,7 +24,9 @@
 {#if loading}
     <!--  -->
 {:else if moment}
-    <Renderer node={moment.content.root}/>
+    <MomentPage stylesheet={moment.content.stylesheet}>
+        <Renderer node={moment.content.root}/>
+    </MomentPage>
 {:else}
     <NotFound/>
 {/if}

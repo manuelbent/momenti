@@ -36,7 +36,7 @@
                     {#each page as slide (slide.id)}
                         <button type="button"
                                 class="aspect-square overflow-hidden rounded cursor-default focus:outline-none">
-                            <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover"
+                            <img id={slide.id} data-nid={slide.id} style={slide.css} src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover"
                                  loading="lazy"/>
                         </button>
                     {/each}
@@ -47,12 +47,12 @@
 {:else if isWideSlideNeeded}
     <div id={node.id} data-nid={node.id} class="w-full space-y-2" style={node.css ?? ''}>
         <button type="button" class="w-full aspect-video overflow-hidden rounded cursor-default focus:outline-none">
-            <img src={slides[0].src ?? ''} alt={slides[0].alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
+            <img id={slides[0].id} data-nid={slides[0].id} style={slides[0].css} src={slides[0].src ?? ''} alt={slides[0].alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
         </button>
         <div class="grid grid-cols-2 gap-2">
             {#each slides.slice(1) as slide (slide.id)}
                 <button type="button" class="aspect-square overflow-hidden rounded cursor-default focus:outline-none">
-                    <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
+                    <img id={slide.id} data-nid={slide.id} style={slide.css} src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
                 </button>
             {/each}
         </div>
@@ -61,7 +61,7 @@
     <div id={node.id} data-nid={node.id} class={`grid w-full gap-2 ${gridClass}`} style={node.css ?? ''}>
         {#each slides as slide (slide.id)}
             <button type="button" class="aspect-square overflow-hidden rounded cursor-default focus:outline-none">
-                <img src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
+                <img id={slide.id} data-nid={slide.id} style={slide.css} src={slide.src ?? ''} alt={slide.alt ?? ''} class="h-full w-full object-cover" loading="lazy"/>
             </button>
         {/each}
     </div>

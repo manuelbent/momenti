@@ -7,6 +7,9 @@ on:
     paths:
       - 'server/**'
       - 'database/**'
+      - 'shared/**'
+      - 'studio/src/lib/utils/parseStreamingMoment.ts'
+      - '.github/workflows/deploy-server.yml'
   workflow_dispatch:
 
 jobs:
@@ -30,6 +33,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
+          npm ci --prefix ../shared
           npm ci
           npm test
           npm run build
