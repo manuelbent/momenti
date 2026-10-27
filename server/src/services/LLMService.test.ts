@@ -39,7 +39,7 @@ describe('LLMService image prompt generation', () => {
         it('streams and returns the stylesheet without changing the image pipeline', async () => {
             const service = new LLMService()
             const payloads = []
-            for await (const payload of service.captureMoment('A supper club', 'https://images.example/supper.png')) {
+            for await (const payload of service.captureMoment('A supper club', { heroImageUrl: 'https://images.example/supper.png' })) {
                 payloads.push(payload)
             }
 

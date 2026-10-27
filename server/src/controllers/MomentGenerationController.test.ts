@@ -32,7 +32,7 @@ describe('MomentGenerationController capture completion', () => {
         capture = vi.fn((
             _userId: number,
             _prompt: string,
-            _heroImageUrl: string,
+            _options: CaptureMomentOptions,
             onDone: typeof completion,
         ) => {
             completion = onDone
@@ -74,7 +74,7 @@ describe('MomentGenerationController capture completion', () => {
         expect(capture).toHaveBeenCalledWith(
             userId,
             prompt,
-            'https://images.example/hero.png',
+            { heroImageUrl: 'https://images.example/hero.png' },
             expect.any(Function),
         )
         expect(storeMoment).toHaveBeenCalledWith({

@@ -124,12 +124,13 @@ export default class LLMService implements LLMServiceInterface {
 
     /**
      * @param {string} prompt
-     * @param {string} heroImageUrl
+     * @param {CaptureMomentOptions} options
      */
     public async* captureMoment(
         prompt: string,
-        heroImageUrl: string,
+        options: CaptureMomentOptions,
     ): AsyncGenerator<LLMStreamPayload> {
+        const { heroImageUrl } = options
         const creativeDirection = createCreativeDirection()
         const stream = await this.openai.chat.completions.create({
             model: 'gpt-6-astra',

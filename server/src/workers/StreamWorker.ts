@@ -24,13 +24,13 @@ export default class StreamWorker implements StreamWorkerInterface {
      * Starts a new capture stream for the given user.
      * @param {number} userId
      * @param {string} prompt
-     * @param {string} heroImageUrl
+     * @param {CaptureMomentOptions} options
      * @param onDone
      */
     public capture(
         userId: number,
         prompt: string,
-        heroImageUrl: string,
+        options: CaptureMomentOptions,
         onDone: (data: { prompt: string; momentContent: MomentContent }) => Promise<unknown>,
     ): EventEmitter {
         this.streamCacheService.clear(userId)
@@ -40,7 +40,7 @@ export default class StreamWorker implements StreamWorkerInterface {
         const emitter = new EventEmitter()
         this.emitters.set(userId, emitter)
 
-        void this.runCapture(userId, prompt, heroImageUrl, emitter, onDone)
+        void this.runCapture(userId, prompt, options, emitter, onDone)
         return emitter
     }
 
@@ -98,7 +98,7 @@ export default class StreamWorker implements StreamWorkerInterface {
      * Runs capture and stores the completed Moment through the controller callback.
      * @param {number} userId
      * @param {string} prompt
-     * @param {string} heroImageUrl
+     * @param {CaptureMomentOptions} options
      * @param {EventEmitter} emitter
      * @param onDone
      * @private
@@ -106,12 +106,12 @@ export default class StreamWorker implements StreamWorkerInterface {
     private async runCapture(
         userId: number,
         prompt: string,
-        heroImageUrl: string,
+        options: CaptureMomentOptions,
         emitter: EventEmitter,
         onDone: (data: { prompt: string; momentContent: MomentContent }) => Promise<unknown>,
     ): Promise<void> {
         try {
-            for await (const payload of this.llmService.captureMoment(prompt, heroImageUrl)) {
+            for await (const payload of this.llmService.captureMoment(prompt, options)) {
                 if ('error' in payload) {
                     this.emit(userId, emitter, 'error', { error: payload.error })
                     break

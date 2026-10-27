@@ -14,6 +14,15 @@ type LLMStreamPayload =
     | { error: string }
 
 /**
+ * Extra inputs passed to the capture pipeline alongside the prompt.
+ * @interface CaptureMomentOptions
+ */
+interface CaptureMomentOptions {
+    /** Public URL of the generated hero image. */
+    heroImageUrl: string
+}
+
+/**
  * Parameters required to patch an existing Moment.
  * Grouped into a single object so the patch pipeline stays easy to extend.
  * @interface PatchMomentParams

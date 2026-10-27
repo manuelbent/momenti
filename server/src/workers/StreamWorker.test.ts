@@ -47,7 +47,7 @@ describe('StreamWorker', () => {
         worker.capture(
             7,
             'Build a birthday page',
-            'https://images.example/hero.png',
+            { heroImageUrl: 'https://images.example/hero.png' },
             async data => {
                 return momentService.store({
                     user_id: 7,
@@ -61,7 +61,7 @@ describe('StreamWorker', () => {
         await vi.waitFor(() => expect(worker.isGenerating(7)).toBe(false))
         expect(captureMoment).toHaveBeenCalledWith(
             'Build a birthday page',
-            'https://images.example/hero.png',
+            { heroImageUrl: 'https://images.example/hero.png' },
         )
         expect(momentService.store).toHaveBeenCalledWith({
             user_id: 7,
@@ -133,7 +133,7 @@ describe('StreamWorker', () => {
         worker.capture(
             7,
             'Build a birthday page',
-            'https://images.example/hero.png',
+            { heroImageUrl: 'https://images.example/hero.png' },
             async data => {
                 return momentService.store({
                     user_id: 7,

@@ -30,12 +30,14 @@ export default class MomentGenerationController {
     public capture(req: Request, res: Response): void {
         const user: User = res.locals.user
         const { prompt } = req.body
-        const heroImageUrl: string = res.locals.heroImageUrl
+        const options: CaptureMomentOptions = {
+            heroImageUrl: res.locals.heroImageUrl,
+        }
 
         const emitter = this.streamWorker.capture(
             user.id,
             prompt,
-            heroImageUrl,
+            options,
             ({ prompt, momentContent }) => this.storeCapture(user.id, prompt, momentContent),
         )
 
