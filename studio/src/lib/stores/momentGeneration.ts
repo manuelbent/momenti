@@ -1,10 +1,10 @@
-import { writable } from 'svelte/store'
+import { get, writable } from 'svelte/store'
 import { push } from 'svelte-spa-router'
-import { capture } from '$lib/api/moments'
+import { capture, type CaptureEvent } from '$lib/api/moments'
 import { moment } from '$lib/stores/moment'
 import { showToast } from '$lib/stores/toast'
 
-export type GenerationStage = 'form'|'empty'|'preview'
+export type GenerationStage = 'form'|'connecting'|'preview'
 
 interface MomentGenerationState {
     streamText: string
@@ -19,51 +19,44 @@ export const createMomentGenerationStore = () => {
     })
     const { subscribe, update } = store
 
-    const openStudio = (data: Moment) => {
-        moment.set(data)
-        setTimeout(() => push('/studio'), 450)
-    }
-
-    const showError = (error: unknown) => {
-        showToast(
-            error instanceof Error ? error.message : 'Something went wrong. Please try again.',
-            'error',
-        )
+    const onEvent = (event: CaptureEvent) => {
+        switch (event.type) {
+            case 'open':
+                update(state => ({ ...state, stage: 'preview' }))
+                break
+            case 'progress':
+                update(state => ({ ...state, progressStage: event.stage }))
+                break
+            case 'chunk':
+                update(state => ({ ...state, streamText: state.streamText + event.chunk }))
+                break
+            case 'done':
+                moment.set(event.data)
+                setTimeout(() => push('/studio'), 450)
+                break
+            case 'error':
+                throw event.error
+        }
     }
 
     const captureMoment = async (prompt: string) => {
         const trimmedPrompt = prompt.trim()
-        if (!trimmedPrompt) return
+        if (!trimmedPrompt || get(store).stage !== 'form') return
 
-        update(state => ({
-            ...state,
+        store.set({
             streamText: '',
-            stage: 'empty',
+            stage: 'connecting',
             progressStage: 'preparing',
-        }))
+        })
 
         try {
-            await capture(trimmedPrompt, {
-                onOpen: () => {
-                    update(state => ({ ...state, stage: 'preview' }))
-                },
-                onProgress: ({ stage: progressStage }) => {
-                    update(state => ({ ...state, progressStage }))
-                },
-                onChunk: (chunk) => {
-                    update(state => ({
-                        ...state,
-                        streamText: state.streamText + chunk,
-                    }))
-                },
-                onError: (error) => {
-                    throw error
-                },
-                onDone: openStudio,
-            })
+            await capture(trimmedPrompt, onEvent)
         } catch (error) {
-            update(state => ({ ...state, stage: 'form', progressStage: undefined }))
-            showError(error)
+            store.set({ streamText: '', stage: 'form' })
+            showToast(
+                error instanceof Error ? error.message : 'Something went wrong. Please try again.',
+                'error',
+            )
         }
     }
 

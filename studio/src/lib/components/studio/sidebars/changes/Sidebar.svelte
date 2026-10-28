@@ -19,7 +19,7 @@
         }
 
         // a section is optional: when none is selected the change applies page-wide
-        const submittedNodeId = $selectedSection?.id ?? null
+        const nodeId = $selectedSection?.id
 
         // immediately show the user's message
         pendingPrompt = submittedPrompt
@@ -30,38 +30,35 @@
         try {
             await patch({
                 momentId: $moment.id,
-                nodeId: submittedNodeId ?? undefined,
+                nodeId,
                 prompt: submittedPrompt,
                 content: $moment.content,
-                callbacks: {
-                    onChunk: (chunk: string) => {
-                        patchChunk.update(v => v + chunk)
-                    },
-                    onError: () => {
-                        patchState.set('error')
-                        patchChunk.set('')
-                        pendingPrompt = null
-                        showToast('Could not process the prompt. Please try again.', 'error')
-                    },
-                    onDone: (change: Change) => {
-                        moment.update(m => ({ ...m, content: change.new_content }))
-                        editorState.setDirty()
-                        selectedSection.set(null)
-                        patchState.set('idle')
-                        patchChunk.set('')
-
-                        appendChange(change)
-
-                        // Clear pending message after change is added
-                        pendingPrompt = null
-                    },
+                onEvent: event => {
+                    switch (event.type) {
+                        case 'chunk':
+                            patchChunk.update(value => value + event.chunk)
+                            break
+                        case 'done':
+                            moment.update(value => ({ ...value, content: event.data.new_content }))
+                            editorState.setDirty()
+                            selectedSection.set(null)
+                            appendChange(event.data)
+                            break
+                        case 'error':
+                            throw event.error
+                    }
                 },
             })
+            patchState.set('idle')
         } catch (err) {
             patchState.set('error')
+            showToast(
+                err instanceof Error ? err.message : 'Could not process the prompt. Please try again.',
+                'error',
+            )
+        } finally {
             patchChunk.set('')
             pendingPrompt = null
-            showToast((err as any).message, 'error')
         }
     }
 </script>

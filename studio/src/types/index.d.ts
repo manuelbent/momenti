@@ -1,17 +1,3 @@
-interface CaptureCallbacks {
-    onOpen?: () => void
-    onProgress?: (progress: CaptureProgress) => void
-    onChunk: (chunk: string) => void
-    onDone: (data: Moment) => void
-    onError?: (err: Error) => void
-}
-
-interface PatchCallbacks {
-    onChunk: (chunk: string) => void
-    onDone: (data: Change) => void
-    onError?: (err: Error) => void
-}
-
 interface Change {
     id: number
     moment_id: number

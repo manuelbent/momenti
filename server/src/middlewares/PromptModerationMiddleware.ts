@@ -23,9 +23,8 @@ export default class PromptModerationMiddleware {
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { prompt } = req.body
 
-        emit(res, 'progress', { stage: 'moderating' })
-
         try {
+            emit(res, 'progress', { stage: 'moderating' })
             const flagged = await this.llmService.moderateText(prompt)
 
             if (flagged) {

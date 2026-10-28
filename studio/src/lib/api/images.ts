@@ -6,9 +6,9 @@ import { API_URL, authHeaders } from './client'
  * @returns The permanent public URL of the uploaded image
  */
 export const uploadImage = async (file: File): Promise<string> => {
-    const headers = authHeaders() as Record<string, string>
+    const headers = new Headers(authHeaders())
     // Remove Content-Type so the browser sets the correct multipart boundary
-    delete headers['Content-Type']
+    headers.delete('Content-Type')
 
     const body = new FormData()
     body.append('file', file)

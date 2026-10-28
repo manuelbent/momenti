@@ -1,6 +1,21 @@
 import { API_URL, authHeaders } from './client'
+import { isRecord, readStream, type StreamEvent } from './stream'
 
-export const capture = async (prompt: string, callbacks: CaptureCallbacks): Promise<void> => {
+export type CaptureEvent = { type: 'open' } | StreamEvent<Moment>
+
+const isContent = (data: unknown): data is MomentContent =>
+    isRecord(data) && typeof data.slug === 'string' && isRecord(data.root) &&
+    typeof data.root.id === 'string' && typeof data.root.type === 'string'
+
+const isMoment = (data: unknown): data is Moment =>
+    isRecord(data) && typeof data.id === 'number' && typeof data.slug === 'string' &&
+    isContent(data.content)
+
+const isChange = (data: unknown): data is Change =>
+    isRecord(data) && typeof data.id === 'number' && typeof data.moment_id === 'number' &&
+    isContent(data.new_content)
+
+export const capture = async (prompt: string, onEvent: (event: CaptureEvent) => void): Promise<void> => {
     const res = await fetch(`${API_URL}/capture`, {
         method: 'POST',
         headers: authHeaders(),
@@ -16,63 +31,8 @@ export const capture = async (prompt: string, callbacks: CaptureCallbacks): Prom
         throw new Error(`Unexpected response: ${res.status}`)
     }
 
-    callbacks.onOpen?.()
-    await readStream<Moment>(res.body, callbacks)
-}
-
-const readStream = async <T>(
-    body: ReadableStream<Uint8Array>,
-    callbacks: {
-        onProgress?: (progress: CaptureProgress) => void
-        onChunk: (chunk: string) => void
-        onDone: (data: T) => void
-        onError?: (err: Error) => void
-    }
-): Promise<void> => {
-    const reader = body
-        .pipeThrough(new TextDecoderStream() as unknown as ReadableWritablePair<string, Uint8Array>)
-        .getReader()
-
-    let buffer = ''
-
-    while (true) {
-        const { value, done } = await reader.read()
-        if (done) throw new Error('The connection closed before generation completed. Please try again.')
-
-        buffer += value
-        const messages = buffer.split('\n\n')
-        buffer = messages.pop() ?? ''
-
-        for (const msg of messages) {
-            let event: string | undefined
-            let data: unknown
-
-            for (const line of msg.split('\n')) {
-                if (line.startsWith('event:')) event = line.slice('event:'.length).trim()
-                else if (line.startsWith('data:')) data = JSON.parse(line.slice('data:'.length).trim())
-            }
-
-            if (!event || data === undefined) continue
-
-            switch (event) {
-                case 'progress':
-                    callbacks.onProgress?.(data as CaptureProgress)
-                    break
-                case 'chunk':
-                    callbacks.onChunk((data as { chunk: string }).chunk)
-                    break
-                case 'done':
-                    callbacks.onDone(data as T)
-                    return
-                case 'error': {
-                    const error = new Error((data as { error: string }).error)
-                    if (!callbacks.onError) throw error
-                    callbacks.onError(error)
-                    return
-                }
-            }
-        }
-    }
+    onEvent({ type: 'open' })
+    await readStream(res.body, isMoment, onEvent)
 }
 
 export const patch = async (
@@ -81,13 +41,13 @@ export const patch = async (
         nodeId,
         prompt,
         content,
-        callbacks,
+        onEvent,
     }: {
         momentId: number,
         prompt: string,
         content: MomentContent,
         nodeId?: string,
-        callbacks: PatchCallbacks,
+        onEvent: (event: StreamEvent<Change>) => void,
     }): Promise<void> => {
     const res = await fetch(`${API_URL}/moments/${momentId}`, {
         method: 'PATCH',
@@ -108,7 +68,7 @@ export const patch = async (
         throw new Error(`Unexpected response: ${res.status}`)
     }
 
-    await readStream<Change>(res.body, callbacks)
+    await readStream(res.body, isChange, onEvent)
 }
 
 export const getMomentBySlug = async (slug: string): Promise<Moment|null> => {

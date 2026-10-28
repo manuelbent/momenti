@@ -81,10 +81,6 @@
                         <Renderer node={content.root}/>
                     </MomentPage>
                 </div>
-            {:else}
-                <div class="flex h-full items-center justify-center">
-                    <!-- -->
-                </div>
             {/if}
         </div>
 
