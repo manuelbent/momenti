@@ -13,14 +13,25 @@ export default class MomentContentModerationMiddleware {
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void|Response> {
         const { content } = req.body
 
-        const text = parse(content)
+        if (!content) {
+            next()
+            return
+        }
 
-        logger.info(text)
+        try {
+            const text = parse(content)
+            const flagged = await this.llmService.moderateText(text)
 
-        const flagged = await this.llmService.moderateText(text)
-
-        if (flagged) {
-            return res.status(422).json({ error: 'Your Moment contains harmful or prohibited content and cannot be saved.' })
+            if (flagged) {
+                return res.status(422).json({
+                    error: 'Your Moment contains harmful or prohibited content and cannot be saved.',
+                })
+            }
+        } catch (err) {
+            logger.error({ err }, '[MomentContentModerationMiddleware] Content moderation error')
+            return res.status(503).json({
+                error: 'Failed to review your Moment. Please try again.',
+            })
         }
 
         next()
