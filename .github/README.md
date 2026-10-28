@@ -2,7 +2,7 @@
 
 Momenti generates a single page for your event from one prompt and publishes it in one click.
 Weddings, birthdays, reunions, parties, concerts, or any occasion that needs a page.
-Describe your event in natural language and the model produces a structured page with sections, typography, images, an RSVP form, a venue map, and a countdown.
+Describe your event in natural language and the AI generates a custom hero image and a structured page with sections, typography, and useful event details such as an RSVP form, a venue map, or a countdown.
 
 Every page gets its own subdomain on `momenti.cc`. 
 The moment starts with a subdomain derived from its title (for example `your-event.momenti.cc`), and you can change it to any name you like, with availability checked live as you type.
@@ -11,10 +11,17 @@ The moment you publish, the page is live at `https://your-event.momenti.cc`, rea
 
 ## How it works
 
-A user describes their event, for example *"A cherry blossom wedding at Villa Camilla on Lake Como, July 23rd, elegant and romantic, with an RSVP section"*, and the server calls an LLM to produce a structured `MomentContent` tree.
-While its JSON is streaming, the studio incrementally parses complete nodes and renders them in a non-interactive preview that automatically follows the page as it is assembled.
+A user describes their event, for example *"A cherry blossom wedding at Villa Camilla on Lake Como, July 23rd, elegant and romantic, with an RSVP section"*. The server then runs a sequential generation pipeline:
+
+1. **Check the brief.** Prompt moderation and classification run before asset generation.
+2. **Create the hero image.** `ImageGenerationController` asks `LLMService` to turn the event brief into a visual-only image prompt using a low-cost text model. This prompt describes the subject, composition, lighting, palette, and mood of a wide 3:2 image, without baked-in text or UI. `ImageService` generates the PNG, and the controller uploads it through `R2Service` to Cloudflare R2.
+3. **Generate the page.** `MomentGenerationController` passes the original brief and uploaded hero image URL to `StreamWorker`, which streams a structured `MomentContent` tree from `LLMService`. The page model includes the existing asset as an image node, preserving its URL, and chooses its placement to suit the composition. The controller saves the completed moment before the stream reports completion.
+
+The studio shows preparation progress while the brief is checked and the image is planned, generated, and uploaded. Once page JSON starts streaming, it incrementally parses complete nodes and renders them in a non-interactive preview that automatically follows the page as it is assembled.
 That tree is a composition of typed nodes (box, text, image, form, map, countdown, carousel, and so on), with a page stylesheet and optional inline CSS overrides.
 The studio lets the host edit any node directly, and the viewer renders it for guests.
+
+Hero image generation is part of initial capture, not patch requests. Patches refine the existing page while retaining its assets and unrelated styles. If hero generation or upload fails, the server reports an error instead of starting page generation without the asset.
 
 ## Structure
 
@@ -32,9 +39,9 @@ momenti/
 
 Node.js / Express written in TypeScript. Responsibilities:
 
-- Streaming LLM generation via OpenAI with prompt safety middleware
+- Prompt safety checks, hero-specific image prompting, custom image generation, and streaming page generation via OpenAI
 - Moment CRUD, slug management, content updates, publishing
-- Image uploads stored in Cloudflare R2
+- Generated hero images and user uploads stored in Cloudflare R2
 - Form submission collection with CSV export
 - Invite-key based access control
 - Redis rate limiting and stream caching
@@ -42,7 +49,7 @@ Node.js / Express written in TypeScript. Responsibilities:
 ### studio
 
 Svelte 5 single-page application.  
-Lets authenticated users prompt for a new moment, watch its page assemble in a live streaming preview, then edit every node in the tree (text, styles, images, links, forms) before saving and publishing.
+Lets authenticated users prompt for a new moment, follow preparation progress while its custom hero image is generated, watch its page assemble in a live streaming preview, then edit every node in the tree (text, styles, images, links, forms) before saving and publishing.
 
 ### viewer
 
@@ -94,7 +101,7 @@ Sequelize migrations and seeders. The default database is SQLite, configured via
 | Layer | Stack |
 |---|---|
 | Server | Node.js, Express, TypeScript, Sequelize, SQLite |
-| AI | OpenAI (streaming) |
+| AI | OpenAI (image prompting, image generation, streaming page generation) |
 | Storage | Cloudflare R2 (S3-compatible) |
 | Cache / Rate limiting | Redis |
 | Frontend | Svelte 5, Vite, Tailwind CSS 4 |
