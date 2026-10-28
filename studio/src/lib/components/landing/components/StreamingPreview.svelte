@@ -63,7 +63,7 @@
                 <span class="h-1.5 w-1.5 rounded-full bg-black/8"></span>
             </div>
             <div class="mx-auto flex items-center gap-2 pr-7 text-[9px] tracking-[0.12em] text-black/25">
-                <span class="live-dot h-1 w-1 rounded-full bg-black/35"></span>
+                <span class="live-dot h-0.5 w-0.5 rounded-full bg-black/35"></span>
                 <span aria-label="Moment URL">{content?.slug ? `https://${content.slug}.momenti.cc` : ''}</span>
             </div>
         </div>
@@ -95,7 +95,7 @@
              aria-hidden="true"
         ></div>
         {#if progressStage && !content?.root}
-            <div class="pointer-events-none absolute bottom-4 right-4 max-w-[calc(100%-2rem)] italic text-[11px] font-light tracking-[-0.01em] text-ink-faint/60"
+            <div class="pointer-events-none absolute bottom-4 right-4 max-w-[calc(100%-2rem)] italic text-[10px] font-light tracking-[-0.01em] text-ink-faint/60"
                  role="status"
                  aria-live="polite"
             >
