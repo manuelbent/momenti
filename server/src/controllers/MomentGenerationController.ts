@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { EventEmitter } from 'node:events'
+import { emit } from '../utils/sse'
 import logger from '../config/logger'
 import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
@@ -34,6 +35,7 @@ export default class MomentGenerationController {
             heroImageUrl: res.locals.heroImageUrl,
         }
 
+        emit(res, 'progress', { stage: 'generating-moment' })
         const emitter = this.streamWorker.capture(
             user.id,
             prompt,
@@ -41,7 +43,7 @@ export default class MomentGenerationController {
             ({ prompt, momentContent }) => this.storeCapture(user.id, prompt, momentContent),
         )
 
-        this.stream(req, res, emitter)
+        this.stream(res, emitter)
     }
 
     private async storeCapture(
@@ -66,16 +68,13 @@ export default class MomentGenerationController {
         const user: User = res.locals.user
 
         if (!this.streamWorker.hasCapture(user.id)) {
-            res.write('event: idle\n')
-            res.write('data: {}\n\n')
-            res.end()
+            emit(res, 'idle', {}, true)
             return
         }
 
         const events = this.streamWorker.getBufferedEvents(user.id)
         for (const event of events) {
-            res.write(`event: ${event.event}\n`)
-            res.write(`data: ${JSON.stringify(event.data)}\n\n`)
+            emit(res, event.event, event.data)
         }
 
         if (!this.streamWorker.isGenerating(user.id)) {
@@ -83,7 +82,7 @@ export default class MomentGenerationController {
             return
         }
 
-        this.stream(req, res, this.streamWorker.getEmitter(user.id)!)
+        this.stream(res, this.streamWorker.getEmitter(user.id)!)
     }
 
     /**
@@ -102,7 +101,7 @@ export default class MomentGenerationController {
             history = changes.map(change => change.prompt)
         } catch (err) {
             logger.error({ err }, '[MomentGenerationController] Failed to load change history')
-            res.status(500).json({ error: 'Internal server error.' })
+            emit(res, 'error', { error: 'Internal server error.' }, true)
             return
         }
 
@@ -120,30 +119,25 @@ export default class MomentGenerationController {
             },
         )
 
-        this.stream(req, res, emitter)
+        this.stream(res, emitter)
     }
 
-    private stream(req: Request, res: Response, emitter: EventEmitter): void {
+    private stream(res: Response, emitter: EventEmitter): void {
         const onChunk = (data: { chunk: string }) => {
-            res.write('event: chunk\n')
-            res.write(`data: ${JSON.stringify(data)}\n\n`)
+            emit(res, 'chunk', data)
         }
         const onDone = (data: unknown) => {
-            res.write('event: done\n')
-            res.write(`data: ${JSON.stringify(data)}\n\n`)
-            res.end()
+            emit(res, 'done', data, true)
         }
         const onError = (data: { error: string }) => {
-            res.write('event: error\n')
-            res.write(`data: ${JSON.stringify(data)}\n\n`)
-            res.end()
+            emit(res, 'error', data, true)
         }
 
         emitter.on('chunk', onChunk)
         emitter.once('done', onDone)
         emitter.once('stream-error', onError)
 
-        req.once('close', () => {
+        res.once('close', () => {
             emitter.off('chunk', onChunk)
             emitter.off('done', onDone)
             emitter.off('stream-error', onError)

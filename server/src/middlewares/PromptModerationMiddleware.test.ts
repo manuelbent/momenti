@@ -9,9 +9,24 @@ function makeReq(prompt: unknown): Partial<Request> {
 }
 
 function makeRes() {
-    const res = { status: vi.fn(), json: vi.fn() }
+    const res = {
+        status: vi.fn(),
+        json: vi.fn(),
+        write: vi.fn(),
+        end: vi.fn(),
+    }
     res.status.mockReturnValue(res)
     return res
+}
+
+function expectStreamedRejection(res: ReturnType<typeof makeRes>) {
+    expect(res.status).not.toHaveBeenCalled()
+    expect(res.json).not.toHaveBeenCalled()
+    expect(res.write).toHaveBeenCalledWith('event: error\n')
+    expect(res.write).toHaveBeenCalledWith(
+        'data: {"error":"Your message contains harmful or prohibited content and cannot be processed."}\n\n',
+    )
+    expect(res.end).toHaveBeenCalledOnce()
 }
 
 describe('PromptModerationMiddleware (real OpenAI Moderation API)', () => {
@@ -40,10 +55,7 @@ describe('PromptModerationMiddleware (real OpenAI Moderation API)', () => {
         await middleware.handle(req as Request, res as unknown as Response, next)
 
         expect(next).not.toHaveBeenCalled()
-        expect(res.status).toHaveBeenCalledWith(422)
-        expect(res.json).toHaveBeenCalledWith({
-            error: 'Your message contains harmful or prohibited content and cannot be processed.',
-        })
+        expectStreamedRejection(res)
     }, 15_000)
 
     it('returns 422 for a prompt containing violent content', async () => {
@@ -53,10 +65,7 @@ describe('PromptModerationMiddleware (real OpenAI Moderation API)', () => {
         await middleware.handle(req as Request, res as unknown as Response, next)
 
         expect(next).not.toHaveBeenCalled()
-        expect(res.status).toHaveBeenCalledWith(422)
-        expect(res.json).toHaveBeenCalledWith({
-            error: 'Your message contains harmful or prohibited content and cannot be processed.',
-        })
+        expectStreamedRejection(res)
     }, 15_000)
 
     it('calls next() when prompt is missing', async () => {
@@ -116,10 +125,7 @@ describe('PromptModerationMiddleware (real OpenAI Moderation API)', () => {
         await middleware.handle(req as Request, res as unknown as Response, next)
 
         expect(next).not.toHaveBeenCalled()
-        expect(res.status).toHaveBeenCalledWith(422)
-        expect(res.json).toHaveBeenCalledWith({
-            error: 'Your message contains harmful or prohibited content and cannot be processed.',
-        })
+        expectStreamedRejection(res)
     }, 15_000)
 
     it('blocks a page recruiting for a scam investment scheme', async () => {
@@ -129,10 +135,7 @@ describe('PromptModerationMiddleware (real OpenAI Moderation API)', () => {
         await middleware.handle(req as Request, res as unknown as Response, next)
 
         expect(next).not.toHaveBeenCalled()
-        expect(res.status).toHaveBeenCalledWith(422)
-        expect(res.json).toHaveBeenCalledWith({
-            error: 'Your message contains harmful or prohibited content and cannot be processed.',
-        })
+        expectStreamedRejection(res)
     }, 15_000)
 
     it('blocks a page for an event distributing drugs to minors', async () => {
@@ -142,9 +145,6 @@ describe('PromptModerationMiddleware (real OpenAI Moderation API)', () => {
         await middleware.handle(req as Request, res as unknown as Response, next)
 
         expect(next).not.toHaveBeenCalled()
-        expect(res.status).toHaveBeenCalledWith(422)
-        expect(res.json).toHaveBeenCalledWith({
-            error: 'Your message contains harmful or prohibited content and cannot be processed.',
-        })
+        expectStreamedRejection(res)
     }, 15_000)
 })

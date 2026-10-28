@@ -34,6 +34,7 @@
     bind:prompt
     loading={$generation.loading}
     stage={$generation.stage}
+    progressStage={$generation.progressStage}
     streamText={$generation.streamText}
     onCapture={capture}
 />

@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
+import { emit } from '../utils/sse'
+import logger from '../config/logger'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 
 /**
@@ -18,15 +20,24 @@ export default class PromptModerationMiddleware {
      * @param {Response} res
      * @param {NextFunction} next
      */
-    public async handle(req: Request, res: Response, next: NextFunction): Promise<void|Response> {
+    public async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { prompt } = req.body
 
-        const flagged = await this.llmService.moderateText(prompt)
+        emit(res, 'progress', { stage: 'moderating' })
 
-        if (flagged) {
-            return res.status(422).json({ error: 'Your message contains harmful or prohibited content and cannot be processed.' })
+        try {
+            const flagged = await this.llmService.moderateText(prompt)
+
+            if (flagged) {
+                const error = 'Your message contains harmful or prohibited content and cannot be processed.'
+                emit(res, 'error', { error }, true)
+                return
+            }
+
+            next()
+        } catch (err) {
+            logger.error({ err }, '[PromptModerationMiddleware] Prompt moderation error')
+            emit(res, 'error', { error: 'Failed to review your prompt. Please try again.' }, true)
         }
-
-        next()
     }
 }

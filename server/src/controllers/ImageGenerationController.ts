@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import { emit } from '../utils/sse'
 import logger from '../config/logger'
 import ImageServiceInterface from '../interfaces/ImageServiceInterface'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
@@ -28,19 +29,23 @@ export default class ImageGenerationController {
      */
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            emit(res, 'progress', { stage: 'planning-image' })
             const imagePrompt = await this.llmService.generateImagePrompt(req.body.prompt)
+
+            emit(res, 'progress', { stage: 'generating-image' })
             const buffer = await this.imageService.generate(imagePrompt)
+
+            emit(res, 'progress', { stage: 'uploading-image' })
             res.locals.heroImageUrl = await this.r2Service.upload(
                 buffer,
                 'image/png',
                 'generated.png',
             )
+
             next()
         } catch (err) {
             logger.error({ err }, '[ImageGenerationController] Image generation error')
-            res.write('event: error\n')
-            res.write(`data: ${JSON.stringify({ error: 'Failed to generate the hero image.' })}\n\n`)
-            res.end()
+            emit(res, 'error', { error: 'Failed to generate the hero image.' }, true)
         }
     }
 }

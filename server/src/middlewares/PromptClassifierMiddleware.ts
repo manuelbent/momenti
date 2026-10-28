@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
+import { emit } from '../utils/sse'
+import logger from '../config/logger'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 
 /**
@@ -20,17 +22,23 @@ export default class PromptClassifierMiddleware {
      * @param {Response} res
      * @param {NextFunction} next
      */
-    public async handle(req: Request, res: Response, next: NextFunction): Promise<void | Response> {
+    public async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { prompt } = req.body
 
-        const classification = await this.llmService.classifyPrompt(prompt)
+        try {
+            emit(res, 'progress', { stage: 'classifying' })
+            const classification = await this.llmService.classifyPrompt(prompt)
 
-        if (!classification.valid) {
-            return res.status(422).json({
-                error: classification.reason ?? 'Your prompt does not describe an event. momenti builds a page for a specific event. Try describing your wedding, party, reunion, or celebration.',
-            })
+            if (!classification.valid) {
+                const error = classification.reason ?? 'Your prompt does not describe an event. momenti builds a page for a specific event. Try describing your wedding, party, reunion, or celebration.'
+                emit(res, 'error', { error }, true)
+                return
+            }
+
+            next()
+        } catch (err) {
+            logger.error({ err }, '[PromptClassifierMiddleware] Prompt classification error')
+            emit(res, 'error', { error: 'Failed to understand your prompt. Please try again.' }, true)
         }
-
-        next()
     }
 }

@@ -3,6 +3,19 @@ type FormField =
     |{ type: 'radio'; name: string; label?: string; options: { label: string; value: string }[] }
     |{ type: 'input'; name: string; label?: string; placeholder?: string }
 
+type CaptureProgressStage =
+    |'preparing'
+    |'moderating'
+    |'classifying'
+    |'planning-image'
+    |'generating-image'
+    |'uploading-image'
+    |'generating-moment'
+
+interface CaptureProgress {
+    stage: CaptureProgressStage
+}
+
 type NodeEffect =
     |{ on?: 'view'|'load'; type: 'fade-in'|'slide-up'|'slide-left'|'slide-right'|'scale-in'; duration?: number; delay?: number }
     |{ on: 'always'; type: 'float'|'pulse'; duration?: number; delay?: number }

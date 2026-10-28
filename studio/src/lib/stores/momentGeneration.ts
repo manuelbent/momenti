@@ -1,18 +1,17 @@
-import { get, writable } from 'svelte/store'
+import { writable } from 'svelte/store'
 import { push } from 'svelte-spa-router'
 import { capture, resume } from '$lib/api/moments'
 import { moment } from '$lib/stores/moment'
 import { showToast } from '$lib/stores/toast'
 
-export type GenerationStage = 'form'|'empty'|'resizing'|'preview'
+export type GenerationStage = 'form'|'empty'|'preview'
 
 interface MomentGenerationState {
     streamText: string
     loading: boolean
     stage: GenerationStage
+    progressStage?: CaptureProgressStage
 }
-
-const wait = (duration: number) => new Promise(resolve => setTimeout(resolve, duration))
 
 export const createMomentGenerationStore = () => {
     const store = writable<MomentGenerationState>({
@@ -34,20 +33,6 @@ export const createMomentGenerationStore = () => {
         )
     }
 
-    const showStreamingPreview = async () => {
-        const steps = [
-            ['empty', 450],
-            ['resizing', 700],
-        ] as const
-
-        for (const [nextStage, duration] of steps) {
-            update(state => ({ ...state, stage: nextStage }))
-            await wait(duration)
-            if (get(store).stage !== nextStage) return
-        }
-        update(state => ({ ...state, stage: 'preview' }))
-    }
-
     const resumeCapture = async (hasInviteKey: boolean) => {
         if (!hasInviteKey) {
             update(state => ({ ...state, loading: false }))
@@ -64,13 +49,20 @@ export const createMomentGenerationStore = () => {
                         ...state,
                         loading: false,
                         stage: 'preview',
+                        progressStage: undefined,
                         streamText: state.streamText + chunk,
                     }))
                 },
                 onDone: openStudio,
             })
         } catch (error) {
-            update(state => ({ ...state, loading: false }))
+            update(state => ({
+                ...state,
+                loading: false,
+                stage: 'form',
+                progressStage: undefined,
+                streamText: '',
+            }))
             showError(error)
         }
     }
@@ -83,14 +75,18 @@ export const createMomentGenerationStore = () => {
             ...state,
             streamText: '',
             stage: 'empty',
+            progressStage: 'preparing',
         }))
 
         try {
             await capture(trimmedPrompt, {
+                onOpen: () => {
+                    update(state => ({ ...state, loading: false, stage: 'preview' }))
+                },
+                onProgress: ({ stage: progressStage }) => {
+                    update(state => ({ ...state, progressStage }))
+                },
                 onChunk: (chunk) => {
-                    if (get(store).stage === 'empty') {
-                        void showStreamingPreview()
-                    }
                     update(state => ({
                         ...state,
                         streamText: state.streamText + chunk,
@@ -102,7 +98,7 @@ export const createMomentGenerationStore = () => {
                 onDone: openStudio,
             })
         } catch (error) {
-            update(state => ({ ...state, stage: 'form' }))
+            update(state => ({ ...state, stage: 'form', progressStage: undefined }))
             showError(error)
         }
     }

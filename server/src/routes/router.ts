@@ -10,9 +10,9 @@ router.post('/capture',
     (req, res, next) => ioc.generationGuardMiddleware.handle(req, res, next),
     (req, res, next) => ioc.generateMomentRequestValidator.validate(req, res, next),
     (req, res, next) => ioc.promptSanitizeMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
     (req, res, next) => ioc.promptModerationMiddleware.handle(req, res, next),
     (req, res, next) => ioc.promptClassifierMiddleware.handle(req, res, next),
-    (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
     (req, res, next) => ioc.imageGenerationController.handle(req, res, next),
     (req, res) => ioc.momentGenerationController.capture(req, res)
 )
@@ -54,8 +54,8 @@ router.patch('/moments/:id',
     (req, res, next) => ioc.generationGuardMiddleware.handle(req, res, next),
     (req, res, next) => ioc.patchMomentRequestValidator.validate(req, res, next),
     (req, res, next) => ioc.promptSanitizeMiddleware.handle(req, res, next),
-    (req, res, next) => ioc.promptModerationMiddleware.handle(req, res, next),
     (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.promptModerationMiddleware.handle(req, res, next),
     (req, res) => ioc.momentGenerationController.patch(req, res)
 )
 

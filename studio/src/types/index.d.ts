@@ -1,4 +1,6 @@
 interface CaptureCallbacks {
+    onOpen?: () => void
+    onProgress?: (progress: CaptureProgress) => void
     onChunk: (chunk: string) => void
     onDone: (data: Moment) => void
     onError?: (err: Error) => void

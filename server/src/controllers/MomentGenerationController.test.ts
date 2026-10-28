@@ -59,6 +59,7 @@ describe('MomentGenerationController capture completion', () => {
             },
             write: vi.fn(),
             end: vi.fn(),
+            once: vi.fn(),
         } as unknown as Response
 
         controller.capture(req, res)
@@ -83,5 +84,40 @@ describe('MomentGenerationController capture completion', () => {
             prompt,
             content,
         })
+    })
+})
+
+describe('MomentGenerationController stream lifecycle', () => {
+    it('detaches a resumed client only when its response closes', () => {
+        const emitter = new EventEmitter()
+        const controller = new MomentGenerationController(
+            {} as MomentServiceInterface,
+            {} as ChangeServiceInterface,
+            {
+                hasCapture: () => true,
+                getBufferedEvents: () => [],
+                isGenerating: () => true,
+                getEmitter: () => emitter,
+            } as unknown as StreamWorkerInterface,
+        )
+        const req = new EventEmitter()
+        const res = Object.assign(new EventEmitter(), {
+            locals: { user: { id: 7 } },
+            write: vi.fn(),
+            end: vi.fn(),
+        })
+
+        controller.resume(req as Request, res as unknown as Response)
+        req.emit('close')
+        emitter.emit('chunk', { chunk: 'still connected' })
+        expect(res.write).toHaveBeenCalledWith('data: {"chunk":"still connected"}\n\n')
+
+        res.emit('close')
+        expect(emitter.listenerCount('chunk')).toBe(0)
+        expect(emitter.listenerCount('done')).toBe(0)
+        expect(emitter.listenerCount('stream-error')).toBe(0)
+        res.write.mockClear()
+        emitter.emit('chunk', { chunk: 'after disconnect' })
+        expect(res.write).not.toHaveBeenCalled()
     })
 })

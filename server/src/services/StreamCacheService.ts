@@ -2,7 +2,7 @@ import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterfa
 
 /**
  * Internal structure for a single cache entry.
- * Its presence in the store means a generation is in progress.
+ * Tracks an active generation or a completed capture retained for replay.
  */
 interface CacheEntry {
     type: StreamType

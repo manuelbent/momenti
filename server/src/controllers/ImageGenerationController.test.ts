@@ -64,9 +64,19 @@ describe('ImageGenerationController', () => {
         expect(upload).not.toHaveBeenCalled()
         expect(storeImage).not.toHaveBeenCalled()
         expect(next).not.toHaveBeenCalled()
-        expect(res.write).toHaveBeenNthCalledWith(1, 'event: error\n')
+        expect(res.write).toHaveBeenNthCalledWith(1, 'event: progress\n')
         expect(res.write).toHaveBeenNthCalledWith(
             2,
+            'data: {"stage":"planning-image"}\n\n',
+        )
+        expect(res.write).toHaveBeenNthCalledWith(3, 'event: progress\n')
+        expect(res.write).toHaveBeenNthCalledWith(
+            4,
+            'data: {"stage":"generating-image"}\n\n',
+        )
+        expect(res.write).toHaveBeenNthCalledWith(5, 'event: error\n')
+        expect(res.write).toHaveBeenNthCalledWith(
+            6,
             'data: {"error":"Failed to generate the hero image."}\n\n',
         )
         expect(res.end).toHaveBeenCalledOnce()

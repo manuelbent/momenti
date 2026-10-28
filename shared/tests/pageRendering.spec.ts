@@ -183,10 +183,21 @@ test('published form submission remains functional with page styles', async ({ p
 
 test('streaming preview applies the stylesheet at its desktop canvas width', async ({ page }) => {
     await prepare(page)
-    await page.route(url => url.pathname === '/api/capture/resume', route => route.fulfill({
-        contentType: 'text/event-stream',
-        body: `event: chunk\ndata: ${JSON.stringify({ chunk: JSON.stringify(content) })}\n\n`,
-    }))
+    await page.addInitScript(content => {
+        const fetch = window.fetch.bind(window)
+        window.fetch = (input, init) => {
+            if (String(input).endsWith('/capture/resume')) {
+                return Promise.resolve(new Response(new ReadableStream<Uint8Array>({
+                    start(controller) {
+                        controller.enqueue(new TextEncoder().encode(
+                            `event: chunk\ndata: ${JSON.stringify({ chunk: JSON.stringify(content) })}\n\n`,
+                        ))
+                    },
+                }), { headers: { 'Content-Type': 'text/event-stream' } }))
+            }
+            return fetch(input, init)
+        }
+    }, content)
     await page.setViewportSize({ width: 500, height: 900 })
     await page.goto('http://127.0.0.1:4173')
     const opening = page.locator('.preview-shell #opening')
@@ -195,6 +206,157 @@ test('streaming preview applies the stylesheet at its desktop canvas width', asy
         getComputedStyle(el).gridTemplateColumns.split(' ').length,
     )).toBe(2)
     await expect(page.locator('.preview-shell #title')).toHaveCSS('color', 'rgb(22, 53, 45)')
+})
+
+test('capture resume opens the stored moment after replaying completion', async ({ page }) => {
+    await prepare(page)
+    await page.route(url => url.pathname === '/api/capture/resume', route => route.fulfill({
+        contentType: 'text/event-stream',
+        body: `event: done\ndata: ${JSON.stringify(makeMoment())}\n\n`,
+    }))
+    await page.goto('http://127.0.0.1:4173')
+    await expect(page).toHaveURL('http://127.0.0.1:4173/#/studio')
+    await expect(page.locator('#title')).toHaveText('Supper at dusk')
+})
+
+for (const scenario of [
+    {
+        name: 'idle',
+        status: 200,
+        body: 'event: idle\ndata: {}\n\n',
+    },
+    {
+        name: 'HTTP error',
+        status: 401,
+        body: JSON.stringify({ error: 'Invalid invite key.' }),
+        error: 'Invalid invite key.',
+    },
+    {
+        name: 'replayed error',
+        status: 200,
+        body: 'event: error\ndata: {"error":"Capture failed."}\n\n',
+        error: 'Capture failed.',
+    },
+    {
+        name: 'interrupted stream',
+        status: 200,
+        body: `event: chunk\ndata: ${JSON.stringify({ chunk: JSON.stringify(content) })}\n\n`,
+        error: 'The connection closed before generation completed. Please try again.',
+    },
+]) {
+    test(`capture resume restores the form on ${scenario.name}`, async ({ page }) => {
+        await prepare(page)
+        await page.route(url => url.pathname === '/api/capture/resume', route => route.fulfill({
+            status: scenario.status,
+            contentType: scenario.status === 200 ? 'text/event-stream' : 'application/json',
+            body: scenario.body,
+        }))
+        await page.goto('http://127.0.0.1:4173')
+        await expect(page.locator('textarea')).toBeVisible()
+        await expect(page.locator('.preview-shell')).toHaveCount(0)
+        if (scenario.error) {
+            await expect(page.getByText(scenario.error, { exact: true })).toBeVisible()
+        }
+    })
+}
+
+test('capture opens the preview on SSE connection with progress inside and URL from chunks', async ({ page }) => {
+    await prepare(page)
+    await page.route(url => url.pathname === '/api/capture/resume', route => route.fulfill({
+        contentType: 'text/event-stream',
+        body: 'event: idle\ndata: {}\n\n',
+    }))
+    await page.addInitScript(() => {
+        const fetch = window.fetch.bind(window)
+        window.fetch = (input, init) => {
+            if (String(input).endsWith('/capture') && init?.method === 'POST') {
+                const stream = new ReadableStream<Uint8Array>({
+                    start(controller) {
+                        window.addEventListener('capture-test-event', event => {
+                            const { name, data } = (event as CustomEvent).detail
+                            controller.enqueue(new TextEncoder().encode(
+                                `event: ${name}\ndata: ${JSON.stringify(data)}\n\n`,
+                            ))
+                        })
+                    },
+                })
+                return new Promise<Response>(resolve => {
+                    window.addEventListener('capture-test-open', () => resolve(new Response(stream, {
+                        headers: { 'Content-Type': 'text/event-stream' },
+                    })), { once: true })
+                })
+            }
+            return fetch(input, init)
+        }
+    })
+    await page.goto('http://127.0.0.1:4173')
+    const prompt = page.locator('textarea')
+    await prompt.fill('A garden wedding')
+    await page.clock.install()
+    await page.clock.pauseAt(new Date())
+    await prompt.press('Control+Enter')
+
+    const status = page.getByRole('status')
+    const preview = page.locator('.preview-shell')
+    await expect(preview).toHaveCount(0)
+    await expect(status).toHaveCount(0)
+    await page.evaluate(() => window.dispatchEvent(new Event('capture-test-open')))
+    await expect(preview).toHaveCount(1)
+    const previewStage = preview.locator('../..')
+    const previewDuration = await previewStage.evaluate(el => {
+        const animation = el.getAnimations()[0]
+        animation.pause()
+        animation.currentTime = 0
+        return animation.effect!.getTiming().duration
+    })
+    expect(previewDuration).toBe(600)
+    await expect(preview.getByLabel('Moment URL')).toBeEmpty()
+    await page.clock.runFor(500)
+    await expect(prompt).toHaveCount(0)
+    await expect(previewStage).toHaveCSS('opacity', '0')
+    await previewStage.evaluate(el => { el.getAnimations()[0].finish() })
+    await page.clock.runFor(500)
+    await expect(previewStage).toHaveCSS('opacity', '1')
+    await expect(status).toHaveText('Understanding what matters to you...')
+    await expect(preview.getByRole('status')).toHaveCount(1)
+    await expect(status.locator('.animate-orbit')).toHaveCount(0)
+    const dots = status.locator('.progress-dots')
+    await expect(dots).toHaveAttribute('aria-hidden', 'true')
+    const clips = await dots.evaluate(el => {
+        const animation = el.getAnimations()[0]
+        animation.pause()
+        return [0, 410, 810, 1210, 1610].map(time => {
+            animation.currentTime = time
+            return getComputedStyle(el).clipPath
+        })
+    })
+    expect(new Set(clips.slice(0, 4)).size).toBe(4)
+    expect(clips[4]).toBe(clips[0])
+
+    const emit = async (name: string, data: unknown) => {
+        await page.evaluate(detail => {
+            window.dispatchEvent(new CustomEvent('capture-test-event', { detail }))
+        }, { name, data })
+    }
+    for (const [stage, label] of [
+        ['planning-image', 'Finding the right feel'],
+        ['generating-image', 'Generating an image'],
+        ['generating-moment', 'Making your moment'],
+    ]) {
+        await emit('progress', { stage })
+        await expect(status).toHaveText(`${label}...`)
+        await expect(status.locator('.progress-dots')).toHaveCount(1)
+    }
+
+    await emit('chunk', { chunk: '{"slug":"garden-wedding",' })
+    await expect(status).toHaveText('Making your moment...')
+    await expect(preview.getByLabel('Moment URL')).toHaveText('https://garden-wedding.momenti.cc')
+    await emit('chunk', {
+        chunk: '"root":{"id":"root","type":"text","html":"Welcome to our wedding"}}',
+    })
+    await expect(page.locator('.preview-shell #root')).toHaveText('Welcome to our wedding')
+    await expect(page.locator('.preview-shell .animate-orbit')).toHaveCount(0)
+    await expect(status).toHaveCount(0)
 })
 
 test('gallery lightbox stays in the viewport of a long styled page', async ({ page }) => {

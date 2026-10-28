@@ -16,6 +16,7 @@ export const capture = async (prompt: string, callbacks: CaptureCallbacks): Prom
         throw new Error(`Unexpected response: ${res.status}`)
     }
 
+    callbacks.onOpen?.()
     await readStream<Moment>(res.body, callbacks)
 }
 
@@ -24,7 +25,14 @@ export const resume = async (callbacks: CaptureCallbacks): Promise<void> => {
         headers: authHeaders(),
     })
 
-    if (!res.ok || !res.body) return
+    if (!res.ok) {
+        const body = await res.json()
+        throw new Error(body.error ?? `Unexpected response: ${res.status}`)
+    }
+
+    if (!res.body) {
+        throw new Error(`Unexpected response: ${res.status}`)
+    }
 
     await readStream<Moment>(res.body, callbacks)
 }
@@ -32,6 +40,7 @@ export const resume = async (callbacks: CaptureCallbacks): Promise<void> => {
 const readStream = async <T>(
     body: ReadableStream<Uint8Array>,
     callbacks: {
+        onProgress?: (progress: CaptureProgress) => void
         onChunk: (chunk: string) => void
         onDone: (data: T) => void
         onError?: (err: Error) => void
@@ -46,7 +55,7 @@ const readStream = async <T>(
 
     while (true) {
         const { value, done } = await reader.read()
-        if (done) break
+        if (done) throw new Error('The connection closed before generation completed. Please try again.')
 
         buffer += value
         const messages = buffer.split('\n\n')
@@ -67,14 +76,21 @@ const readStream = async <T>(
                 case 'idle':
                     callbacks.onIdle?.()
                     return
+                case 'progress':
+                    callbacks.onProgress?.(data as CaptureProgress)
+                    break
                 case 'chunk':
                     callbacks.onChunk((data as { chunk: string }).chunk)
                     break
                 case 'done':
                     callbacks.onDone(data as T)
                     return
-                case 'error':
-                    callbacks.onError?.(new Error((data as { error: string }).error))
+                case 'error': {
+                    const error = new Error((data as { error: string }).error)
+                    if (!callbacks.onError) throw error
+                    callbacks.onError(error)
+                    return
+                }
             }
         }
     }
