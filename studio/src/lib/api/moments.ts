@@ -20,23 +20,6 @@ export const capture = async (prompt: string, callbacks: CaptureCallbacks): Prom
     await readStream<Moment>(res.body, callbacks)
 }
 
-export const resume = async (callbacks: CaptureCallbacks): Promise<void> => {
-    const res = await fetch(`${API_URL}/capture/resume`, {
-        headers: authHeaders(),
-    })
-
-    if (!res.ok) {
-        const body = await res.json()
-        throw new Error(body.error ?? `Unexpected response: ${res.status}`)
-    }
-
-    if (!res.body) {
-        throw new Error(`Unexpected response: ${res.status}`)
-    }
-
-    await readStream<Moment>(res.body, callbacks)
-}
-
 const readStream = async <T>(
     body: ReadableStream<Uint8Array>,
     callbacks: {
@@ -44,7 +27,6 @@ const readStream = async <T>(
         onChunk: (chunk: string) => void
         onDone: (data: T) => void
         onError?: (err: Error) => void
-        onIdle?: () => void
     }
 ): Promise<void> => {
     const reader = body
@@ -73,9 +55,6 @@ const readStream = async <T>(
             if (!event || data === undefined) continue
 
             switch (event) {
-                case 'idle':
-                    callbacks.onIdle?.()
-                    return
                 case 'progress':
                     callbacks.onProgress?.(data as CaptureProgress)
                     break

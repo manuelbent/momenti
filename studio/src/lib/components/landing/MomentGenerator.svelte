@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from 'svelte'
     import { inviteKey } from '$lib/stores/auth'
     import { createMomentGenerationStore } from '$lib/stores/momentGeneration'
     import GenerationPanel from './components/GenerationPanel.svelte'
@@ -8,10 +7,6 @@
     let prompt = $state('')
     let showInviteModal = $state(false)
     const generation = createMomentGenerationStore()
-
-    onMount(() => {
-        void generation.resume(Boolean($inviteKey))
-    })
 
     const capture = () => {
         if (!prompt.trim()) return
@@ -32,7 +27,6 @@
 
 <GenerationPanel
     bind:prompt
-    loading={$generation.loading}
     stage={$generation.stage}
     progressStage={$generation.progressStage}
     streamText={$generation.streamText}

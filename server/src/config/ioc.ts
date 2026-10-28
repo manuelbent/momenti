@@ -21,7 +21,7 @@ import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import R2ServiceInterface from '../interfaces/R2ServiceInterface'
-import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
+import StreamCacheInterface from '../interfaces/StreamCacheInterface'
 import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
 import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
 import UserServiceInterface from '../interfaces/UserServiceInterface'
@@ -58,7 +58,7 @@ import InviteKeyService from '../services/InviteKeyService'
 import LLMService from '../services/LLMService'
 import MomentService from '../services/MomentService'
 import R2Service from '../services/R2Service'
-import StreamCacheService from '../services/StreamCacheService'
+import StreamCache from '../services/StreamCache'
 import UserService from '../services/UserService'
 
 import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
@@ -106,7 +106,7 @@ class Container {
     private _userService?: UserServiceInterface
     private _formSubmissionService?: FormSubmissionServiceInterface
     private _feedbackService?: FeedbackServiceInterface
-    private _streamCacheService?: StreamCacheServiceInterface
+    private _streamCache?: StreamCacheInterface
     private _changeService?: ChangeServiceInterface
     private _imageService?: ImageServiceInterface
     // services (non-orm)
@@ -185,7 +185,7 @@ class Container {
     }
 
     public get generationGuardMiddleware(): GenerationGuardMiddleware {
-        return this._generationGuardMiddleware ??= new GenerationGuardMiddleware(this.streamCacheService)
+        return this._generationGuardMiddleware ??= new GenerationGuardMiddleware(this.streamCache)
     }
 
     public get rateLimiterMiddleware(): RateLimiterMiddleware {
@@ -256,12 +256,12 @@ class Container {
         return this._llmService ??= new LLMService()
     }
 
-    public get streamCacheService(): StreamCacheServiceInterface {
-        return this._streamCacheService ??= new StreamCacheService()
+    public get streamCache(): StreamCacheInterface {
+        return this._streamCache ??= new StreamCache()
     }
 
     public get streamWorker(): StreamWorkerInterface {
-        return this._streamWorker ??= new StreamWorker(this.llmService, this.streamCacheService)
+        return this._streamWorker ??= new StreamWorker(this.llmService, this.streamCache)
     }
 
     public get momentController(): MomentController {

@@ -17,12 +17,6 @@ router.post('/capture',
     (req, res) => ioc.momentGenerationController.capture(req, res)
 )
 
-router.get('/capture/resume',
-    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
-    (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
-    (req, res) => ioc.momentGenerationController.resume(req, res)
-)
-
 // moments routes
 router.get('/moments',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),

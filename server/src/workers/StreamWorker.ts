@@ -1,23 +1,21 @@
 import { EventEmitter } from 'events'
 import logger from '../config/logger'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
-import StreamCacheServiceInterface from '../interfaces/StreamCacheServiceInterface'
+import StreamCacheInterface from '../interfaces/StreamCacheInterface'
 import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
 
 /**
  * @class StreamWorker
  */
 export default class StreamWorker implements StreamWorkerInterface {
-    private emitters = new Map<number, EventEmitter>()
-
     /**
      * @constructor
      * @param {LLMServiceInterface} llmService
-     * @param {StreamCacheServiceInterface} streamCacheService
+     * @param {StreamCacheInterface} streamCache
      */
     constructor(
         private llmService: LLMServiceInterface,
-        private streamCacheService: StreamCacheServiceInterface,
+        private streamCache: StreamCacheInterface,
     ) {}
 
     /**
@@ -33,12 +31,8 @@ export default class StreamWorker implements StreamWorkerInterface {
         options: CaptureMomentOptions,
         onDone: (data: { prompt: string; momentContent: MomentContent }) => Promise<unknown>,
     ): EventEmitter {
-        this.streamCacheService.clear(userId)
-        this.emitters.delete(userId)
-
-        this.streamCacheService.init(userId, 'capture')
+        this.streamCache.init(userId)
         const emitter = new EventEmitter()
-        this.emitters.set(userId, emitter)
 
         void this.runCapture(userId, prompt, options, emitter, onDone)
         return emitter
@@ -55,43 +49,11 @@ export default class StreamWorker implements StreamWorkerInterface {
         params: PatchMomentParams,
         onDone: (data: { momentContent: MomentContent }) => Promise<unknown>,
     ): EventEmitter {
-        this.streamCacheService.clear(userId)
-        this.emitters.delete(userId)
-
-        this.streamCacheService.init(userId, 'patch')
+        this.streamCache.init(userId)
         const emitter = new EventEmitter()
-        this.emitters.set(userId, emitter)
 
         void this.runPatch(userId, params, emitter, onDone)
         return emitter
-    }
-
-    /**
-     * @param {number} userId
-     */
-    public getEmitter(userId: number): EventEmitter|undefined {
-        return this.emitters.get(userId)
-    }
-
-    /**
-     * @param {number} userId
-     */
-    public isGenerating(userId: number): boolean {
-        return this.streamCacheService.isGenerating(userId)
-    }
-
-    /**
-     * @param {number} userId
-     */
-    public hasCapture(userId: number): boolean {
-        return this.streamCacheService.hasStream(userId, 'capture')
-    }
-
-    /**
-     * @param {number} userId
-     */
-    public getBufferedEvents(userId: number): StreamEvent[] {
-        return this.streamCacheService.getAllEvents(userId)
     }
 
     /**
@@ -113,32 +75,30 @@ export default class StreamWorker implements StreamWorkerInterface {
         try {
             for await (const payload of this.llmService.captureMoment(prompt, options)) {
                 if ('error' in payload) {
-                    this.emit(userId, emitter, 'error', { error: payload.error })
+                    emitter.emit('stream-error', { error: payload.error })
                     break
                 }
 
                 if ('chunk' in payload) {
-                    this.emit(userId, emitter, 'chunk', { chunk: payload.chunk })
+                    emitter.emit('chunk', { chunk: payload.chunk })
                 }
 
                 if ('done' in payload) {
                     try {
                         const moment = await onDone({ prompt, momentContent: payload.momentContent })
-                        this.emit(userId, emitter, 'done', moment)
+                        emitter.emit('done', moment)
                     } catch (err) {
                         logger.error({ err, userId }, '[StreamWorker] Store moment error')
-                        this.emit(userId, emitter, 'error', { error: 'Failed to save the Moment.' })
+                        emitter.emit('stream-error', { error: 'Failed to save the Moment.' })
                     }
                     break
                 }
             }
         } catch (err) {
             logger.error({ err, userId }, '[StreamWorker] Generation loop error')
-            this.emit(userId, emitter, 'error', { error: 'Failed to generate the Moment. Please try again.' })
+            emitter.emit('stream-error', { error: 'Failed to generate the Moment. Please try again.' })
         } finally {
-            this.streamCacheService.complete(userId)
-            this.streamCacheService.clear(userId)
-            this.emitters.delete(userId)
+            this.streamCache.clear(userId)
         }
     }
 
@@ -182,21 +142,7 @@ export default class StreamWorker implements StreamWorkerInterface {
             logger.error({ err, userId }, '[StreamWorker] Patch loop error')
             emitter.emit('stream-error', { error: 'Failed to patch the Moment. Please try again.' })
         } finally {
-            this.streamCacheService.clear(userId)
-            this.emitters.delete(userId)
+            this.streamCache.clear(userId)
         }
-    }
-
-    /**
-     * Emits a named event and appends it to the capture buffer.
-     * @param {number} userId
-     * @param {EventEmitter} emitter
-     * @param {'chunk' | 'done' | 'error'} event
-     * @param {unknown} data
-     * @private
-     */
-    private emit(userId: number, emitter: EventEmitter, event: StreamEvent['event'], data: unknown): void {
-        this.streamCacheService.append(userId, { event, data })
-        emitter.emit(event === 'error' ? 'stream-error' : event, data)
     }
 }

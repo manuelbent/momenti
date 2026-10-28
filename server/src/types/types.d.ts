@@ -1,13 +1,6 @@
 // Shared types (FormField, MomentNode, Content, Moment, CssComputedVals)
 // are defined in shared/types.d.ts and included via tsconfig.
 
-interface StreamEvent {
-    event: 'chunk' | 'done' | 'error'
-    data: unknown
-}
-
-type StreamType = 'capture' | 'patch'
-
 type LLMStreamPayload =
     | { chunk: string }
     | { done: true; momentContent: MomentContent }

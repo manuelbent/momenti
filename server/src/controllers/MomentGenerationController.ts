@@ -60,32 +60,6 @@ export default class MomentGenerationController {
     }
 
     /**
-     * Server-Sent Events endpoint: resumes a capture stream for the current user.
-     * @param {Request} req
-     * @param {Response} res
-     */
-    public resume(req: Request, res: Response): void {
-        const user: User = res.locals.user
-
-        if (!this.streamWorker.hasCapture(user.id)) {
-            emit(res, 'idle', {}, true)
-            return
-        }
-
-        const events = this.streamWorker.getBufferedEvents(user.id)
-        for (const event of events) {
-            emit(res, event.event, event.data)
-        }
-
-        if (!this.streamWorker.isGenerating(user.id)) {
-            res.end()
-            return
-        }
-
-        this.stream(res, this.streamWorker.getEmitter(user.id)!)
-    }
-
-    /**
      * Server-Sent Events endpoint: streams a targeted patch of an existing moment.
      * @param {Request} req
      * @param {Response} res

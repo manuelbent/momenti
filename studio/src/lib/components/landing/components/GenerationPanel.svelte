@@ -6,14 +6,12 @@
 
     let {
         prompt = $bindable(''),
-        loading,
         stage,
         progressStage,
         streamText,
         onCapture,
     }: {
         prompt?: string
-        loading: boolean
         stage: GenerationStage
         progressStage?: CaptureProgressStage
         streamText: string
@@ -45,12 +43,11 @@
 
 {#snippet activeStage()}
     {@const renderers = {
-        loading: emptyStage,
         empty: emptyStage,
         preview: previewStage,
         form: formStage,
     }}
-    {@render renderers[loading ? 'loading' : stage]()}
+    {@render renderers[stage]()}
 {/snippet}
 
 <div class="grid w-full min-w-0 transition-[height] duration-700 ease-out"

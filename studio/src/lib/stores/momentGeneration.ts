@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 import { push } from 'svelte-spa-router'
-import { capture, resume } from '$lib/api/moments'
+import { capture } from '$lib/api/moments'
 import { moment } from '$lib/stores/moment'
 import { showToast } from '$lib/stores/toast'
 
@@ -8,7 +8,6 @@ export type GenerationStage = 'form'|'empty'|'preview'
 
 interface MomentGenerationState {
     streamText: string
-    loading: boolean
     stage: GenerationStage
     progressStage?: CaptureProgressStage
 }
@@ -16,7 +15,6 @@ interface MomentGenerationState {
 export const createMomentGenerationStore = () => {
     const store = writable<MomentGenerationState>({
         streamText: '',
-        loading: true,
         stage: 'form',
     })
     const { subscribe, update } = store
@@ -33,40 +31,6 @@ export const createMomentGenerationStore = () => {
         )
     }
 
-    const resumeCapture = async (hasInviteKey: boolean) => {
-        if (!hasInviteKey) {
-            update(state => ({ ...state, loading: false }))
-            return
-        }
-
-        try {
-            await resume({
-                onIdle: () => {
-                    update(state => ({ ...state, loading: false }))
-                },
-                onChunk: (chunk) => {
-                    update(state => ({
-                        ...state,
-                        loading: false,
-                        stage: 'preview',
-                        progressStage: undefined,
-                        streamText: state.streamText + chunk,
-                    }))
-                },
-                onDone: openStudio,
-            })
-        } catch (error) {
-            update(state => ({
-                ...state,
-                loading: false,
-                stage: 'form',
-                progressStage: undefined,
-                streamText: '',
-            }))
-            showError(error)
-        }
-    }
-
     const captureMoment = async (prompt: string) => {
         const trimmedPrompt = prompt.trim()
         if (!trimmedPrompt) return
@@ -81,7 +45,7 @@ export const createMomentGenerationStore = () => {
         try {
             await capture(trimmedPrompt, {
                 onOpen: () => {
-                    update(state => ({ ...state, loading: false, stage: 'preview' }))
+                    update(state => ({ ...state, stage: 'preview' }))
                 },
                 onProgress: ({ stage: progressStage }) => {
                     update(state => ({ ...state, progressStage }))
@@ -105,7 +69,6 @@ export const createMomentGenerationStore = () => {
 
     return {
         subscribe,
-        resume: resumeCapture,
         capture: captureMoment,
     }
 }

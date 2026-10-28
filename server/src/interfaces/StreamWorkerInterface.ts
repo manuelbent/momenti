@@ -15,8 +15,4 @@ export default interface StreamWorkerInterface {
         params: PatchMomentParams,
         onDone: (data: { momentContent: MomentContent }) => Promise<unknown>,
     ): EventEmitter
-    getEmitter(userId: number): EventEmitter | undefined
-    isGenerating(userId: number): boolean
-    hasCapture(userId: number): boolean
-    getBufferedEvents(userId: number): StreamEvent[]
 }
