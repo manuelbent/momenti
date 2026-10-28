@@ -92,6 +92,19 @@ npm --prefix shared run test:browser
 
 The browser runner starts isolated local Vite servers and mocks API requests; it does not generate paid assets or publish moments.
 
+### CI/CD
+
+The server, studio, and viewer deployment workflows all trigger on changes to `shared/`.
+Each runs the reusable Shared CI workflow, which installs shared and both frontend packages
+and runs the Chromium browser suite before allowing deployment. Build dependency caches
+include the shared lockfile.
+
+The frontend builds bundle shared rendering code into their deployed assets. The server
+workflow also syncs `shared/` to `/var/www/momenti/shared/` and installs its production
+dependencies before migrations and the PM2 restart. Local dependencies and browser test
+output are excluded from that sync. Server tests and compilation must pass before any
+server files are uploaded.
+
 ### database
 
 Sequelize migrations and seeders. The default database is SQLite, configured via `database/config.cjs`.

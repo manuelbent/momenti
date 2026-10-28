@@ -32,7 +32,7 @@ describe('ImageService', () => {
 
         await expect(service.generate('A candlelit garden')).resolves.toEqual(Buffer.from('image-data'))
         expect(generate).toHaveBeenCalledWith({
-            model: 'gpt-image-1',
+            model: 'gpt-image-2.5-flare',
             prompt: 'A candlelit garden',
             output_format: 'png',
             quality: 'low',

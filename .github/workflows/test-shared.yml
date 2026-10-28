@@ -1,0 +1,37 @@
+name: Shared CI
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: Test shared rendering
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '26'
+          cache: 'npm'
+          cache-dependency-path: |
+            ./shared/package-lock.json
+            ./studio/package-lock.json
+            ./viewer/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm ci --prefix shared
+          npm ci --prefix studio
+          npm ci --prefix viewer
+
+      - name: Install Chromium
+        working-directory: ./shared
+        run: npx playwright install --with-deps chromium
+
+      - name: Test shared rendering
+        working-directory: ./shared
+        run: npm run test:browser

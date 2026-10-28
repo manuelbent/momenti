@@ -10,11 +10,17 @@ on:
       - 'shared/**'
       - 'studio/src/lib/utils/parseStreamingMoment.ts'
       - '.github/workflows/deploy-server.yml'
+      - '.github/workflows/test-shared.yml'
   workflow_dispatch:
 
 jobs:
+  shared:
+    name: Shared CI
+    uses: ./.github/workflows/test-shared.yml
+
   deploy:
     name: Deploy to Ionos
+    needs: shared
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +32,9 @@ jobs:
         with:
           node-version: '26'
           cache: 'npm'
-          cache-dependency-path: './server/package-lock.json'
+          cache-dependency-path: |
+            ./server/package-lock.json
+            ./shared/package-lock.json
 
       - name: Build Server
         working-directory: ./server
@@ -66,7 +74,14 @@ jobs:
           --exclude 'data/' \
           ./database/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/database/
 
-          # 3. Refresh the server
+          # 3. Sync shared source without local dependencies or browser test output
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
+          --exclude 'node_modules/' \
+          --exclude 'test-results/' \
+          --exclude 'playwright-report/' \
+          ./shared/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/shared/
+
+          # 4. Refresh the server
           ssh -o StrictHostKeyChecking=no ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }} << 'EOF'
             set -e
             export NVM_DIR="$HOME/.nvm"
@@ -75,6 +90,7 @@ jobs:
             cd /var/www/momenti/server
           
             # Install dependencies
+            npm ci --prefix ../shared --omit=dev
             npm ci
           
             # Run migrations
