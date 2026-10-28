@@ -62,7 +62,6 @@ import StreamCache from '../services/StreamCache'
 import UserService from '../services/UserService'
 
 import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
-import GenerateMomentRequestValidator from '../validators/GenerateMomentRequestValidator'
 import PatchMomentRequestValidator from '../validators/PatchMomentRequestValidator'
 import SubmitFeedbackRequestValidator from '../validators/SubmitFeedbackRequestValidator'
 import SubmitFormDataRequestValidator from '../validators/SubmitFormDataRequestValidator'
@@ -124,7 +123,6 @@ class Container {
     private _imageController?: ImageController
     private _imageGenerationController?: ImageGenerationController
     // validators
-    private _generateMomentRequestValidator?: GenerateMomentRequestValidator
     private _updateMomentRequestValidator?: UpdateMomentRequestValidator
     private _validateInviteKeyRequestValidator?: ValidateInviteKeyRequestValidator
     private _submitFormDataRequestValidator?: SubmitFormDataRequestValidator
@@ -298,10 +296,6 @@ class Container {
 
     public get feedbackController(): FeedbackController {
         return this._feedbackController ??= new FeedbackController(this.feedbackService)
-    }
-
-    public get generateMomentRequestValidator(): GenerateMomentRequestValidator {
-        return this._generateMomentRequestValidator ??= new GenerateMomentRequestValidator()
     }
 
     public get updateMomentRequestValidator(): UpdateMomentRequestValidator {
