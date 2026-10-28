@@ -7,18 +7,14 @@ on:
     paths:
       - 'studio/**'
       - 'shared/**'
+      - '!shared/tests/**'
+      - '!shared/playwright.config.ts'
       - '.github/workflows/deploy-studio.yml'
-      - '.github/workflows/test-shared.yml'
   workflow_dispatch:
 
 jobs:
-  shared:
-    name: Shared CI
-    uses: ./.github/workflows/test-shared.yml
-
   deploy:
     name: Deploy to Ionos
-    needs: shared
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +24,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: '26'
+          node-version-file: './studio/.nvmrc'
           cache: 'npm'
           cache-dependency-path: |
             ./studio/package-lock.json

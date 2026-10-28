@@ -1,7 +1,15 @@
 name: Shared CI
 
 on:
-  workflow_call:
+  push:
+    branches:
+      - main
+    paths:
+      - 'shared/**'
+      - 'studio/**'
+      - 'viewer/**'
+      - '.github/workflows/test-shared.yml'
+  workflow_dispatch:
 
 jobs:
   test:
@@ -15,7 +23,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: '26'
+          node-version-file: './studio/.nvmrc'
           cache: 'npm'
           cache-dependency-path: |
             ./shared/package-lock.json

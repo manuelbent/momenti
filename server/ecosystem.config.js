@@ -2,6 +2,7 @@ module.exports = {
     apps: [
         {
             name: 'momenti-api',
+            cwd: __dirname,
             script: './dist/server.js',
             env: {
                 NODE_ENV: 'production',

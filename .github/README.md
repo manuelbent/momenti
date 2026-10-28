@@ -80,7 +80,7 @@ Stylesheet-enabled pages implement `box.layout` as low-specificity flex/grid def
 
 The shared CSS parser scopes every selector, including conditional rules. It accepts flat rules and `@container`, `@media`, and `@supports`, but rejects CSS imports, resource URLs, global registrations such as `@font-face`/`@keyframes`, and nested selectors. Use image nodes, the fonts array, and built-in effects instead. The page boundary contains positioned content so generated CSS cannot cover the studio UI. Unsupported styles produce a visible error rather than being injected as global CSS.
 
-Capture and patch instructions share `server/src/services/prompts/moment-format.txt`. Composition is left to the model; maps, footers, card grids, and motion are not mandatory. Patch requests retain existing assets and unrelated styles.
+Prompts are private readonly attributes in `LLMService`; capture and patch share its `momentFormat` attribute. Composition is left to the model; maps, footers, card grids, and motion are not mandatory. Patch requests retain existing assets and unrelated styles.
 
 Styling and streaming regressions run with the server's Vitest suite. Browser coverage exercises the real studio and viewer, including responsive frames, text editing, saving, forms, and gallery lightboxes:
 
@@ -90,20 +90,17 @@ npm --prefix shared exec -- playwright install chromium
 npm --prefix shared run test:browser
 ```
 
-The browser runner starts isolated local Vite servers and mocks API requests; it does not generate paid assets or publish moments.
+The browser runner builds studio and viewer in production mode, serves their bundles with
+Vite preview, and mocks API requests. It does not generate paid assets or publish moments.
 
 ### CI/CD
 
-The server, studio, and viewer deployment workflows all trigger on changes to `shared/`.
-Each runs the reusable Shared CI workflow, which installs shared and both frontend packages
-and runs the Chromium browser suite before allowing deployment. Build dependency caches
-include the shared lockfile.
-
-The frontend builds bundle shared rendering code into their deployed assets. The server
-workflow also syncs `shared/` to `/var/www/momenti/shared/` and installs its production
-dependencies before migrations and the PM2 restart. Local dependencies and browser test
-output are excluded from that sync. Server tests and compilation must pass before any
-server files are uploaded.
+Each package deploys independently using its `.nvmrc`. Shared browser checks run once in
+a separate workflow against production frontend builds; they do not gate deployments.
+Shared is bundled into the frontends and supplies compile-time server types, so it is
+not deployed separately. Server uploads contain compiled code, runtime config,
+package manifests, and migration inputs; development dependencies are pruned afterward.
+SSE responses send `X-Accel-Buffering: no`, which the reverse proxy must honor.
 
 ### database
 

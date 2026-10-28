@@ -6,21 +6,15 @@ on:
       - main
     paths:
       - 'server/**'
-      - 'database/**'
-      - 'shared/**'
-      - 'studio/src/lib/utils/parseStreamingMoment.ts'
+      - 'database/migrations/**'
+      - 'database/config.cjs'
+      - 'shared/types.d.ts'
       - '.github/workflows/deploy-server.yml'
-      - '.github/workflows/test-shared.yml'
   workflow_dispatch:
 
 jobs:
-  shared:
-    name: Shared CI
-    uses: ./.github/workflows/test-shared.yml
-
   deploy:
     name: Deploy to Ionos
-    needs: shared
     runs-on: ubuntu-latest
 
     steps:
@@ -30,7 +24,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: '26'
+          node-version-file: './server/.nvmrc'
           cache: 'npm'
           cache-dependency-path: |
             ./server/package-lock.json
@@ -62,41 +56,34 @@ jobs:
 
       - name: Deploy and Restart via SSH
         run: |
-          # 1. Sync BOTH the server source AND the newly created 'dist' folder
-          # We exclude node_modules because we'll install production-only deps on the server
           rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
-          --exclude '.git/' \
-          --exclude 'node_modules/' \
+          --include='/dist/***' --include='/package*.json' \
+          --include='/ecosystem.config.js' --include='/.nvmrc' --exclude='*' \
           ./server/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/server/
 
-          # 2. Sync the database folder (migrations, seeders, config) — excluding the data directory
           rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
-          --exclude 'data/' \
+          --include='/migrations/***' --include='/config.cjs' --exclude='*' \
           ./database/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/database/
 
-          # 3. Sync shared source without local dependencies or browser test output
-          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
-          --exclude 'node_modules/' \
-          --exclude 'test-results/' \
-          --exclude 'playwright-report/' \
-          ./shared/ ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }}:/var/www/momenti/shared/
-
-          # 4. Refresh the server
           ssh -o StrictHostKeyChecking=no ${{ secrets.IONOS_USER }}@${{ secrets.IONOS_HOST }} << 'EOF'
             set -e
             export NVM_DIR="$HOME/.nvm"
             source "$NVM_DIR/nvm.sh"
           
             cd /var/www/momenti/server
+            PM2_BIN="$(command -v pm2)"
+            nvm install
           
-            # Install dependencies
-            npm ci --prefix ../shared --omit=dev
-            npm ci
+            # Migration tooling is needed only during deployment.
+            npm ci --include=dev
           
-            # Run migrations
             NODE_ENV=prod npm run migrate:up
+            npm prune --omit=dev
+
+            # Remove build-time files uploaded by previous workflows.
+            rm -rf /var/www/momenti/server/src /var/www/momenti/server/tests /var/www/momenti/shared
+            rm -f /var/www/momenti/server/tsconfig.json /var/www/momenti/server/vitest.config.mts
           
-            # Restart PM2 using the ecosystem configuration
-            pm2 startOrReload ecosystem.config.js --update-env
-            pm2 save
+            "$PM2_BIN" startOrReload ecosystem.config.js --interpreter "$(command -v node)" --update-env
+            "$PM2_BIN" save
           EOF
