@@ -13,7 +13,8 @@ export default class SseMiddleware {
      */
     public async handle(_: Request, res: Response, next: NextFunction): Promise<void> {
         res.setHeader('Content-Type', 'text/event-stream')
-        res.setHeader('Cache-Control', 'no-cache')
+        res.setHeader('Cache-Control', 'no-cache, no-transform')
+        res.setHeader('X-Accel-Buffering', 'no')
         res.setHeader('Connection', 'keep-alive')
         res.flushHeaders()
         next()
