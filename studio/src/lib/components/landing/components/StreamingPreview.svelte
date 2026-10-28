@@ -95,7 +95,7 @@
              aria-hidden="true"
         ></div>
         {#if progressStage && !content?.root}
-            <div class="pointer-events-none absolute bottom-4 right-4 max-w-[calc(100%-2rem)] italic text-right text-xs font-light tracking-[-0.01em] text-black/25"
+            <div class="pointer-events-none absolute bottom-4 right-4 max-w-[calc(100%-2rem)] italic text-[11px] font-light tracking-[-0.01em] text-ink-faint/60"
                  role="status"
                  aria-live="polite"
             >
