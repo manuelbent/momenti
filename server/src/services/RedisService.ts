@@ -4,7 +4,7 @@ import redis from '../config/redis'
 import logger from '../config/logger'
 
 /**
- * Reserves one active generation per user until completion or expiry.
+ * Manages generation reservations and cached stream events.
  * @class RedisService
  */
 export default class RedisService {
@@ -40,6 +40,40 @@ export default class RedisService {
             'NX',
         )
         return acquired === 'OK' ? generationId : null
+    }
+
+
+    /**
+     * Appends a generation event to its Redis Stream and refreshes its expiry.
+     * Returns the Stream ID for use as the corresponding SSE event ID, or null
+     * when caching fails.
+     * @param {number} userId
+     * @param {string} generationId
+     * @param {string} event
+     * @param {unknown} data
+     */
+    public async cacheGenerationEvent(
+        userId: number,
+        generationId: string,
+        event: string,
+        data: unknown,
+    ): Promise<string | null> {
+        try {
+            const eventId = await this.redis.eval(
+                `local eventId = redis.call('XADD', KEYS[1], '*', 'event', ARGV[1], 'data', ARGV[2])
+                redis.call('PEXPIRE', KEYS[1], ARGV[3])
+                return eventId`,
+                1,
+                `generation:events:${userId}:${generationId}`,
+                event,
+                JSON.stringify(data),
+                this.ttlMs,
+            )
+            return String(eventId)
+        } catch (err) {
+            logger.warn({ err, userId, generationId, event }, '[RedisService] Failed to cache generation event')
+            return null
+        }
     }
 
     /**

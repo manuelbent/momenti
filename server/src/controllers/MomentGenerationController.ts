@@ -37,31 +37,31 @@ export default class MomentGenerationController {
         const options: CaptureMomentOptions = { heroImageUrl: res.locals.heroImageUrl }
 
         try {
-            this.send(res, 'progress', { stage: 'generating-moment' })
+            await this.send(res, 'progress', { stage: 'generating-moment' })
             for await (const payload of this.llmService.captureMoment(prompt, options)) {
                 if ('error' in payload) {
-                    this.send(res, 'error', { error: payload.error }, true)
+                    await this.send(res, 'error', { error: payload.error }, true)
                     break
                 }
 
                 if ('chunk' in payload) {
-                    this.send(res, 'chunk', { chunk: payload.chunk })
+                    await this.send(res, 'chunk', { chunk: payload.chunk })
                 }
 
                 if ('done' in payload) {
                     try {
                         const moment = await this.storeCapture(user.id, prompt, payload.momentContent)
-                        this.send(res, 'done', moment, true)
+                        await this.send(res, 'done', moment, true)
                     } catch (err) {
                         logger.error({ err, userId: user.id }, '[MomentGenerationController] Store moment error')
-                        this.send(res, 'error', { error: 'Failed to save the Moment.' }, true)
+                        await this.send(res, 'error', { error: 'Failed to save the Moment.' }, true)
                     }
                     break
                 }
             }
         } catch (err) {
             logger.error({ err, userId: user.id }, '[MomentGenerationController] Generation loop error')
-            this.send(res, 'error', { error: 'Failed to generate the Moment. Please try again.' }, true)
+            await this.send(res, 'error', { error: 'Failed to generate the Moment. Please try again.' }, true)
         } finally {
             await this.redisService.releaseGenerationLock(user.id, res.locals.generationId)
         }
@@ -97,18 +97,18 @@ export default class MomentGenerationController {
                 history = changes.map(change => change.prompt)
             } catch (err) {
                 logger.error({ err }, '[MomentGenerationController] Failed to load change history')
-                this.send(res, 'error', { error: 'Internal server error.' }, true)
+                await this.send(res, 'error', { error: 'Internal server error.' }, true)
                 return
             }
 
             for await (const payload of this.llmService.patchMoment({ nodeId, prompt, content, history })) {
                 if ('error' in payload) {
-                    this.send(res, 'error', { error: payload.error }, true)
+                    await this.send(res, 'error', { error: payload.error }, true)
                     break
                 }
 
                 if ('chunk' in payload) {
-                    this.send(res, 'chunk', { chunk: payload.chunk })
+                    await this.send(res, 'chunk', { chunk: payload.chunk })
                 }
 
                 if ('done' in payload) {
@@ -120,25 +120,31 @@ export default class MomentGenerationController {
                             old_content: content,
                             new_content: payload.momentContent,
                         })
-                        this.send(res, 'done', change, true)
+                        await this.send(res, 'done', change, true)
                     } catch (err) {
                         logger.error({ err, userId: user.id }, '[MomentGenerationController] Patch update error')
-                        this.send(res, 'error', { error: 'Failed to save the patched Moment.' }, true)
+                        await this.send(res, 'error', { error: 'Failed to save the patched Moment.' }, true)
                     }
                     break
                 }
             }
         } catch (err) {
             logger.error({ err, userId: user.id }, '[MomentGenerationController] Patch loop error')
-            this.send(res, 'error', { error: 'Failed to patch the Moment. Please try again.' }, true)
+            await this.send(res, 'error', { error: 'Failed to patch the Moment. Please try again.' }, true)
         } finally {
             await this.redisService.releaseGenerationLock(user.id, res.locals.generationId)
         }
     }
 
-    private send(res: Response, event: string, data: unknown, end = false): void {
+    private async send(res: Response, event: string, data: unknown, end = false): Promise<void> {
+        const eventId = await this.redisService.cacheGenerationEvent(
+            res.locals.user.id,
+            res.locals.generationId,
+            event,
+            data,
+        )
         if (!res.destroyed && !res.writableEnded) {
-            emit(res, event, data, end)
+            emit(res, event, data, end, eventId ?? undefined)
         }
     }
 }
