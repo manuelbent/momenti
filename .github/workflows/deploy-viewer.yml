@@ -7,8 +7,6 @@ on:
     paths:
       - 'viewer/**'
       - 'shared/**'
-      - '!shared/tests/**'
-      - '!shared/playwright.config.ts'
       - '.github/workflows/deploy-viewer.yml'
   workflow_dispatch:
 

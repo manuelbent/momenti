@@ -83,23 +83,19 @@ The shared CSS parser scopes every selector, including conditional rules. It acc
 
 Prompts are private readonly attributes in `LLMService`; capture and patch share its `momentFormat` attribute. Composition is left to the model; maps, footers, card grids, and motion are not mandatory. Patch requests retain existing assets and unrelated styles.
 
-Styling and streaming regressions run with the server's Vitest suite. Browser coverage exercises the real studio and viewer, including responsive frames, text editing, saving, forms, and gallery lightboxes:
+Server stylesheet validation runs with the server's Vitest suite:
 
 ```sh
-npm --prefix server test -- tests/pageStyles.test.ts src/validators/PageStyleValidation.test.ts src/services/LLMService.test.ts
-npm --prefix shared exec -- playwright install chromium
-npm --prefix shared run test:browser
+npm --prefix server test -- src/validators/PageStyleValidation.test.ts src/services/LLMService.test.ts
 ```
-
-The browser runner builds studio and viewer in production mode, serves their bundles with
-Vite preview, and mocks API requests. It does not generate paid assets or publish moments.
 
 ### CI/CD
 
-Each package deploys independently using its `.nvmrc`. Shared browser checks run once in
-a separate workflow against production frontend builds; they do not gate deployments.
-Shared is bundled into the frontends and supplies compile-time server types, so it is
-not deployed separately. Server uploads contain compiled code, runtime config,
+Each package deploys independently using its `.nvmrc`. Only studio and viewer deployments
+track shared changes and install its dependencies to bundle it into their builds.
+Shared has no standalone CI or test setup. It supplies compile-time server types without
+requiring its dependencies in the server workflow and is not deployed separately.
+Server uploads contain compiled code, runtime config,
 package manifests, and migration inputs; development dependencies are pruned afterward.
 SSE responses send `X-Accel-Buffering: no`, which the reverse proxy must honor.
 
