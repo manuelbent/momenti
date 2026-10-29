@@ -3,8 +3,8 @@ import ioc from '../config/ioc'
 
 const router = Router()
 
-// capture routes
-router.post('/capture',
+// moments routes
+router.post('/moments',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res, next) => ioc.momentLimitMiddleware.handle(req, res, next),
     (req, res, next) => ioc.promptSanitizeMiddleware.handle(req, res, next),
@@ -12,11 +12,10 @@ router.post('/capture',
     (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
     (req, res, next) => ioc.promptModerationMiddleware.handle(req, res, next),
     (req, res, next) => ioc.promptClassifierMiddleware.handle(req, res, next),
-    (req, res, next) => ioc.imageGenerationController.handle(req, res, next),
-    (req, res) => ioc.momentGenerationController.capture(req, res)
+    (req, res, next) => ioc.imageGenerationController.generate(req, res, next),
+    (req, res) => ioc.momentGenerationController.generate(req, res)
 )
 
-// moments routes
 router.get('/moments',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
     (req, res) => ioc.momentController.loadAll(req, res)

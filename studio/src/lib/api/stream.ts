@@ -1,5 +1,5 @@
 export type StreamEvent<T> =
-    | { type: 'progress'; stage: CaptureProgressStage }
+    | { type: 'progress'; stage: GenerationProgressStage }
     | { type: 'chunk'; chunk: string }
     | { type: 'done'; data: T }
     | { type: 'error'; error: Error }
@@ -9,7 +9,7 @@ const progressStages = new Set<string>([
     'generating-image', 'uploading-image', 'generating-moment',
 ])
 
-const isProgressStage = (value: unknown): value is CaptureProgressStage =>
+const isProgressStage = (value: unknown): value is GenerationProgressStage =>
     typeof value === 'string' && progressStages.has(value)
 
 export const isRecord = (value: unknown): value is Record<string, unknown> =>

@@ -1,6 +1,6 @@
 import { get, writable } from 'svelte/store'
 import { push } from 'svelte-spa-router'
-import { capture, type CaptureEvent } from '$lib/api/moments'
+import { generateMoment, type MomentGenerationEvent } from '$lib/api/moments'
 import { moment } from '$lib/stores/moment'
 import { showToast } from '$lib/stores/toast'
 
@@ -9,7 +9,7 @@ export type GenerationStage = 'form'|'connecting'|'preview'
 interface MomentGenerationState {
     streamText: string
     stage: GenerationStage
-    progressStage?: CaptureProgressStage
+    progressStage?: GenerationProgressStage
 }
 
 export const createMomentGenerationStore = () => {
@@ -19,7 +19,7 @@ export const createMomentGenerationStore = () => {
     })
     const { subscribe, update } = store
 
-    const onEvent = (event: CaptureEvent) => {
+    const onEvent = (event: MomentGenerationEvent) => {
         switch (event.type) {
             case 'open':
                 update(state => ({ ...state, stage: 'preview' }))
@@ -39,7 +39,7 @@ export const createMomentGenerationStore = () => {
         }
     }
 
-    const captureMoment = async (prompt: string) => {
+    const generate = async (prompt: string) => {
         const trimmedPrompt = prompt.trim()
         if (!trimmedPrompt || get(store).stage !== 'form') return
 
@@ -50,7 +50,7 @@ export const createMomentGenerationStore = () => {
         })
 
         try {
-            await capture(trimmedPrompt, onEvent)
+            await generateMoment(trimmedPrompt, onEvent)
         } catch (error) {
             store.set({ streamText: '', stage: 'form' })
             showToast(
@@ -62,6 +62,6 @@ export const createMomentGenerationStore = () => {
 
     return {
         subscribe,
-        capture: captureMoment,
+        generate,
     }
 }

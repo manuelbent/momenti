@@ -4,10 +4,10 @@
 
     let {
         prompt = $bindable(''),
-        onCapture,
+        onGenerate,
     }: {
         prompt?: string
-        onCapture: () => void
+        onGenerate: () => void
     } = $props()
 
     let textarea: HTMLTextAreaElement
@@ -55,10 +55,10 @@
             placeholder={placeholder}
             bind:value={prompt}
             rows={5}
-            onkeydown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) onCapture() }}></textarea>
+            onkeydown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) onGenerate() }}></textarea>
 
     <div class="flex justify-end p-3 border-t border-ink-accent">
-        <RoundButton onclick={onCapture} disabled={!prompt.trim()}>
+        <RoundButton onclick={onGenerate} disabled={!prompt.trim()}>
             <ArrowUp size={12}/>
         </RoundButton>
     </div>

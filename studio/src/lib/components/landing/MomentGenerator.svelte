@@ -8,7 +8,7 @@
     let showInviteModal = $state(false)
     const generation = createMomentGenerationStore()
 
-    const capture = () => {
+    const generate = () => {
         if (!prompt.trim()) return
 
         if (!$inviteKey) {
@@ -16,12 +16,12 @@
             return
         }
 
-        void generation.capture(prompt)
+        void generation.generate(prompt)
     }
 
     const unlock = () => {
         showInviteModal = false
-        void generation.capture(prompt)
+        void generation.generate(prompt)
     }
 </script>
 
@@ -30,7 +30,7 @@
     stage={$generation.stage}
     progressStage={$generation.progressStage}
     streamText={$generation.streamText}
-    onCapture={capture}
+    onGenerate={generate}
 />
 
 {#if showInviteModal}

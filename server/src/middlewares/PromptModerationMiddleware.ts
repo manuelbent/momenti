@@ -30,7 +30,7 @@ export default class PromptModerationMiddleware {
         const { user, generationId } = res.locals
 
         try {
-            const progress: CaptureProgress = { stage: 'moderating' }
+            const progress: GenerationProgress = { stage: 'moderating' }
             const progressId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', progress)
             emit(res, 'progress', progress, false, progressId ?? undefined)
 

@@ -30,20 +30,20 @@ export default class ImageGenerationController {
      * @param {Response} res
      * @param {NextFunction} next
      */
-    public async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public async generate(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { user, generationId } = res.locals
         try {
-            const planning: CaptureProgress = { stage: 'planning-image' }
+            const planning: GenerationProgress = { stage: 'planning-image' }
             const planningId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', planning)
             emit(res, 'progress', planning, false, planningId ?? undefined)
             const imagePrompt = await this.llmService.generateImagePrompt(req.body.prompt)
 
-            const generating: CaptureProgress = { stage: 'generating-image' }
+            const generating: GenerationProgress = { stage: 'generating-image' }
             const generatingId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', generating)
             emit(res, 'progress', generating, false, generatingId ?? undefined)
             const buffer = await this.imageService.generate(imagePrompt)
 
-            const uploading: CaptureProgress = { stage: 'uploading-image' }
+            const uploading: GenerationProgress = { stage: 'uploading-image' }
             const uploadingId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', uploading)
             emit(res, 'progress', uploading, false, uploadingId ?? undefined)
             res.locals.heroImageUrl = await this.r2Service.upload(

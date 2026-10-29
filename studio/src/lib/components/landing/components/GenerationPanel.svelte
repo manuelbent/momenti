@@ -9,13 +9,13 @@
         stage,
         progressStage,
         streamText,
-        onCapture,
+        onGenerate,
     }: {
         prompt?: string
         stage: GenerationStage
-        progressStage?: CaptureProgressStage
+        progressStage?: GenerationProgressStage
         streamText: string
-        onCapture: () => void
+        onGenerate: () => void
     } = $props()
 
 </script>
@@ -30,7 +30,7 @@
              in:fade={{ duration: 450 }}
              out:fade={{ duration: 450 }}
         >
-            <FormCard bind:prompt {onCapture}/>
+            <FormCard bind:prompt {onGenerate}/>
         </div>
     {:else if stage === 'preview'}
         <div class="[grid-area:1/1] flex h-full w-full min-w-0 items-center justify-center pt-2"

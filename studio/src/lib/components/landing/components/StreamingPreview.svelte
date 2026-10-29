@@ -8,10 +8,10 @@
 
     const { streamText = '', progressStage }: {
         streamText?: string
-        progressStage?: CaptureProgressStage
+        progressStage?: GenerationProgressStage
     } = $props()
 
-    const progressLabels: Record<CaptureProgressStage, string> = {
+    const progressLabels: Record<GenerationProgressStage, string> = {
         'preparing': 'Understanding what matters to you',
         'moderating': 'Understanding what matters to you',
         'classifying': 'Understanding what matters to you',

@@ -3,7 +3,7 @@ type FormField =
     |{ type: 'radio'; name: string; label?: string; options: { label: string; value: string }[] }
     |{ type: 'input'; name: string; label?: string; placeholder?: string }
 
-type CaptureProgressStage =
+type GenerationProgressStage =
     |'preparing'
     |'moderating'
     |'classifying'
@@ -12,8 +12,8 @@ type CaptureProgressStage =
     |'uploading-image'
     |'generating-moment'
 
-interface CaptureProgress {
-    stage: CaptureProgressStage
+interface GenerationProgress {
+    stage: GenerationProgressStage
 }
 
 type NodeEffect =

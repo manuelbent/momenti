@@ -116,7 +116,7 @@ COMPONENT BEHAVIOR
 - effects: optional animation on the actual node, with duration and delay in milliseconds. Use at most one effect per node; prefer entrance motion to perpetual movement. Effects respect reduced-motion preferences.
 `
 
-    private readonly capturePrompt = `You design distinctive, beautifully composed single-page event websites for momenti.
+    private readonly generationPrompt = `You design distinctive, beautifully composed single-page event websites for momenti.
 
 Find a coherent visual idea in the user's brief, then let it guide the typography, imagery, color, composition, and pacing. Design for this particular event, not a generic landing page with its nouns replaced. Honor the user's stated aesthetic and supplied title. Any CREATIVE_DIRECTION is inspiration, not a template or a requirement to override the brief.
 
@@ -230,18 +230,18 @@ ${this.momentFormat}`
 
     /**
      * @param {string} prompt
-     * @param {CaptureMomentOptions} options
+     * @param {GenerateMomentOptions} options
      */
-    public async* captureMoment(
+    public async* generateMoment(
         prompt: string,
-        options: CaptureMomentOptions,
+        options: GenerateMomentOptions,
     ): AsyncGenerator<LLMStreamPayload> {
         const { heroImageUrl } = options
         const creativeDirection = createCreativeDirection()
         const stream = await this.openai.chat.completions.create({
             model: 'gpt-6-astra',
             messages: [
-                { role: 'system', content: this.capturePrompt },
+                { role: 'system', content: this.generationPrompt },
                 {
                     role: 'user',
                     content:
@@ -267,14 +267,14 @@ ${this.momentFormat}`
         try {
             const momentContent: MomentContent = JSON.parse(accumulated)
             if (!momentContent.slug || !momentContent.root) {
-                logger.error({ momentContent }, '[LLMService] captureMoment: invalid moment structure')
+                logger.error({ momentContent }, '[LLMService] generateMoment: invalid moment structure')
                 yield { error: 'Invalid Moment structure.' }
                 return
             }
 
             yield { done: true, momentContent }
         } catch {
-            logger.error({ accumulated }, '[LLMService] captureMoment: malformed JSON')
+            logger.error({ accumulated }, '[LLMService] generateMoment: malformed JSON')
             yield { error: 'Failed to generate a valid Moment.' }
         }
     }

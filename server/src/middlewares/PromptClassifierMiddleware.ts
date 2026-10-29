@@ -32,7 +32,7 @@ export default class PromptClassifierMiddleware {
         const { user, generationId } = res.locals
 
         try {
-            const progress: CaptureProgress = { stage: 'classifying' }
+            const progress: GenerationProgress = { stage: 'classifying' }
             const progressId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', progress)
             emit(res, 'progress', progress, false, progressId ?? undefined)
 

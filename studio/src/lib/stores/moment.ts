@@ -40,7 +40,7 @@ moment.subscribe(updated => {
         if (exists) {
             return list.map(m => m.id === updated.id ? updated : m)
         }
-        // new moment (e.g. after re-capture) — prepend to keep recency order
+        // new moment (e.g. after regeneration) — prepend to keep recency order
         return [updated, ...list]
     })
 })

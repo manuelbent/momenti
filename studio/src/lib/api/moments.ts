@@ -1,7 +1,7 @@
 import { API_URL, authHeaders } from './client'
 import { isRecord, readStream, type StreamEvent } from './stream'
 
-export type CaptureEvent = { type: 'open' } | StreamEvent<Moment>
+export type MomentGenerationEvent = { type: 'open' } | StreamEvent<Moment>
 
 const isContent = (data: unknown): data is MomentContent =>
     isRecord(data) && typeof data.slug === 'string' && isRecord(data.root) &&
@@ -15,8 +15,8 @@ const isChange = (data: unknown): data is Change =>
     isRecord(data) && typeof data.id === 'number' && typeof data.moment_id === 'number' &&
     isContent(data.new_content)
 
-export const capture = async (prompt: string, onEvent: (event: CaptureEvent) => void): Promise<void> => {
-    const res = await fetch(`${API_URL}/capture`, {
+export const generateMoment = async (prompt: string, onEvent: (event: MomentGenerationEvent) => void): Promise<void> => {
+    const res = await fetch(`${API_URL}/moments`, {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ prompt }),

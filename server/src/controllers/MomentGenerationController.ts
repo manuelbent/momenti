@@ -31,18 +31,18 @@ export default class MomentGenerationController {
      * @param {Request} req
      * @param {Response} res
      */
-    public async capture(req: Request, res: Response): Promise<void> {
+    public async generate(req: Request, res: Response): Promise<void> {
         const user: User = res.locals.user
         const generationId: string = res.locals.generationId
         const { prompt } = req.body
-        const options: CaptureMomentOptions = { heroImageUrl: res.locals.heroImageUrl }
+        const options: GenerateMomentOptions = { heroImageUrl: res.locals.heroImageUrl }
 
         try {
-            const progress: CaptureProgress = { stage: 'generating-moment' }
+            const progress: GenerationProgress = { stage: 'generating-moment' }
             const progressId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', progress)
             emit(res, 'progress', progress, false, progressId ?? undefined)
 
-            for await (const payload of this.llmService.captureMoment(prompt, options)) {
+            for await (const payload of this.llmService.generateMoment(prompt, options)) {
                 if ('error' in payload) {
                     const data = { error: payload.error }
                     const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', data)
@@ -58,7 +58,7 @@ export default class MomentGenerationController {
 
                 if ('done' in payload) {
                     try {
-                        const moment = await this.storeCapture(user.id, prompt, payload.momentContent)
+                        const moment = await this.storeMoment(user.id, prompt, payload.momentContent)
                         const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'done', moment)
                         emit(res, 'done', moment, true, eventId ?? undefined)
                     } catch (err) {
@@ -80,7 +80,7 @@ export default class MomentGenerationController {
         }
     }
 
-    private async storeCapture(
+    private async storeMoment(
         userId: number,
         prompt: string,
         momentContent: MomentContent,
