@@ -80,6 +80,34 @@ export default class MomentGenerationController {
         }
     }
 
+    /**
+     * Replays the user's active generation and streams subsequent events.
+     * @param {Request} _
+     * @param {Response} res
+     */
+    public async resume(_: Request, res: Response): Promise<void> {
+        const user: User = res.locals.user
+        try {
+            for await (const { id, event, data } of this.redisService.readGenerationEvents(user.id)) {
+                const end = event === 'done' || event === 'error'
+                emit(res, event, data, end, id)
+                if (end) {
+                    return
+                }
+            }
+        } catch (err) {
+            logger.error({ err, userId: user.id }, '[MomentGenerationController] Resume stream error')
+            emit(res, 'error', { error: 'Failed to resume the generation. Please try again.' }, true)
+        }
+    }
+
+    /**
+     * Persists a generated Moment for the given user.
+     * @param {number} userId
+     * @param {string} prompt - The prompt that produced the content.
+     * @param {MomentContent} momentContent - Generated content, including its slug.
+     * @returns {Promise<Moment>} The stored Moment.
+     */
     private async storeMoment(
         userId: number,
         prompt: string,

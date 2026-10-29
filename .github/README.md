@@ -54,6 +54,11 @@ Node.js / Express written in TypeScript. Responsibilities:
 `GET /me` requires the `x-invite-key` header and returns `{ id: number, isGenerating: boolean }`.
 `isGenerating` indicates whether the user has an active generation lock in Redis.
 
+`GET /generations` requires the `x-invite-key` header and opens an SSE connection.
+It replays the user's active generation from the beginning with the original event IDs,
+then streams new events until `done` or `error`. If no generation is active, the connection closes.
+Disconnecting only stops replay; it does not cancel the generation or release its lock.
+
 ### studio
 
 Svelte 5 single-page application.  

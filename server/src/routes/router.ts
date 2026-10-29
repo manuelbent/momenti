@@ -9,6 +9,13 @@ router.get('/me',
     (req, res) => ioc.userController.me(req, res)
 )
 
+// generations routes
+router.get('/generations',
+    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.sseMiddleware.handle(req, res, next),
+    (req, res) => ioc.momentGenerationController.resume(req, res)
+)
+
 // moments routes
 router.post('/moments',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
@@ -73,6 +80,7 @@ router.get('/moments/:slug/submissions',
     (req, res) => ioc.formSubmissionController.download(req, res)
 )
 
+// tmp
 // invite keys routes
 router.get('/invite-keys/generate',
     (req, res, next) => ioc.rateLimiterMiddleware.handle(req, res, next),

@@ -84,6 +84,51 @@ export default class RedisService {
     }
 
     /**
+     * Replays the active generation's cached events and waits for new entries.
+     * Uses a dedicated connection so blocking reads do not delay other Redis commands.
+     * @param {number} userId
+     */
+    public async *readGenerationEvents(userId: number): AsyncGenerator<{ id: string, event: string, data: unknown }> {
+        const generationId = await this.redis.get(`generation:active:${userId}`)
+        if (!generationId) {
+            return
+        }
+
+        const reader = this.redis.duplicate({ lazyConnect: true })
+        reader.on('error', (err) => {
+            logger.error({ err, userId, generationId }, '[RedisService] Generation stream connection error')
+        })
+
+        try {
+            await reader.connect()
+            let lastId = '0-0' // always from the start
+
+            while (true) {
+                const streams = await reader.xread(
+                    'COUNT', 100,
+                    'BLOCK', 1000,
+                    'STREAMS', `generation:events:${userId}:${generationId}`, lastId,
+                )
+
+                if (!streams) {
+                    const activeGenerationId = await this.redis.get(`generation:active:${userId}`)
+                    if (activeGenerationId !== generationId) return
+                    continue
+                }
+
+                for (const [, entries] of streams) {
+                    for (const [id, fields] of entries) {
+                        yield { id, event: fields[1], data: JSON.parse(fields[3]) }
+                        lastId = id
+                    }
+                }
+            }
+        } finally {
+            reader.disconnect()
+        }
+    }
+
+    /**
      * Releases a reservation only if it still belongs to this generation.
      * @param {number} userId
      * @param {string} generationId

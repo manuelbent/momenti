@@ -13,9 +13,16 @@ export default class UserController {
      */
     constructor(private redisService: RedisService) {}
 
+    /**
+     * Returns the authenticated user's id and whether a generation is in progress.
+     * Requires `InviteKeyMiddleware` to have set `res.locals.user`.
+     * @param {Request} _
+     * @param {Response} res
+     * @returns {Promise<void>}
+     */
     public async me(_: Request, res: Response): Promise<void> {
-        const user: User = res.locals.user
         res.setHeader('Cache-Control', 'no-store')
+        const user: User = res.locals.user
 
         try {
             const isGenerating = await this.redisService.isGenerating(user.id)
