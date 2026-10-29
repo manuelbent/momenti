@@ -10,6 +10,7 @@ function makeReq(prompt: unknown): Partial<Request> {
 
 function makeRes() {
     const res = {
+        locals: { user: { id: 7 }, generationId: 'generation-id' },
         status: vi.fn(),
         json: vi.fn(),
         write: vi.fn(),
@@ -34,7 +35,10 @@ describe('PromptModerationMiddleware (real OpenAI Moderation API)', () => {
     let next: NextFunction
 
     beforeEach(() => {
-        middleware = new PromptModerationMiddleware(new LLMService())
+        middleware = new PromptModerationMiddleware(new LLMService(), {
+            acquireGenerationLock: vi.fn(),
+            releaseGenerationLock: vi.fn().mockResolvedValue(undefined),
+        })
         next = vi.fn()
     })
 

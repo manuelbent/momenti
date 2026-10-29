@@ -5,6 +5,8 @@ import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 import R2ServiceInterface from '../interfaces/R2ServiceInterface'
 import ImageGenerationController from './ImageGenerationController'
 
+vi.mock('../config/logger', () => ({ default: { warn: vi.fn() } }))
+
 describe('ImageGenerationController', () => {
     const prompt = 'Create a garden wedding page'
     const imagePrompt = 'A candlelit garden wedding at dusk, wide cinematic composition'
@@ -32,7 +34,7 @@ describe('ImageGenerationController', () => {
         const llmService = { generateImagePrompt } as unknown as LLMServiceInterface
         controller = new ImageGenerationController(imageService, r2Service, llmService)
         res = {
-            locals: {},
+            locals: { user: { id: 7 }, generationId: 'generation-id' },
             write: vi.fn(),
             end: vi.fn(),
         } as unknown as Response
@@ -55,7 +57,7 @@ describe('ImageGenerationController', () => {
         expect(next).toHaveBeenCalledOnce()
     })
 
-    it('ends the SSE response when image generation fails', async () => {
+    it('continues with a placeholder when image generation fails', async () => {
         generateImage.mockRejectedValue(new Error('Image API unavailable'))
         const req = { body: { prompt } } as Request
 
@@ -63,7 +65,8 @@ describe('ImageGenerationController', () => {
 
         expect(upload).not.toHaveBeenCalled()
         expect(storeImage).not.toHaveBeenCalled()
-        expect(next).not.toHaveBeenCalled()
+        expect(next).toHaveBeenCalledOnce()
+        expect(res.locals.heroImageUrl).toBe('https://placehold.co/1536x1024/png')
         expect(res.write).toHaveBeenNthCalledWith(1, 'event: progress\n')
         expect(res.write).toHaveBeenNthCalledWith(
             2,
@@ -74,12 +77,8 @@ describe('ImageGenerationController', () => {
             4,
             'data: {"stage":"generating-image"}\n\n',
         )
-        expect(res.write).toHaveBeenNthCalledWith(5, 'event: error\n')
-        expect(res.write).toHaveBeenNthCalledWith(
-            6,
-            'data: {"error":"Failed to generate the hero image."}\n\n',
-        )
-        expect(res.end).toHaveBeenCalledOnce()
+        expect(res.write).not.toHaveBeenCalledWith('event: error\n')
+        expect(res.end).not.toHaveBeenCalled()
     })
 
     it('does not call the image API when prompt generation fails', async () => {
@@ -90,7 +89,26 @@ describe('ImageGenerationController', () => {
 
         expect(generateImage).not.toHaveBeenCalled()
         expect(upload).not.toHaveBeenCalled()
-        expect(next).not.toHaveBeenCalled()
-        expect(res.end).toHaveBeenCalledOnce()
+        expect(next).toHaveBeenCalledOnce()
+        expect(res.locals.heroImageUrl).toBe('https://placehold.co/1536x1024/png')
+        expect(res.write).not.toHaveBeenCalledWith('event: error\n')
+        expect(res.end).not.toHaveBeenCalled()
+    })
+
+    it('continues with a placeholder and logs the failure when upload fails', async () => {
+        const { default: logger } = await import('../config/logger')
+        const err = new Error('R2 unavailable')
+        upload.mockRejectedValue(err)
+
+        await controller.handle({ body: { prompt } } as Request, res, next as NextFunction)
+
+        expect(res.locals.heroImageUrl).toBe('https://placehold.co/1536x1024/png')
+        expect(next).toHaveBeenCalledOnce()
+        expect(res.write).not.toHaveBeenCalledWith('event: error\n')
+        expect(res.end).not.toHaveBeenCalled()
+        expect(logger.warn).toHaveBeenCalledWith(
+            { err },
+            '[ImageGenerationController] Image preparation failed, using placeholder',
+        )
     })
 })

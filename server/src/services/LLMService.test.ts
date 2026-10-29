@@ -36,10 +36,13 @@ describe('LLMService image prompt generation', () => {
             }))
         })
 
-        it('streams and returns the stylesheet without changing the image pipeline', async () => {
+        it.each([
+            'https://images.example/supper.png',
+            'https://placehold.co/1536x1024/png',
+        ])('streams the page using the supplied hero asset %s', async heroImageUrl => {
             const service = new LLMService()
             const payloads = []
-            for await (const payload of service.captureMoment('A supper club', { heroImageUrl: 'https://images.example/supper.png' })) {
+            for await (const payload of service.captureMoment('A supper club', { heroImageUrl })) {
                 payloads.push(payload)
             }
 
@@ -51,8 +54,9 @@ describe('LLMService image prompt generation', () => {
             expect(request.messages[0].content).toContain('OUTPUT CONTRACT')
             expect(request.messages[0].content).toContain('stylesheet?: string')
             expect(request.messages[0].content).toContain('There is no mandatory hero arrangement')
+            expect(request.messages[0].content).toContain('either a generated image or a fallback placeholder')
             expect(request.messages[1].content).toContain(
-                '<HERO_IMAGE_URL>https://images.example/supper.png</HERO_IMAGE_URL>',
+                `<HERO_IMAGE_URL>${heroImageUrl}</HERO_IMAGE_URL>`,
             )
         })
 
