@@ -22,7 +22,6 @@ import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import R2ServiceInterface from '../interfaces/R2ServiceInterface'
 import StreamCacheInterface from '../interfaces/StreamCacheInterface'
-import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
 import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
 import UserServiceInterface from '../interfaces/UserServiceInterface'
 
@@ -68,7 +67,6 @@ import SubmitFormDataRequestValidator from '../validators/SubmitFormDataRequestV
 import UpdateMomentRequestValidator from '../validators/UpdateMomentRequestValidator'
 import ValidateInviteKeyRequestValidator from '../validators/ValidateInviteKeyRequestValidator'
 
-import StreamWorker from '../workers/StreamWorker'
 
 /**
  * Dependency injection container.
@@ -112,7 +110,6 @@ class Container {
     private _r2Service?: R2ServiceInterface
     private _llmService?: LLMServiceInterface
     // workers
-    private _streamWorker?: StreamWorkerInterface
     // controllers
     private _systemController?: SystemController
     private _momentController?: MomentController
@@ -258,10 +255,6 @@ class Container {
         return this._streamCache ??= new StreamCache()
     }
 
-    public get streamWorker(): StreamWorkerInterface {
-        return this._streamWorker ??= new StreamWorker(this.llmService, this.streamCache)
-    }
-
     public get momentController(): MomentController {
         return this._momentController ??= new MomentController(this.momentService, this.changeService)
     }
@@ -270,7 +263,8 @@ class Container {
         return this._momentGenerationController ??= new MomentGenerationController(
             this.momentService,
             this.changeService,
-            this.streamWorker,
+            this.llmService,
+            this.streamCache,
         )
     }
 

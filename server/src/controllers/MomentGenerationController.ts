@@ -1,11 +1,12 @@
 import { Request, Response } from 'express'
-import { EventEmitter } from 'node:events'
 import { emit } from '../utils/sse'
 import logger from '../config/logger'
+import User from '../models/User'
+import Moment from '../models/Moment'
 import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
-import StreamWorkerInterface from '../interfaces/StreamWorkerInterface'
-import User from '../models/User'
+import LLMServiceInterface from '../interfaces/LLMServiceInterface'
+import StreamCacheInterface from '../interfaces/StreamCacheInterface'
 
 /**
  * @class MomentGenerationController
@@ -15,12 +16,14 @@ export default class MomentGenerationController {
      * @constructor
      * @param {MomentServiceInterface} momentService
      * @param {ChangeServiceInterface} changeService
-     * @param {StreamWorkerInterface} streamWorker
+     * @param {LLMServiceInterface} llmService
+     * @param {StreamCacheInterface} streamCache
      */
     constructor(
         private momentService: MomentServiceInterface,
         private changeService: ChangeServiceInterface,
-        private streamWorker: StreamWorkerInterface,
+        private llmService: LLMServiceInterface,
+        private streamCache: StreamCacheInterface,
     ) {}
 
     /**
@@ -28,29 +31,48 @@ export default class MomentGenerationController {
      * @param {Request} req
      * @param {Response} res
      */
-    public capture(req: Request, res: Response): void {
+    public async capture(req: Request, res: Response): Promise<void> {
         const user: User = res.locals.user
         const { prompt } = req.body
-        const options: CaptureMomentOptions = {
-            heroImageUrl: res.locals.heroImageUrl,
+        const options: CaptureMomentOptions = { heroImageUrl: res.locals.heroImageUrl }
+
+        this.streamCache.init(user.id)
+        try {
+            this.send(res, 'progress', { stage: 'generating-moment' })
+            for await (const payload of this.llmService.captureMoment(prompt, options)) {
+                if ('error' in payload) {
+                    this.send(res, 'error', { error: payload.error }, true)
+                    break
+                }
+
+                if ('chunk' in payload) {
+                    this.send(res, 'chunk', { chunk: payload.chunk })
+                }
+
+                if ('done' in payload) {
+                    try {
+                        const moment = await this.storeCapture(user.id, prompt, payload.momentContent)
+                        this.send(res, 'done', moment, true)
+                    } catch (err) {
+                        logger.error({ err, userId: user.id }, '[MomentGenerationController] Store moment error')
+                        this.send(res, 'error', { error: 'Failed to save the Moment.' }, true)
+                    }
+                    break
+                }
+            }
+        } catch (err) {
+            logger.error({ err, userId: user.id }, '[MomentGenerationController] Generation loop error')
+            this.send(res, 'error', { error: 'Failed to generate the Moment. Please try again.' }, true)
+        } finally {
+            this.streamCache.clear(user.id)
         }
-
-        emit(res, 'progress', { stage: 'generating-moment' })
-        const emitter = this.streamWorker.capture(
-            user.id,
-            prompt,
-            options,
-            ({ prompt, momentContent }) => this.storeCapture(user.id, prompt, momentContent),
-        )
-
-        this.stream(res, emitter)
     }
 
     private async storeCapture(
         userId: number,
         prompt: string,
         momentContent: MomentContent,
-    ): Promise<unknown> {
+    ): Promise<Moment> {
         return this.momentService.store({
             user_id: userId,
             slug: momentContent.slug,
@@ -75,46 +97,51 @@ export default class MomentGenerationController {
             history = changes.map(change => change.prompt)
         } catch (err) {
             logger.error({ err }, '[MomentGenerationController] Failed to load change history')
-            emit(res, 'error', { error: 'Internal server error.' }, true)
+            this.send(res, 'error', { error: 'Internal server error.' }, true)
             return
         }
 
-        const emitter = this.streamWorker.patch(
-            user.id,
-            { nodeId, prompt, content, history },
-            async ({ momentContent }) => {
-                return this.changeService.store({
-                    moment_id: momentId,
-                    node_id: nodeId,
-                    prompt,
-                    old_content: content,
-                    new_content: momentContent,
-                })
-            },
-        )
+        this.streamCache.init(user.id)
 
-        this.stream(res, emitter)
+        try {
+            for await (const payload of this.llmService.patchMoment({ nodeId, prompt, content, history })) {
+                if ('error' in payload) {
+                    this.send(res, 'error', { error: payload.error }, true)
+                    break
+                }
+
+                if ('chunk' in payload) {
+                    this.send(res, 'chunk', { chunk: payload.chunk })
+                }
+
+                if ('done' in payload) {
+                    try {
+                        const change = await this.changeService.store({
+                            moment_id: momentId,
+                            node_id: nodeId,
+                            prompt,
+                            old_content: content,
+                            new_content: payload.momentContent,
+                        })
+                        this.send(res, 'done', change, true)
+                    } catch (err) {
+                        logger.error({ err, userId: user.id }, '[MomentGenerationController] Patch update error')
+                        this.send(res, 'error', { error: 'Failed to save the patched Moment.' }, true)
+                    }
+                    break
+                }
+            }
+        } catch (err) {
+            logger.error({ err, userId: user.id }, '[MomentGenerationController] Patch loop error')
+            this.send(res, 'error', { error: 'Failed to patch the Moment. Please try again.' }, true)
+        } finally {
+            this.streamCache.clear(user.id)
+        }
     }
 
-    private stream(res: Response, emitter: EventEmitter): void {
-        const onChunk = (data: { chunk: string }) => {
-            emit(res, 'chunk', data)
+    private send(res: Response, event: string, data: unknown, end = false): void {
+        if (!res.destroyed && !res.writableEnded) {
+            emit(res, event, data, end)
         }
-        const onDone = (data: unknown) => {
-            emit(res, 'done', data, true)
-        }
-        const onError = (data: { error: string }) => {
-            emit(res, 'error', data, true)
-        }
-
-        emitter.on('chunk', onChunk)
-        emitter.once('done', onDone)
-        emitter.once('stream-error', onError)
-
-        res.once('close', () => {
-            emitter.off('chunk', onChunk)
-            emitter.off('done', onDone)
-            emitter.off('stream-error', onError)
-        })
     }
 }
