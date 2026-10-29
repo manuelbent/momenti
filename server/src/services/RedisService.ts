@@ -27,6 +27,14 @@ export default class RedisService {
     }
 
     /**
+     * Returns whether the user currently holds an active generation lock.
+     * @param {number} userId
+     */
+    public async isGenerating(userId: number): Promise<boolean> {
+        return await this.redis.exists(`generation:active:${userId}`) === 1
+    }
+
+    /**
      * Atomically reserves the user and returns the owning generation ID.
      * @param {number} userId
      */

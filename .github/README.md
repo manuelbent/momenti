@@ -51,6 +51,9 @@ Node.js / Express written in TypeScript. Responsibilities:
 - Invite-key based access control
 - Redis rate limiting and stream caching
 
+`GET /me` requires the `x-invite-key` header and returns `{ id: number, isGenerating: boolean }`.
+`isGenerating` indicates whether the user has an active generation lock in Redis.
+
 ### studio
 
 Svelte 5 single-page application.  

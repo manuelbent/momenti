@@ -6,6 +6,7 @@ import InviteKeyController from '../controllers/InviteKeyController'
 import MomentController from '../controllers/MomentController'
 import MomentGenerationController from '../controllers/MomentGenerationController'
 import SystemController from '../controllers/SystemController'
+import UserController from '../controllers/UserController'
 
 import ChangeRepositoryInterface from '../interfaces/ChangeRepositoryInterface'
 import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
@@ -108,8 +109,8 @@ class Container {
     // services (non-orm)
     private _r2Service?: R2ServiceInterface
     private _llmService?: LLMServiceInterface
-    // workers
     // controllers
+    private _userController?: UserController
     private _systemController?: SystemController
     private _momentController?: MomentController
     private _momentGenerationController?: MomentGenerationController
@@ -252,6 +253,10 @@ class Container {
 
     public get redisService(): RedisService {
         return this._redisService ??= new RedisService()
+    }
+
+    public get userController(): UserController {
+        return this._userController ??= new UserController(this.redisService)
     }
 
     public get momentController(): MomentController {

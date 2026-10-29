@@ -3,6 +3,12 @@ import ioc from '../config/ioc'
 
 const router = Router()
 
+// users routes
+router.get('/me',
+    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    (req, res) => ioc.userController.me(req, res)
+)
+
 // moments routes
 router.post('/moments',
     (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
