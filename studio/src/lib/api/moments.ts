@@ -35,6 +35,17 @@ export const generateMoment = async (prompt: string, onEvent: (event: MomentGene
     await readStream(res.body, isMoment, onEvent)
 }
 
+export const resumeMoment = async (onEvent: (event: MomentGenerationEvent) => void): Promise<void> => {
+    const res = await fetch(`${API_URL}/generations`, {
+        headers: authHeaders(),
+    })
+    if (!res.ok) throw new Error(`Failed to resume generation: ${res.status}`)
+    if (!res.body) throw new Error(`Unexpected response: ${res.status}`)
+
+    onEvent({ type: 'open' })
+    await readStream(res.body, isMoment, onEvent)
+}
+
 export const patch = async (
     {
         momentId,

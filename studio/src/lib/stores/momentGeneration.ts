@@ -1,6 +1,6 @@
 import { get, writable } from 'svelte/store'
 import { push } from 'svelte-spa-router'
-import { generateMoment, type MomentGenerationEvent } from '$lib/api/moments'
+import { generateMoment, resumeMoment, type MomentGenerationEvent } from '$lib/api/moments'
 import { moment } from '$lib/stores/moment'
 import { showToast } from '$lib/stores/toast'
 
@@ -32,16 +32,18 @@ export const createMomentGenerationStore = () => {
                 break
             case 'done':
                 moment.set(event.data)
-                setTimeout(() => push('/studio'), 450)
+                setTimeout(async () => {
+                    await push('/studio')
+                    store.set({ streamText: '', stage: 'form' })
+                }, 450)
                 break
             case 'error':
                 throw event.error
         }
     }
 
-    const generate = async (prompt: string) => {
-        const trimmedPrompt = prompt.trim()
-        if (!trimmedPrompt || get(store).stage !== 'form') return
+    const start = async (request: () => Promise<void>) => {
+        if (get(store).stage !== 'form') return
 
         store.set({
             streamText: '',
@@ -50,7 +52,7 @@ export const createMomentGenerationStore = () => {
         })
 
         try {
-            await generateMoment(trimmedPrompt, onEvent)
+            await request()
         } catch (error) {
             store.set({ streamText: '', stage: 'form' })
             showToast(
@@ -60,8 +62,19 @@ export const createMomentGenerationStore = () => {
         }
     }
 
+    const generate = async (prompt: string) => {
+        const trimmedPrompt = prompt.trim()
+        if (!trimmedPrompt) return
+        await start(() => generateMoment(trimmedPrompt, onEvent))
+    }
+
+    const resume = () => start(() => resumeMoment(onEvent))
+
     return {
         subscribe,
         generate,
+        resume,
     }
 }
+
+export const momentGeneration = createMomentGenerationStore()

@@ -63,6 +63,7 @@ Disconnecting only stops replay; it does not cancel the generation or release it
 
 Svelte 5 single-page application.  
 Lets authenticated users prompt for a new moment, follow preparation progress while its custom hero image is generated, watch its page assemble in a live streaming preview, then edit every node in the tree (text, styles, images, links, forms) before saving and publishing.
+On initialization with a saved invite key, it checks `/me` and resumes an active Moment generation through `/generations`, rebuilding the landing-page preview from replayed events.
 
 ### viewer
 

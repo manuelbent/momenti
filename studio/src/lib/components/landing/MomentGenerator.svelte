@@ -1,12 +1,11 @@
 <script lang="ts">
     import { inviteKey } from '$lib/stores/auth'
-    import { createMomentGenerationStore } from '$lib/stores/momentGeneration'
+    import { momentGeneration as generation } from '$lib/stores/momentGeneration'
     import GenerationPanel from './components/GenerationPanel.svelte'
     import InviteModal from './InviteModal.svelte'
 
     let prompt = $state('')
     let showInviteModal = $state(false)
-    const generation = createMomentGenerationStore()
 
     const generate = () => {
         if (!prompt.trim()) return
