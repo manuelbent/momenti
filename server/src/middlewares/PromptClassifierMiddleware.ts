@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { emit } from '../utils/sse'
 import logger from '../config/logger'
+import RedisService from '../services/RedisService'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 
 /**
@@ -14,8 +15,12 @@ export default class PromptClassifierMiddleware {
     /**
      * @constructor
      * @param {LLMServiceInterface} llmService
+     * @param {RedisService} redisService
      */
-    constructor(private llmService: LLMServiceInterface) {}
+    constructor(
+        private llmService: LLMServiceInterface,
+        private redisService: RedisService,
+    ) {}
 
     /**
      * @param {Request} req
@@ -30,8 +35,11 @@ export default class PromptClassifierMiddleware {
             const classification = await this.llmService.classifyPrompt(prompt)
 
             if (!classification.valid) {
-                const error = classification.reason ?? 'Your prompt does not describe an event. momenti builds a page for a specific event. Try describing your wedding, party, reunion, or celebration.'
+                const error = classification.reason
+                    ?? 'Your prompt does not describe an event. momenti builds a page for a specific event. Try describing your wedding, party, reunion, or celebration.'
+
                 emit(res, 'error', { error }, true)
+                await this.redisService.releaseGenerationLock(res.locals.user.id, res.locals.generationId)
                 return
             }
 
@@ -39,6 +47,7 @@ export default class PromptClassifierMiddleware {
         } catch (err) {
             logger.error({ err }, '[PromptClassifierMiddleware] Prompt classification error')
             emit(res, 'error', { error: 'Failed to understand your prompt. Please try again.' }, true)
+            await this.redisService.releaseGenerationLock(res.locals.user.id, res.locals.generationId)
         }
     }
 }

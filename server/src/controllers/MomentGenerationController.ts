@@ -3,10 +3,10 @@ import { emit } from '../utils/sse'
 import logger from '../config/logger'
 import User from '../models/User'
 import Moment from '../models/Moment'
+import RedisService from '../services/RedisService'
 import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
-import StreamCacheInterface from '../interfaces/StreamCacheInterface'
 
 /**
  * @class MomentGenerationController
@@ -17,13 +17,13 @@ export default class MomentGenerationController {
      * @param {MomentServiceInterface} momentService
      * @param {ChangeServiceInterface} changeService
      * @param {LLMServiceInterface} llmService
-     * @param {StreamCacheInterface} streamCache
+     * @param {RedisService} redisService
      */
     constructor(
         private momentService: MomentServiceInterface,
         private changeService: ChangeServiceInterface,
         private llmService: LLMServiceInterface,
-        private streamCache: StreamCacheInterface,
+        private redisService: RedisService,
     ) {}
 
     /**
@@ -36,7 +36,6 @@ export default class MomentGenerationController {
         const { prompt } = req.body
         const options: CaptureMomentOptions = { heroImageUrl: res.locals.heroImageUrl }
 
-        this.streamCache.init(user.id)
         try {
             this.send(res, 'progress', { stage: 'generating-moment' })
             for await (const payload of this.llmService.captureMoment(prompt, options)) {
@@ -64,7 +63,7 @@ export default class MomentGenerationController {
             logger.error({ err, userId: user.id }, '[MomentGenerationController] Generation loop error')
             this.send(res, 'error', { error: 'Failed to generate the Moment. Please try again.' }, true)
         } finally {
-            this.streamCache.clear(user.id)
+            await this.redisService.releaseGenerationLock(user.id, res.locals.generationId)
         }
     }
 
@@ -91,19 +90,17 @@ export default class MomentGenerationController {
         const momentId = Number(req.params.id)
         const { nodeId, prompt, content } = req.body
 
-        let history: string[]
         try {
-            const changes = await this.changeService.getAll(momentId)
-            history = changes.map(change => change.prompt)
-        } catch (err) {
-            logger.error({ err }, '[MomentGenerationController] Failed to load change history')
-            this.send(res, 'error', { error: 'Internal server error.' }, true)
-            return
-        }
+            let history: string[]
+            try {
+                const changes = await this.changeService.getAll(momentId)
+                history = changes.map(change => change.prompt)
+            } catch (err) {
+                logger.error({ err }, '[MomentGenerationController] Failed to load change history')
+                this.send(res, 'error', { error: 'Internal server error.' }, true)
+                return
+            }
 
-        this.streamCache.init(user.id)
-
-        try {
             for await (const payload of this.llmService.patchMoment({ nodeId, prompt, content, history })) {
                 if ('error' in payload) {
                     this.send(res, 'error', { error: payload.error }, true)
@@ -135,7 +132,7 @@ export default class MomentGenerationController {
             logger.error({ err, userId: user.id }, '[MomentGenerationController] Patch loop error')
             this.send(res, 'error', { error: 'Failed to patch the Moment. Please try again.' }, true)
         } finally {
-            this.streamCache.clear(user.id)
+            await this.redisService.releaseGenerationLock(user.id, res.locals.generationId)
         }
     }
 

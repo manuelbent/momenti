@@ -21,7 +21,6 @@ import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import R2ServiceInterface from '../interfaces/R2ServiceInterface'
-import StreamCacheInterface from '../interfaces/StreamCacheInterface'
 import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
 import UserServiceInterface from '../interfaces/UserServiceInterface'
 
@@ -57,7 +56,7 @@ import InviteKeyService from '../services/InviteKeyService'
 import LLMService from '../services/LLMService'
 import MomentService from '../services/MomentService'
 import R2Service from '../services/R2Service'
-import StreamCache from '../services/StreamCache'
+import RedisService from '../services/RedisService'
 import UserService from '../services/UserService'
 
 import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
@@ -103,7 +102,7 @@ class Container {
     private _userService?: UserServiceInterface
     private _formSubmissionService?: FormSubmissionServiceInterface
     private _feedbackService?: FeedbackServiceInterface
-    private _streamCache?: StreamCacheInterface
+    private _redisService?: RedisService
     private _changeService?: ChangeServiceInterface
     private _imageService?: ImageServiceInterface
     // services (non-orm)
@@ -168,7 +167,7 @@ class Container {
     }
 
     public get promptModerationMiddleware(): PromptModerationMiddleware {
-        return this._promptModerationMiddleware ??= new PromptModerationMiddleware(this.llmService)
+        return this._promptModerationMiddleware ??= new PromptModerationMiddleware(this.llmService, this.redisService)
     }
 
     public get momentContentModerationMiddleware(): MomentContentModerationMiddleware {
@@ -176,11 +175,11 @@ class Container {
     }
 
     public get promptClassifierMiddleware(): PromptClassifierMiddleware {
-        return this._promptClassifierMiddleware ??= new PromptClassifierMiddleware(this.llmService)
+        return this._promptClassifierMiddleware ??= new PromptClassifierMiddleware(this.llmService, this.redisService)
     }
 
     public get generationGuardMiddleware(): GenerationGuardMiddleware {
-        return this._generationGuardMiddleware ??= new GenerationGuardMiddleware(this.streamCache)
+        return this._generationGuardMiddleware ??= new GenerationGuardMiddleware(this.redisService)
     }
 
     public get rateLimiterMiddleware(): RateLimiterMiddleware {
@@ -251,8 +250,8 @@ class Container {
         return this._llmService ??= new LLMService()
     }
 
-    public get streamCache(): StreamCacheInterface {
-        return this._streamCache ??= new StreamCache()
+    public get redisService(): RedisService {
+        return this._redisService ??= new RedisService()
     }
 
     public get momentController(): MomentController {
@@ -264,7 +263,7 @@ class Container {
             this.momentService,
             this.changeService,
             this.llmService,
-            this.streamCache,
+            this.redisService,
         )
     }
 

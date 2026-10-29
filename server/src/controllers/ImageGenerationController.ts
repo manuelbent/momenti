@@ -22,7 +22,7 @@ export default class ImageGenerationController {
     ) {}
 
     /**
-     * Generates and uploads the hero image before Moment generation starts.
+     * Prepares a hero image, falling back to a placeholder on failure.
      * @param {Request} req
      * @param {Response} res
      * @param {NextFunction} next
@@ -41,11 +41,11 @@ export default class ImageGenerationController {
                 'image/png',
                 'generated.png',
             )
-
-            next()
         } catch (err) {
-            logger.error({ err }, '[ImageGenerationController] Image generation error')
-            emit(res, 'error', { error: 'Failed to generate the hero image.' }, true)
+            logger.warn({ err }, '[ImageGenerationController] Image preparation failed, using placeholder')
+            res.locals.heroImageUrl = 'https://placehold.co/1536x1024/png'
         }
+
+        next()
     }
 }

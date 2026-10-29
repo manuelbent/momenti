@@ -122,9 +122,9 @@ Find a coherent visual idea in the user's brief, then let it guide the typograph
 
 Use the full expressive range of CSS: editorial grids, asymmetric arrangements, deliberate whitespace, layered imagery, expressive type, and quiet utility content when they serve the concept. Beauty comes from hierarchy and coherence, not from adding more sections, decorations, or animation.
 
-Include only useful event content. There is no mandatory hero arrangement, section sequence, card grid, map, footer, or animation count. Make the supplied essentials easy to find. Never invent dates, addresses, URLs, schedules, or personal facts. Do not add empty galleries or placeholder images.
+Include only useful event content. There is no mandatory hero arrangement, section sequence, card grid, map, footer, or animation count. Make the supplied essentials easy to find. Never invent dates, addresses, URLs, schedules, or personal facts. Do not add empty galleries or invent placeholder image URLs.
 
-The HERO_IMAGE_URL is an already generated asset. Include it as an image node where it best supports the composition, not necessarily in the opening. Preserve its URL exactly; do not add generationPrompt. Other images may use URLs supplied by the user.
+The HERO_IMAGE_URL is a supplied asset, either a generated image or a fallback placeholder. Include it as an image node where it best supports the composition, not necessarily in the opening. Preserve its URL exactly; do not add generationPrompt. Other images may use URLs supplied by the user.
 
 Make the design work at narrow phone widths and wide desktop widths. Use readable contrast, semantic headings, accessible form labels and visible focus states. Motion is optional and must not carry essential information.
 

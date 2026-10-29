@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { emit } from '../utils/sse'
 import logger from '../config/logger'
+import RedisService from '../services/RedisService'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 
 /**
@@ -12,8 +13,12 @@ export default class PromptModerationMiddleware {
     /**
      * @constructor
      * @param {LLMServiceInterface} llmService
+     * @param {RedisService} redisService
      */
-    constructor(private llmService: LLMServiceInterface) {}
+    constructor(
+        private llmService: LLMServiceInterface,
+        private redisService: RedisService,
+    ) {}
 
     /**
      * @param {Request} req
@@ -37,6 +42,7 @@ export default class PromptModerationMiddleware {
         } catch (err) {
             logger.error({ err }, '[PromptModerationMiddleware] Prompt moderation error')
             emit(res, 'error', { error: 'Failed to review your prompt. Please try again.' }, true)
+            await this.redisService.releaseGenerationLock(res.locals.user.id, res.locals.generationId)
         }
     }
 }
