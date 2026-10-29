@@ -27,22 +27,33 @@ export default class PromptModerationMiddleware {
      */
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { prompt } = req.body
+        const { user, generationId } = res.locals
 
         try {
-            emit(res, 'progress', { stage: 'moderating' })
+            const progress: CaptureProgress = { stage: 'moderating' }
+            const progressId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', progress)
+            emit(res, 'progress', progress, false, progressId ?? undefined)
+
             const flagged = await this.llmService.moderateText(prompt)
 
             if (flagged) {
                 const error = 'Your message contains harmful or prohibited content and cannot be processed.'
-                emit(res, 'error', { error }, true)
+                const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', { error })
+                emit(res, 'error', { error }, true, eventId ?? undefined)
+
+                await this.redisService.releaseGenerationLock(res.locals.user.id, res.locals.generationId)
                 return
             }
 
             next()
         } catch (err) {
             logger.error({ err }, '[PromptModerationMiddleware] Prompt moderation error')
-            emit(res, 'error', { error: 'Failed to review your prompt. Please try again.' }, true)
+            const error = 'Failed to review your prompt. Please try again.'
+            const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', { error })
+            emit(res, 'error', { error }, true, eventId ?? undefined)
+
             await this.redisService.releaseGenerationLock(res.locals.user.id, res.locals.generationId)
         }
     }
+
 }

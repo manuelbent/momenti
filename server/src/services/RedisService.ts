@@ -45,8 +45,7 @@ export default class RedisService {
 
     /**
      * Appends a generation event to its Redis Stream and refreshes its expiry.
-     * Returns the Stream ID for use as the corresponding SSE event ID, or null
-     * when caching fails.
+     * Returns the Redis Stream entry ID, or null when caching fails.
      * @param {number} userId
      * @param {string} generationId
      * @param {string} event

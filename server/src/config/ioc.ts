@@ -272,6 +272,7 @@ class Container {
             this.imageService,
             this.r2Service,
             this.llmService,
+            this.redisService,
         )
     }
 

@@ -33,35 +33,48 @@ export default class MomentGenerationController {
      */
     public async capture(req: Request, res: Response): Promise<void> {
         const user: User = res.locals.user
+        const generationId: string = res.locals.generationId
         const { prompt } = req.body
         const options: CaptureMomentOptions = { heroImageUrl: res.locals.heroImageUrl }
 
         try {
-            await this.send(res, 'progress', { stage: 'generating-moment' })
+            const progress: CaptureProgress = { stage: 'generating-moment' }
+            const progressId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', progress)
+            emit(res, 'progress', progress, false, progressId ?? undefined)
+
             for await (const payload of this.llmService.captureMoment(prompt, options)) {
                 if ('error' in payload) {
-                    await this.send(res, 'error', { error: payload.error }, true)
+                    const data = { error: payload.error }
+                    const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', data)
+                    emit(res, 'error', data, true, eventId ?? undefined)
                     break
                 }
 
                 if ('chunk' in payload) {
-                    await this.send(res, 'chunk', { chunk: payload.chunk })
+                    const data = { chunk: payload.chunk }
+                    const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'chunk', data)
+                    emit(res, 'chunk', data, false, eventId ?? undefined)
                 }
 
                 if ('done' in payload) {
                     try {
                         const moment = await this.storeCapture(user.id, prompt, payload.momentContent)
-                        await this.send(res, 'done', moment, true)
+                        const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'done', moment)
+                        emit(res, 'done', moment, true, eventId ?? undefined)
                     } catch (err) {
                         logger.error({ err, userId: user.id }, '[MomentGenerationController] Store moment error')
-                        await this.send(res, 'error', { error: 'Failed to save the Moment.' }, true)
+                        const data = { error: 'Failed to save the Moment.' }
+                        const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', data)
+                        emit(res, 'error', data, true, eventId ?? undefined)
                     }
                     break
                 }
             }
         } catch (err) {
             logger.error({ err, userId: user.id }, '[MomentGenerationController] Generation loop error')
-            await this.send(res, 'error', { error: 'Failed to generate the Moment. Please try again.' }, true)
+            const data = { error: 'Failed to generate the Moment. Please try again.' }
+            const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', data)
+            emit(res, 'error', data, true, eventId ?? undefined)
         } finally {
             await this.redisService.releaseGenerationLock(user.id, res.locals.generationId)
         }
@@ -87,6 +100,7 @@ export default class MomentGenerationController {
      */
     public async patch(req: Request, res: Response): Promise<void> {
         const user: User = res.locals.user
+        const generationId: string = res.locals.generationId
         const momentId = Number(req.params.id)
         const { nodeId, prompt, content } = req.body
 
@@ -97,18 +111,24 @@ export default class MomentGenerationController {
                 history = changes.map(change => change.prompt)
             } catch (err) {
                 logger.error({ err }, '[MomentGenerationController] Failed to load change history')
-                await this.send(res, 'error', { error: 'Internal server error.' }, true)
+                const data = { error: 'Internal server error.' }
+                const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', data)
+                emit(res, 'error', data, true, eventId ?? undefined)
                 return
             }
 
             for await (const payload of this.llmService.patchMoment({ nodeId, prompt, content, history })) {
                 if ('error' in payload) {
-                    await this.send(res, 'error', { error: payload.error }, true)
+                    const data = { error: payload.error }
+                    const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', data)
+                    emit(res, 'error', data, true, eventId ?? undefined)
                     break
                 }
 
                 if ('chunk' in payload) {
-                    await this.send(res, 'chunk', { chunk: payload.chunk })
+                    const data = { chunk: payload.chunk }
+                    const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'chunk', data)
+                    emit(res, 'chunk', data, false, eventId ?? undefined)
                 }
 
                 if ('done' in payload) {
@@ -120,31 +140,24 @@ export default class MomentGenerationController {
                             old_content: content,
                             new_content: payload.momentContent,
                         })
-                        await this.send(res, 'done', change, true)
+                        const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'done', change)
+                        emit(res, 'done', change, true, eventId ?? undefined)
                     } catch (err) {
                         logger.error({ err, userId: user.id }, '[MomentGenerationController] Patch update error')
-                        await this.send(res, 'error', { error: 'Failed to save the patched Moment.' }, true)
+                        const data = { error: 'Failed to save the patched Moment.' }
+                        const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', data)
+                        emit(res, 'error', data, true, eventId ?? undefined)
                     }
                     break
                 }
             }
         } catch (err) {
             logger.error({ err, userId: user.id }, '[MomentGenerationController] Patch loop error')
-            await this.send(res, 'error', { error: 'Failed to patch the Moment. Please try again.' }, true)
+            const data = { error: 'Failed to patch the Moment. Please try again.' }
+            const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', data)
+            emit(res, 'error', data, true, eventId ?? undefined)
         } finally {
             await this.redisService.releaseGenerationLock(user.id, res.locals.generationId)
-        }
-    }
-
-    private async send(res: Response, event: string, data: unknown, end = false): Promise<void> {
-        const eventId = await this.redisService.cacheGenerationEvent(
-            res.locals.user.id,
-            res.locals.generationId,
-            event,
-            data,
-        )
-        if (!res.destroyed && !res.writableEnded) {
-            emit(res, event, data, end, eventId ?? undefined)
         }
     }
 }
