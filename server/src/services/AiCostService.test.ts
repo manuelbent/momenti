@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { QueryInterface, Sequelize } from 'sequelize'
+import { QueryInterface, Sequelize, DataTypes } from 'sequelize'
 import AiCostRepositoryInterface from '../interfaces/AiCostRepositoryInterface'
 import AiCost from '../models/AiCost'
 import AiCostService from './AiCostService'
@@ -26,7 +26,7 @@ describe('AiCostService', () => {
             const queryInterface = db.getQueryInterface()
 
             try {
-                await queryInterface.createTable('moments', { id: { type: Sequelize.INTEGER, primaryKey: true } })
+                await queryInterface.createTable('moments', { id: { type: DataTypes.INTEGER, primaryKey: true } })
                 await queryInterface.bulkInsert('moments', [{ id: 1 }])
                 const createTable = vi.spyOn(queryInterface, 'createTable')
                 await create.up(queryInterface, Sequelize)
