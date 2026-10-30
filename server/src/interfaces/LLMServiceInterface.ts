@@ -2,9 +2,10 @@
  * @interface LLMServiceInterface
  */
 export default interface LLMServiceInterface {
-    moderateText(text: string): Promise<boolean>
-    classifyPrompt(prompt: string): Promise<{ valid: boolean; reason?: string }>
-    generateImagePrompt(prompt: string): Promise<string>
-    generateMoment(prompt: string, options: GenerateMomentOptions): AsyncGenerator<LLMStreamPayload>
-    patchMoment(params: PatchMomentParams): AsyncGenerator<LLMStreamPayload>
+    moderateText(text: string, context: LLMRequestContext): Promise<boolean>
+    classifyPrompt(prompt: string, context: LLMRequestContext): Promise<{ valid: boolean; reason?: string }>
+    generateImagePrompt(prompt: string, context: LLMRequestContext): Promise<string>
+    generateImage(prompt: string, context: LLMRequestContext): Promise<Buffer>
+    generateMoment(prompt: string, options: GenerateMomentOptions, context: LLMRequestContext): AsyncGenerator<LLMStreamPayload>
+    patchMoment(params: PatchMomentParams, context: LLMRequestContext): AsyncGenerator<LLMStreamPayload>
 }

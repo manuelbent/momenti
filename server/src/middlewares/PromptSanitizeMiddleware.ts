@@ -13,8 +13,8 @@ import { NextFunction, Request, Response } from 'express'
  */
 export default class PromptSanitizeMiddleware {
     /**
-     * Structural control tags used by the LLMService to delimit trusted
-     * instructions from untrusted user input. Kept in sync with LLMService.
+     * Structural control tags used by OpenAIService to delimit trusted
+     * instructions from untrusted user input. Kept in sync with OpenAIService.
      * @private
      * @readonly
      */

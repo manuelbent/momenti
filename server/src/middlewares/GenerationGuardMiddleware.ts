@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { Request, Response, NextFunction } from 'express'
 import logger from '../config/logger'
 import User from '../models/User'
@@ -40,6 +41,7 @@ export default class GenerationGuardMiddleware {
         }
 
         res.locals.generationId = generationId
+        res.locals.correlationId = randomUUID()
         next()
     }
 }

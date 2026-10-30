@@ -1,15 +1,20 @@
 import OpenAI from 'openai'
 import logger from '../config/logger'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
+import AiCostServiceInterface from '../interfaces/AiCostServiceInterface'
+import type AiCost from '../models/AiCost'
 import { createCreativeDirection } from '../utils/creativeDirection'
 
 /**
- * Service responsible for all LLM interactions.
- * Orchestrates the AI pipeline: prompt moderation → moment generation
- * @class LLMService
+ * Handles OpenAI moderation, prompt classification, image generation, and streaming Moment generation.
+ * Records response usage and costs internally without exposing accounting metadata to callers.
+ * @class OpenAIService
  * @implements {LLMServiceInterface}
  */
-export default class LLMService implements LLMServiceInterface {
+export default class OpenAIService implements LLMServiceInterface {
+    /**
+     * System instructions for checking whether a brief describes a real-world event.
+     */
     private readonly classifierPrompt = `You are a prompt quality validator for an event page generator called "momenti".
 "momenti" builds a single page for a real-world event, and nothing else.
 Your only job is to decide if a user's input describes a specific event that can become an event page.
@@ -36,6 +41,9 @@ or
 { "valid": false, "reason": "<Short human-readable explanation>" }
 `
 
+    /**
+     * System instructions for turning an event brief into a visual-only hero image prompt.
+     */
     private readonly imagePrompt = `You write production-ready prompts for a hero image generation model.
 
 Transform the user's page brief into one standalone prompt for the visual asset that will appear in the page's hero.
@@ -49,6 +57,9 @@ Requirements:
 - Output only the final image prompt with no heading, explanation, quotation marks, or metadata.
 `
 
+    /**
+     * Shared MomentContent output contract and rendering constraints for generation and patching.
+     */
     private readonly momentFormat = `OUTPUT CONTRACT
 
 interface MomentContent {
@@ -116,6 +127,9 @@ COMPONENT BEHAVIOR
 - effects: optional animation on the actual node, with duration and delay in milliseconds. Use at most one effect per node; prefer entrance motion to perpetual movement. Effects respect reduced-motion preferences.
 `
 
+    /**
+     * System instructions for creating an event page using the supplied hero image.
+     */
     private readonly generationPrompt = `You design distinctive, beautifully composed single-page event websites for momenti.
 
 Find a coherent visual idea in the user's brief, then let it guide the typography, imagery, color, composition, and pacing. Design for this particular event, not a generic landing page with its nouns replaced. Honor the user's stated aesthetic and supplied title. Any CREATIVE_DIRECTION is inspiration, not a template or a requirement to override the brief.
@@ -133,6 +147,9 @@ Return only the complete MomentContent JSON described below. Write slug, fonts, 
 
 ${this.momentFormat}`
 
+    /**
+     * System instructions for applying requested edits while preserving unrelated page content and styling.
+     */
     private readonly patchPrompt = `You edit an existing momenti event page while preserving its visual identity.
 
 Inputs are CURRENT_CONTENT, CHANGE, an optional TARGET_NODE_ID, and optional CHANGE_HISTORY. Interpret the latest change using the history only when needed.
@@ -161,35 +178,52 @@ ${this.momentFormat}`
     /**
      * Creates an OpenAI client using the `OPENAI_API_KEY` environment variable.
      * @constructor
+     * @param {AiCostServiceInterface} aiCostService - Persists usage and calculates request costs.
      */
-    constructor() {
+    constructor(private aiCostService: AiCostServiceInterface) {
         this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     }
 
     /**
-     * Check whether the given text contains harmful or prohibited content.
+     * Checks text for harmful or prohibited content and records successful moderation responses.
+     * Logs API failures and fails open by returning false.
      * @param {string} text - The text to moderate.
-     * @returns {Promise<boolean>} `true` if flagged, `false` otherwise.
+     * @param {LLMRequestContext} context - Correlation and optional Moment IDs, plus an optional operation label.
+     * @returns {Promise<boolean>} True if flagged; false if unflagged or moderation is unavailable.
      */
-    public async moderateText(text: string): Promise<boolean> {
+    public async moderateText(text: string, context: LLMRequestContext): Promise<boolean> {
         try {
             const moderation = await this.openai.moderations.create({
                 model: 'omni-moderation-latest',
                 input: text,
             })
+            await this.recordCost(context, context.operation ?? 'prompt-moderation', {
+                model: 'omni-moderation-latest',
+                response_id: moderation.id ?? null,
+                input_tokens: null,
+                output_tokens: null,
+            })
             return moderation.results[0].flagged
-        } catch {
-            // fail open: treat as not flagged if the moderation API is unavailable
+        } catch (err) {
+            logger.warn({ err }, '[OpenAIService] Moderation unavailable, allowing request')
             return false
         }
     }
 
     /**
-     * @param {string} prompt
+     * Checks whether a brief describes a valid event, recording usage before parsing the response.
+     * Malformed JSON is logged and returned as a failed classification.
+     * @param {string} prompt - The user's event brief.
+     * @param {LLMRequestContext} context - Correlation and optional Moment IDs for cost recording.
+     * @returns {Promise<{ valid: boolean; reason?: string }>} Classification and an optional rejection reason.
+     * @throws {Error} If the OpenAI request fails.
      */
-    public async classifyPrompt(prompt: string): Promise<{ valid: boolean; reason?: string }> {
+    public async classifyPrompt(
+        prompt: string,
+        context: LLMRequestContext,
+    ): Promise<{ valid: boolean; reason?: string }> {
         const response = await this.openai.chat.completions.create({
-            model: 'gpt-4.1-mini',
+            model: 'gpt-6-luna',
             messages: [
                 { role: 'system', content: this.classifierPrompt },
                 { role: 'user', content: prompt },
@@ -198,26 +232,43 @@ ${this.momentFormat}`
             temperature: 0,
         })
 
+        await this.recordCost(context, 'prompt-classification', {
+            model: 'gpt-6-luna',
+            response_id: response.id,
+            input_tokens: response.usage?.prompt_tokens ?? null,
+            output_tokens: response.usage?.completion_tokens ?? null,
+        })
+
         try {
             return JSON.parse(response.choices[0].message.content ?? '{}')
         } catch {
-            logger.error('[LLMService] classifyPrompt: malformed JSON response')
+            logger.error('[OpenAIService] classifyPrompt: malformed JSON response')
             return { valid: false, reason: 'Classification failed.' }
         }
     }
 
     /**
      * Creates a visual-only prompt for the hero image model.
-     * @param {string} prompt
+     * Records usage before checking whether the response contains a usable prompt.
+     * @param {string} prompt - The user's event brief, not an image-generation prompt.
+     * @param {LLMRequestContext} context - Correlation and optional Moment IDs for cost recording.
+     * @returns {Promise<string>} The trimmed hero image prompt.
+     * @throws {Error} If the OpenAI request fails or returns no image prompt.
      */
-    public async generateImagePrompt(prompt: string): Promise<string> {
+    public async generateImagePrompt(prompt: string, context: LLMRequestContext): Promise<string> {
         const response = await this.openai.chat.completions.create({
-            model: 'gpt-4.1-mini',
+            model: 'gpt-6-luna',
             messages: [
                 { role: 'system', content: this.imagePrompt },
                 { role: 'user', content: prompt.trim() },
             ],
             temperature: 0.7,
+        })
+        await this.recordCost(context, 'hero-image-prompt', {
+            model: 'gpt-6-luna',
+            response_id: response.id,
+            input_tokens: response.usage?.prompt_tokens ?? null,
+            output_tokens: response.usage?.completion_tokens ?? null,
         })
         const imagePrompt = response.choices[0]?.message.content?.trim()
 
@@ -229,17 +280,55 @@ ${this.momentFormat}`
     }
 
     /**
-     * @param {string} prompt
-     * @param {GenerateMomentOptions} options
+     * Generates a landscape PNG and records its total input and output token usage.
+     * Returns image bytes without uploading or persisting an image record.
+     * @param {string} prompt - A visual-only image prompt prepared from the event brief.
+     * @param {LLMRequestContext} context - Correlation and optional Moment IDs for cost recording.
+     * @returns {Promise<Buffer>} The decoded PNG image.
+     * @throws {Error} If the OpenAI request fails or returns no encoded image data.
+     */
+    public async generateImage(prompt: string, context: LLMRequestContext): Promise<Buffer> {
+        const response = await this.openai.images.generate({
+            model: 'gpt-image-2.5-flare',
+            prompt,
+            output_format: 'png',
+            quality: 'low',
+            size: '1536x1024',
+        })
+
+        await this.recordCost(context, 'hero-image-generation', {
+            model: 'gpt-image-2.5-flare',
+            response_id: 'id' in response && typeof response.id === 'string' ? response.id : null,
+            input_tokens: response.usage?.input_tokens ?? null,
+            output_tokens: response.usage?.output_tokens ?? null,
+        })
+
+        const encoded = response.data?.[0]?.b64_json
+        if (!encoded) {
+            throw new Error('OpenAI did not return generated image data.')
+        }
+
+        return Buffer.from(encoded, 'base64')
+    }
+
+    /**
+     * Streams a new Moment, then yields its parsed content or a content-validation error.
+     * Records usage when received, or unknown usage if iteration ends before usage arrives.
+     * @param {string} prompt - The user's event brief.
+     * @param {GenerateMomentOptions} options - The public hero image URL to include in the generated page.
+     * @param {LLMRequestContext} context - Correlation and optional Moment IDs for cost recording.
+     * @yields {LLMStreamPayload} Text chunks followed by a completed Moment or a content-validation error.
+     * @throws {Error} If the OpenAI request or stream iteration fails.
      */
     public async* generateMoment(
         prompt: string,
         options: GenerateMomentOptions,
+        context: LLMRequestContext,
     ): AsyncGenerator<LLMStreamPayload> {
         const { heroImageUrl } = options
         const creativeDirection = createCreativeDirection()
         const stream = await this.openai.chat.completions.create({
-            model: 'gpt-6-astra',
+            model: 'gpt-6.1-terra',
             messages: [
                 { role: 'system', content: this.generationPrompt },
                 {
@@ -252,44 +341,65 @@ ${this.momentFormat}`
             ],
             response_format: { type: 'json_object' },
             stream: true,
+            stream_options: { include_usage: true },
         })
 
         let accumulated = ''
-
-        for await (const part of stream) {
-            const delta = part.choices[0]?.delta?.content ?? ''
-            if (delta) {
-                accumulated += delta
-                yield { chunk: delta }
+        let responseId: string|null = null
+        let recorded = false
+        try {
+            for await (const part of stream) {
+                responseId = part.id ?? responseId
+                if (part.usage && !recorded) {
+                    await this.recordCost(context, 'moment-generation', {
+                        model: 'gpt-6.1-terra',
+                        response_id: responseId,
+                        input_tokens: part.usage.prompt_tokens,
+                        output_tokens: part.usage.completion_tokens,
+                    })
+                    recorded = true
+                }
+                const delta = part.choices[0]?.delta?.content ?? ''
+                if (delta) {
+                    accumulated += delta
+                    yield { chunk: delta }
+                }
+            }
+        } finally {
+            if (!recorded) {
+                await this.recordCost(context, 'moment-generation', {
+                    model: 'gpt-6.1-terra',
+                    response_id: responseId,
+                    input_tokens: null,
+                    output_tokens: null,
+                })
             }
         }
 
         try {
             const momentContent: MomentContent = JSON.parse(accumulated)
             if (!momentContent.slug || !momentContent.root) {
-                logger.error({ momentContent }, '[LLMService] generateMoment: invalid moment structure')
+                logger.error({ momentContent }, '[OpenAIService] generateMoment: invalid moment structure')
                 yield { error: 'Invalid Moment structure.' }
                 return
             }
 
             yield { done: true, momentContent }
         } catch {
-            logger.error({ accumulated }, '[LLMService] generateMoment: malformed JSON')
+            logger.error({ accumulated }, '[OpenAIService] generateMoment: malformed JSON')
             yield { error: 'Failed to generate a valid Moment.' }
         }
     }
 
     /**
-     * Streams a targeted patch of an existing MomentContent.
-     * The LLM receives:
-     * - the user's plain-language instruction,
-     * - the full current content,
-     * - optional id of the node to change,
-     * - optional history of previous change prompts (for vague follow-ups),
-     * then returns the full updated MomentContent.
-     * @param {PatchMomentParams} params - The patch parameters.
+     * Streams edits to an existing Moment, returning its complete updated content rather than a diff.
+     * Records usage when received, or unknown usage if iteration ends before usage arrives.
+     * @param {PatchMomentParams} params - The instruction, current content, optional target node, and prompt history.
+     * @param {LLMRequestContext} context - Correlation and existing Moment IDs for cost recording.
+     * @yields {LLMStreamPayload} Text chunks followed by the updated Moment or a content-validation error.
+     * @throws {Error} If the OpenAI request or stream iteration fails.
      */
-    public async* patchMoment(params: PatchMomentParams): AsyncGenerator<LLMStreamPayload> {
+    public async* patchMoment(params: PatchMomentParams, context: LLMRequestContext): AsyncGenerator<LLMStreamPayload> {
         const { prompt, content, nodeId, history } = params
 
         // only the prior prompt strings are sent (no prior contents) to keep token usage low
@@ -307,37 +417,84 @@ ${this.momentFormat}`
             )
 
         const stream = await this.openai.chat.completions.create({
-            model: 'gpt-6-astra',
+            model: 'gpt-6.1-terra',
             messages: [
                 { role: 'system', content: this.patchPrompt },
                 { role: 'user', content: userMessage },
             ],
             response_format: { type: 'json_object' },
             stream: true,
+            stream_options: { include_usage: true },
         })
 
         let accumulated = ''
-
-        for await (const part of stream) {
-            const delta = part.choices[0]?.delta?.content ?? ''
-            if (delta) {
-                accumulated += delta
-                yield { chunk: delta }
+        let responseId: string|null = null
+        let recorded = false
+        try {
+            for await (const part of stream) {
+                responseId = part.id ?? responseId
+                if (part.usage && !recorded) {
+                    await this.recordCost(context, 'moment-patch', {
+                        model: 'gpt-6.1-terra',
+                        response_id: responseId,
+                        input_tokens: part.usage.prompt_tokens,
+                        output_tokens: part.usage.completion_tokens,
+                    })
+                    recorded = true
+                }
+                const delta = part.choices[0]?.delta?.content ?? ''
+                if (delta) {
+                    accumulated += delta
+                    yield { chunk: delta }
+                }
+            }
+        } finally {
+            if (!recorded) {
+                await this.recordCost(context, 'moment-patch', {
+                    model: 'gpt-6.1-terra',
+                    response_id: responseId,
+                    input_tokens: null,
+                    output_tokens: null,
+                })
             }
         }
 
         try {
             const momentContent: MomentContent = JSON.parse(accumulated)
             if (!momentContent.slug || !momentContent.root) {
-                logger.error({ momentContent }, '[LLMService] patchMoment: invalid moment structure')
+                logger.error({ momentContent }, '[OpenAIService] patchMoment: invalid moment structure')
                 yield { error: 'Invalid Moment structure.' }
                 return
             }
 
             yield { done: true, momentContent }
         } catch {
-            logger.error({ accumulated }, '[LLMService] patchMoment: malformed JSON')
+            logger.error({ accumulated }, '[OpenAIService] patchMoment: malformed JSON')
             yield { error: 'Failed to generate a valid Moment.' }
+        }
+    }
+
+    /**
+     * Persists response usage with request identifiers and calculates its cost.
+     * Logs unknown costs and persistence failures without interrupting the calling operation.
+     * @param {LLMRequestContext} context - Correlation and optional Moment IDs to attach to the record.
+     * @param {string} operation - The operation that produced the response.
+     * @param {Partial<AiCost>} data - The model, response ID, and available total token counts.
+     * @returns {Promise<void>}
+     */
+    private async recordCost(context: LLMRequestContext, operation: string, data: Partial<AiCost>): Promise<void> {
+        try {
+            const cost = await this.aiCostService.record({
+                ...data,
+                moment_id: context.momentId ?? null,
+                correlation_id: context.correlationId,
+                operation,
+            })
+            if (cost.cost_usd === null) {
+                logger.warn({ operation, correlationId: context.correlationId }, '[OpenAIService] Incomplete usage; cost is unknown')
+            }
+        } catch (err) {
+            logger.warn({ err, operation, correlationId: context.correlationId }, '[OpenAIService] Failed to store AI cost')
         }
     }
 }

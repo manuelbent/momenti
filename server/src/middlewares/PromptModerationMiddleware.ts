@@ -32,14 +32,17 @@ export default class PromptModerationMiddleware {
         try {
             const progress: GenerationProgress = { stage: 'moderating' }
             const progressId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', progress)
-            emit(res, 'progress', progress, false, progressId ?? undefined)
+            emit(res, 'progress', progress, false, progressId)
 
-            const flagged = await this.llmService.moderateText(prompt)
+            const flagged = await this.llmService.moderateText(prompt, {
+                correlationId: res.locals.correlationId,
+                momentId: req.params.id ? Number(req.params.id) : null,
+            })
 
             if (flagged) {
                 const error = 'Your message contains harmful or prohibited content and cannot be processed.'
                 const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', { error })
-                emit(res, 'error', { error }, true, eventId ?? undefined)
+                emit(res, 'error', { error }, true, eventId)
 
                 await this.redisService.releaseGenerationLock(res.locals.user.id, res.locals.generationId)
                 return
@@ -50,7 +53,7 @@ export default class PromptModerationMiddleware {
             logger.error({ err }, '[PromptModerationMiddleware] Prompt moderation error')
             const error = 'Failed to review your prompt. Please try again.'
             const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', { error })
-            emit(res, 'error', { error }, true, eventId ?? undefined)
+            emit(res, 'error', { error }, true, eventId)
 
             await this.redisService.releaseGenerationLock(res.locals.user.id, res.locals.generationId)
         }

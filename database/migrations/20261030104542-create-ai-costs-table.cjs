@@ -12,13 +12,17 @@ module.exports = {
             },
             moment_id: {
                 type: Sequelize.INTEGER,
-                allowNull: false,
+                allowNull: true,
                 references: {
                     model: 'moments',
                     key: 'id'
                 },
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE'
+            },
+            correlation_id: {
+                type: Sequelize.STRING,
+                allowNull: false,
             },
             operation: {
                 type: Sequelize.STRING,
@@ -34,15 +38,15 @@ module.exports = {
             },
             input_tokens: {
                 type: Sequelize.INTEGER,
-                allowNull: false,
+                allowNull: true,
             },
             output_tokens: {
                 type: Sequelize.INTEGER,
-                allowNull: false,
+                allowNull: true,
             },
             cost_usd: {
                 type: Sequelize.DECIMAL,
-                allowNull: false,
+                allowNull: true,
             },
             created_at: {
                 type: Sequelize.DATE,
@@ -52,6 +56,7 @@ module.exports = {
         })
 
         await queryInterface.addIndex('ai_costs', ['moment_id'])
+        await queryInterface.addIndex('ai_costs', ['correlation_id'])
     },
 
     async down(queryInterface) {

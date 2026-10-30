@@ -38,7 +38,7 @@ export default class RedisService {
      * Atomically reserves the user and returns the owning generation ID.
      * @param {number} userId
      */
-    public async acquireGenerationLock(userId: number): Promise<string | null> {
+    public async acquireGenerationLock(userId: number): Promise<string|null> {
         const generationId = randomUUID()
         const acquired = await this.redis.set(
             `generation:active:${userId}`,
@@ -64,7 +64,7 @@ export default class RedisService {
         generationId: string,
         event: string,
         data: unknown,
-    ): Promise<string | null> {
+    ): Promise<string|undefined> {
         try {
             const eventId = await this.redis.eval(
                 `local eventId = redis.call('XADD', KEYS[1], '*', 'event', ARGV[1], 'data', ARGV[2])
@@ -79,7 +79,6 @@ export default class RedisService {
             return String(eventId)
         } catch (err) {
             logger.warn({ err, userId, generationId, event }, '[RedisService] Failed to cache generation event')
-            return null
         }
     }
 
@@ -88,7 +87,7 @@ export default class RedisService {
      * Uses a dedicated connection so blocking reads do not delay other Redis commands.
      * @param {number} userId
      */
-    public async *readGenerationEvents(userId: number): AsyncGenerator<{ id: string, event: string, data: unknown }> {
+    public async* readGenerationEvents(userId: number): AsyncGenerator<{ id: string, event: string, data: unknown }> {
         const generationId = await this.redis.get(`generation:active:${userId}`)
         if (!generationId) {
             return

@@ -14,8 +14,10 @@ The moment you publish, the page is live at `https://your-event.momenti.cc`, rea
 A user describes their event, for example *"A cherry blossom wedding at Villa Camilla on Lake Como, July 23rd, elegant and romantic, with an RSVP section"*. The server then runs a sequential generation pipeline:
 
 1. **Check the brief.** Prompt moderation and classification run before asset generation.
-2. **Create the hero image.** `ImageGenerationController` asks `LLMService` to turn the event brief into a visual-only image prompt using a low-cost text model. This prompt describes the subject, composition, lighting, palette, and mood of a wide 3:2 image, without baked-in text or UI. `ImageService` generates the PNG, and the controller uploads it through `R2Service` to Cloudflare R2.
-3. **Generate the page.** `MomentGenerationController` passes the original brief and uploaded hero image URL to `LLMService` and consumes its stream directly, forwarding chunks to the client over SSE. The page model includes the existing asset as an image node, preserving its URL, and chooses its placement to suit the composition. The controller saves the completed moment before the stream reports completion. Initial moment generation and patch generation continue to completion if the client disconnects.
+2. **Create the hero image.** `ImageGenerationController` asks `OpenAIService` to turn the event brief into a visual-only image prompt using a low-cost text model. This prompt describes the subject, composition, lighting, palette, and mood of a wide 3:2 image, without baked-in text or UI. `OpenAIService` generates the PNG, and the controller uploads it through `R2Service` to Cloudflare R2. `ImageService` only persists image records.
+3. **Generate the page.** `MomentGenerationController` passes the original brief and uploaded hero image URL to `OpenAIService` and consumes its stream directly, forwarding chunks to the client over SSE. The page model includes the existing asset as an image node, preserving its URL, and chooses its placement to suit the composition. The controller saves the completed moment before the stream reports completion. Initial moment generation and patch generation continue to completion if the client disconnects.
+
+`OpenAIService` implements `LLMServiceInterface` and records API response usage through `AiCostService` before returning results or completing streams. Callers pass a correlation ID shared across each generation, plus a Moment ID when one already exists; they do not receive usage payloads. Only total `input_tokens` and `output_tokens` are tracked. Rates live in `server/src/config/constants.ts`; image generation conservatively prices all input tokens at $0.000008 each and all output tokens at $0.000030 each, without cache discounts or text/image breakdowns. Unreported usage remains `NULL`, and the cost remains `NULL` when required input or output counts are unavailable. Moderation is free even though its token counts are unavailable. Cost-storage failures log a warning without interrupting generation.
 
 Before opening SSE or starting AI work, moment creation and patch requests acquire the same per-user Redis reservation through `RedisService`. Acquisition is atomic; a competing request receives `409`, and Redis acquisition failures return `503` without starting generation. Validation runs before acquisition. Completion, rejection of the brief, or a terminal generation failure releases only that generation's reservation, independently of client disconnects. Image preparation failures are non-terminal and keep the reservation held. Lock operations and cleanup error handling live in `RedisService`, which controllers and middleware call directly. Reservations expire after ten minutes as crash cleanup; they are not renewed, so work exceeding that lease can overlap a later request.
 
@@ -94,12 +96,12 @@ Stylesheet-enabled pages implement `box.layout` as low-specificity flex/grid def
 
 The shared CSS parser scopes every selector, including conditional rules. It accepts flat rules and `@container`, `@media`, and `@supports`, but rejects CSS imports, resource URLs, global registrations such as `@font-face`/`@keyframes`, and nested selectors. Use image nodes, the fonts array, and built-in effects instead. The page boundary contains positioned content so generated CSS cannot cover the studio UI. Unsupported styles produce a visible error rather than being injected as global CSS.
 
-Prompts are private readonly attributes in `LLMService`; initial moment generation and patch generation share its `momentFormat` attribute. Composition is left to the model; maps, footers, card grids, and motion are not mandatory. Patch requests retain existing assets and unrelated styles.
+Prompts are private readonly attributes in `OpenAIService`; initial moment generation and patch generation share its `momentFormat` attribute. Composition is left to the model; maps, footers, card grids, and motion are not mandatory. Patch requests retain existing assets and unrelated styles.
 
 Server stylesheet validation runs with the server's Vitest suite:
 
 ```sh
-npm --prefix server test -- src/validators/PageStyleValidation.test.ts src/services/LLMService.test.ts
+npm --prefix server test -- src/validators/PageStyleValidation.test.ts src/services/OpenAIService.test.ts
 ```
 
 ### CI/CD

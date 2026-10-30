@@ -10,6 +10,8 @@ import UserController from '../controllers/UserController'
 
 import ChangeRepositoryInterface from '../interfaces/ChangeRepositoryInterface'
 import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
+import AiCostRepositoryInterface from '../interfaces/AiCostRepositoryInterface'
+import AiCostServiceInterface from '../interfaces/AiCostServiceInterface'
 import FeedbackServiceInterface from '../interfaces/FeedbackServiceInterface'
 import FeedbackRepositoryInterface from '../interfaces/FeedbackRepositoryInterface'
 import FormSubmissionRepositoryInterface from '../interfaces/FormSubmissionRepositoryInterface'
@@ -42,6 +44,7 @@ import UploadMiddleware from '../middlewares/UploadMiddleware'
 import ValidationErrorMiddleware from '../middlewares/ValidationErrorMiddleware'
 
 import ChangeRepository from '../repositories/ChangeRepository'
+import AiCostRepository from '../repositories/AiCostRepository'
 import FeedbackRepository from '../repositories/FeedbackRepository'
 import FormSubmissionRepository from '../repositories/FormSubmissionRepository'
 import ImageRepository from '../repositories/ImageRepository'
@@ -50,11 +53,12 @@ import MomentRepository from '../repositories/MomentRepository'
 import UserRepository from '../repositories/UserRepository'
 
 import ChangeService from '../services/ChangeService'
+import AiCostService from '../services/AiCostService'
 import FeedbackService from '../services/FeedbackService'
 import FormSubmissionService from '../services/FormSubmissionService'
 import ImageService from '../services/ImageService'
 import InviteKeyService from '../services/InviteKeyService'
-import LLMService from '../services/LLMService'
+import OpenAIService from '../services/OpenAIService'
 import MomentService from '../services/MomentService'
 import R2Service from '../services/R2Service'
 import RedisService from '../services/RedisService'
@@ -97,6 +101,7 @@ class Container {
     private _feedbackRepository?: FeedbackRepositoryInterface
     private _changeRepository?: ChangeRepositoryInterface
     private _imageRepository?: ImageRepositoryInterface
+    private _aiCostRepository?: AiCostRepositoryInterface
     // services
     private _momentService?: MomentServiceInterface
     private _inviteKeyService?: InviteKeyServiceInterface
@@ -106,6 +111,7 @@ class Container {
     private _redisService?: RedisService
     private _changeService?: ChangeServiceInterface
     private _imageService?: ImageServiceInterface
+    private _aiCostService?: AiCostServiceInterface
     // services (non-orm)
     private _r2Service?: R2ServiceInterface
     private _llmService?: LLMServiceInterface
@@ -168,15 +174,23 @@ class Container {
     }
 
     public get promptModerationMiddleware(): PromptModerationMiddleware {
-        return this._promptModerationMiddleware ??= new PromptModerationMiddleware(this.llmService, this.redisService)
+        return this._promptModerationMiddleware ??= new PromptModerationMiddleware(
+            this.llmService,
+            this.redisService,
+        )
     }
 
     public get momentContentModerationMiddleware(): MomentContentModerationMiddleware {
-        return this._momentContentModerationMiddleware ??= new MomentContentModerationMiddleware(this.llmService)
+        return this._momentContentModerationMiddleware ??= new MomentContentModerationMiddleware(
+            this.llmService,
+        )
     }
 
     public get promptClassifierMiddleware(): PromptClassifierMiddleware {
-        return this._promptClassifierMiddleware ??= new PromptClassifierMiddleware(this.llmService, this.redisService)
+        return this._promptClassifierMiddleware ??= new PromptClassifierMiddleware(
+            this.llmService,
+            this.redisService,
+        )
     }
 
     public get generationGuardMiddleware(): GenerationGuardMiddleware {
@@ -215,6 +229,10 @@ class Container {
         return this._imageRepository ??= new ImageRepository()
     }
 
+    public get aiCostRepository(): AiCostRepositoryInterface {
+        return this._aiCostRepository ??= new AiCostRepository()
+    }
+
     public get momentService(): MomentServiceInterface {
         return this._momentService ??= new MomentService(this.momentRepository)
     }
@@ -243,12 +261,16 @@ class Container {
         return this._imageService ??= new ImageService(this.imageRepository)
     }
 
+    public get aiCostService(): AiCostServiceInterface {
+        return this._aiCostService ??= new AiCostService(this.aiCostRepository)
+    }
+
     public get r2Service(): R2ServiceInterface {
         return this._r2Service ??= new R2Service()
     }
 
     public get llmService(): LLMServiceInterface {
-        return this._llmService ??= new LLMService()
+        return this._llmService ??= new OpenAIService(this.aiCostService)
     }
 
     public get redisService(): RedisService {
@@ -274,7 +296,6 @@ class Container {
 
     public get imageGenerationController(): ImageGenerationController {
         return this._imageGenerationController ??= new ImageGenerationController(
-            this.imageService,
             this.r2Service,
             this.llmService,
             this.redisService,

@@ -1,15 +1,28 @@
+import { randomUUID } from 'node:crypto'
 import { NextFunction, Request, Response } from 'express'
-import LLMServiceInterface from '../interfaces/LLMServiceInterface'
-import { parse } from '../utils/momentContentParser'
 import logger from '../config/logger'
+import { parse } from '../utils/momentContentParser'
+import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 
 /**
  * Blocks harmful text added through the Moment editor.
  * @class MomentContentModerationMiddleware
  */
 export default class MomentContentModerationMiddleware {
+    /**
+     * @constructor
+     * @param {LLMServiceInterface} llmService
+     */
     constructor(private llmService: LLMServiceInterface) {}
 
+    /**
+     * Moderates editor content, rejecting flagged text with 422 or processing errors with 503.
+     * Requests without content continue without moderation.
+     * @param {Request} req
+     * @param {Response} res
+     * @param {NextFunction} next
+     * @returns {Promise<void|Response>}
+     */
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void|Response> {
         const { content } = req.body
 
@@ -20,7 +33,11 @@ export default class MomentContentModerationMiddleware {
 
         try {
             const text = parse(content)
-            const flagged = await this.llmService.moderateText(text)
+            const flagged = await this.llmService.moderateText(text, {
+                correlationId: res.locals.correlationId ?? randomUUID(),
+                momentId: Number(req.params.id),
+                operation: 'moment-content-moderation',
+            })
 
             if (flagged) {
                 return res.status(422).json({

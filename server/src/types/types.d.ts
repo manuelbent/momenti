@@ -1,6 +1,12 @@
 // Shared types (FormField, MomentNode, Content, Moment, CssComputedVals)
 // are defined in shared/types.d.ts and included via tsconfig.
 
+interface LLMRequestContext {
+    correlationId: string
+    momentId?: number|null
+    operation?: string
+}
+
 type LLMStreamPayload =
     | { chunk: string }
     | { done: true; momentContent: MomentContent }

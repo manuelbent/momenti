@@ -30,19 +30,20 @@ export default class PromptClassifierMiddleware {
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { prompt } = req.body
         const { user, generationId } = res.locals
+        const context: LLMRequestContext = { correlationId: res.locals.correlationId }
 
         try {
             const progress: GenerationProgress = { stage: 'classifying' }
             const progressId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', progress)
-            emit(res, 'progress', progress, false, progressId ?? undefined)
+            emit(res, 'progress', progress, false, progressId)
 
-            const classification = await this.llmService.classifyPrompt(prompt)
+            const classification = await this.llmService.classifyPrompt(prompt, context)
 
             if (!classification.valid) {
                 const error = classification.reason
                     ?? 'Your prompt does not describe an event. momenti builds a page for a specific event. Try describing your wedding, party, reunion, or celebration.'
                 const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', { error })
-                emit(res, 'error', { error }, true, eventId ?? undefined)
+                emit(res, 'error', { error }, true, eventId)
 
                 await this.redisService.releaseGenerationLock(res.locals.user.id, res.locals.generationId)
                 return
@@ -53,7 +54,7 @@ export default class PromptClassifierMiddleware {
             logger.error({ err }, '[PromptClassifierMiddleware] Prompt classification error')
             const error = 'Failed to understand your prompt. Please try again.'
             const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', { error })
-            emit(res, 'error', { error }, true, eventId ?? undefined)
+            emit(res, 'error', { error }, true, eventId)
 
             await this.redisService.releaseGenerationLock(res.locals.user.id, res.locals.generationId)
         }

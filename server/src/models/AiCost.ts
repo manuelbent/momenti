@@ -4,13 +4,14 @@ import Moment from './Moment'
 
 export default class AiCost extends Model {
     declare id: number
-    declare moment_id: number
+    declare moment_id: number|null
+    declare correlation_id: string
     declare operation: string
     declare model: string
     declare response_id: string|null
-    declare input_tokens: number
-    declare output_tokens: number
-    declare cost_usd: number
+    declare input_tokens: number|null
+    declare output_tokens: number|null
+    declare cost_usd: number|null
     declare created_at: Date
 
     declare getMoment: BelongsToGetAssociationMixin<Moment>
@@ -25,13 +26,17 @@ AiCost.init({
     },
     moment_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
             model: 'moments',
             key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
+    },
+    correlation_id: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
     operation: {
         type: DataTypes.STRING,
@@ -47,15 +52,15 @@ AiCost.init({
     },
     input_tokens: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     output_tokens: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     cost_usd: {
         type: DataTypes.DECIMAL,
-        allowNull: false
+        allowNull: true
     },
     created_at: {
         type: DataTypes.DATE,
@@ -70,6 +75,9 @@ AiCost.init({
     indexes: [
         {
             fields: ['moment_id']
+        },
+        {
+            fields: ['correlation_id']
         }
     ]
 })
