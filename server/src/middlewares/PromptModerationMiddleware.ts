@@ -28,16 +28,18 @@ export default class PromptModerationMiddleware {
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { prompt } = req.body
         const { user, generationId } = res.locals
+        const context: LLMRequestContext = {
+            userId: user.id,
+            generationId,
+            momentId: req.params.id ? Number(req.params.id) : null,
+        }
 
         try {
             const progress: GenerationProgress = { stage: 'moderating' }
             const progressId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', progress)
             emit(res, 'progress', progress, false, progressId)
 
-            const flagged = await this.llmService.moderateText(prompt, {
-                correlationId: res.locals.correlationId,
-                momentId: req.params.id ? Number(req.params.id) : null,
-            })
+            const flagged = await this.llmService.moderateText(prompt, context)
 
             if (flagged) {
                 const error = 'Your message contains harmful or prohibited content and cannot be processed.'

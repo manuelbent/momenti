@@ -21,7 +21,7 @@ vi.mock('../config/logger', () => ({
 }))
 
 describe('OpenAIService', () => {
-    const context: LLMRequestContext = { correlationId: 'generation-1', momentId: 42 }
+    const context: LLMRequestContext = { userId: 7, generationId: 'generation-1', momentId: 42 }
     const content = { slug: 'garden-party', root: { id: 'hero', type: 'box' } }
     let record: ReturnType<typeof vi.fn>
     let service: OpenAIService
@@ -45,7 +45,8 @@ describe('OpenAIService', () => {
         await expect(service.classifyPrompt('A garden party', context)).resolves.toEqual({ valid: true })
         expect(record).toHaveBeenCalledExactlyOnceWith({
             moment_id: 42,
-            correlation_id: 'generation-1',
+            user_id: 7,
+            generation_id: 'generation-1',
             operation: 'prompt-classification',
             model: 'gpt-6-luna',
             response_id: 'chat-1',
@@ -93,15 +94,20 @@ describe('OpenAIService', () => {
         moderate.mockResolvedValue({ id: 'mod-1', results: [{ flagged: true }] })
 
         await expect(service.moderateText('Some text', {
-            ...context, operation: 'moment-content-moderation',
+            userId: 7,
+            momentId: 42,
+            operation: 'moment-content-moderation',
         })).resolves.toBe(true)
-        expect(record).toHaveBeenCalledWith(expect.objectContaining({
+        expect(record).toHaveBeenCalledWith({
+            moment_id: 42,
+            user_id: 7,
+            generation_id: null,
             operation: 'moment-content-moderation',
             model: 'omni-moderation-latest',
             response_id: 'mod-1',
             input_tokens: null,
             output_tokens: null,
-        }))
+        })
     })
 
     it('preserves fail-open moderation behavior and logs unavailable API errors', async () => {
@@ -131,7 +137,8 @@ describe('OpenAIService', () => {
         })
         expect(record).toHaveBeenCalledWith({
             moment_id: 42,
-            correlation_id: 'generation-1',
+            user_id: 7,
+            generation_id: 'generation-1',
             operation: 'hero-image-generation',
             model: 'gpt-image-2.5-flare',
             response_id: null,

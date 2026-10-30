@@ -1,11 +1,13 @@
 import { Model, DataTypes, BelongsToGetAssociationMixin } from 'sequelize'
 import sequelize from '../config/sequelize'
 import Moment from './Moment'
+import User from './User'
 
 export default class AiCost extends Model {
     declare id: number
     declare moment_id: number|null
-    declare correlation_id: string
+    declare user_id: number
+    declare generation_id: string|null
     declare operation: string
     declare model: string
     declare response_id: string|null
@@ -15,6 +17,7 @@ export default class AiCost extends Model {
     declare created_at: Date
 
     declare getMoment: BelongsToGetAssociationMixin<Moment>
+    declare getUser: BelongsToGetAssociationMixin<User>
 }
 
 AiCost.init({
@@ -34,9 +37,19 @@ AiCost.init({
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
     },
-    correlation_id: {
+    user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+    },
+    generation_id: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     operation: {
         type: DataTypes.STRING,
@@ -77,7 +90,10 @@ AiCost.init({
             fields: ['moment_id']
         },
         {
-            fields: ['correlation_id']
+            fields: ['user_id']
+        },
+        {
+            fields: ['generation_id']
         }
     ]
 })
@@ -88,4 +104,12 @@ AiCost.belongsTo(Moment, {
 
 Moment.hasMany(AiCost, {
     foreignKey: 'moment_id'
+})
+
+AiCost.belongsTo(User, {
+    foreignKey: 'user_id'
+})
+
+User.hasMany(AiCost, {
+    foreignKey: 'user_id'
 })

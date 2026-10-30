@@ -29,7 +29,7 @@ export default class ImageGenerationController {
      */
     public async generate(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { user, generationId } = res.locals
-        const context: LLMRequestContext = { correlationId: res.locals.correlationId }
+        const context: LLMRequestContext = { userId: user.id, generationId }
         try {
             const planning: GenerationProgress = { stage: 'planning-image' }
             const planningId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', planning)

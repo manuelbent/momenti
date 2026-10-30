@@ -20,9 +20,19 @@ module.exports = {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE'
             },
-            correlation_id: {
-                type: Sequelize.STRING,
+            user_id: {
+                type: Sequelize.INTEGER,
                 allowNull: false,
+                references: {
+                    model: 'users',
+                    key: 'id'
+                },
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE'
+            },
+            generation_id: {
+                type: Sequelize.STRING,
+                allowNull: true,
             },
             operation: {
                 type: Sequelize.STRING,
@@ -56,7 +66,8 @@ module.exports = {
         })
 
         await queryInterface.addIndex('ai_costs', ['moment_id'])
-        await queryInterface.addIndex('ai_costs', ['correlation_id'])
+        await queryInterface.addIndex('ai_costs', ['user_id'])
+        await queryInterface.addIndex('ai_costs', ['generation_id'])
     },
 
     async down(queryInterface) {

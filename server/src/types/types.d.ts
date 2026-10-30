@@ -2,7 +2,8 @@
 // are defined in shared/types.d.ts and included via tsconfig.
 
 interface LLMRequestContext {
-    correlationId: string
+    userId: number
+    generationId?: string|null
     momentId?: number|null
     operation?: string
 }

@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto'
 import { NextFunction, Request, Response } from 'express'
 import logger from '../config/logger'
 import { parse } from '../utils/momentContentParser'
@@ -31,13 +30,15 @@ export default class MomentContentModerationMiddleware {
             return
         }
 
+        const context: LLMRequestContext = {
+            userId: res.locals.user.id,
+            momentId: Number(req.params.id),
+            operation: 'moment-content-moderation',
+        }
+
         try {
             const text = parse(content)
-            const flagged = await this.llmService.moderateText(text, {
-                correlationId: res.locals.correlationId ?? randomUUID(),
-                momentId: Number(req.params.id),
-                operation: 'moment-content-moderation',
-            })
+            const flagged = await this.llmService.moderateText(text, context)
 
             if (flagged) {
                 return res.status(422).json({

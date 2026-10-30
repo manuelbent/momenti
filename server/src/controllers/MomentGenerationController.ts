@@ -36,15 +36,14 @@ export default class MomentGenerationController {
         const generationId: string = res.locals.generationId
         const { prompt } = req.body
         const options: GenerateMomentOptions = { heroImageUrl: res.locals.heroImageUrl }
+        const context: LLMRequestContext = { userId: user.id, generationId }
 
         try {
             const progress: GenerationProgress = { stage: 'generating-moment' }
             const progressId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'progress', progress)
             emit(res, 'progress', progress, false, progressId)
 
-            for await (const payload of this.llmService.generateMoment(prompt, options, {
-                correlationId: res.locals.correlationId,
-            })) {
+            for await (const payload of this.llmService.generateMoment(prompt, options, context)) {
                 if ('error' in payload) {
                     const data = { error: payload.error }
                     const eventId = await this.redisService.cacheGenerationEvent(user.id, generationId, 'error', data)
@@ -148,7 +147,8 @@ export default class MomentGenerationController {
             }
 
             for await (const payload of this.llmService.patchMoment({ nodeId, prompt, content, history }, {
-                correlationId: res.locals.correlationId,
+                userId: user.id,
+                generationId,
                 momentId,
             })) {
                 if ('error' in payload) {

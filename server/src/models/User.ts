@@ -1,6 +1,7 @@
 import { Model, DataTypes, HasManyGetAssociationsMixin } from 'sequelize'
 import sequelize from '../config/sequelize'
 import type Moment from './Moment'
+import type AiCost from './AiCost'
 
 export default class User extends Model {
     declare id: number
@@ -9,6 +10,7 @@ export default class User extends Model {
     declare created_at: Date
 
     declare getMoments: HasManyGetAssociationsMixin<Moment>
+    declare getAiCosts: HasManyGetAssociationsMixin<AiCost>
 }
 
 User.init({

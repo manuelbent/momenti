@@ -30,7 +30,7 @@ export default class PromptClassifierMiddleware {
     public async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
         const { prompt } = req.body
         const { user, generationId } = res.locals
-        const context: LLMRequestContext = { correlationId: res.locals.correlationId }
+        const context: LLMRequestContext = { userId: user.id, generationId }
 
         try {
             const progress: GenerationProgress = { stage: 'classifying' }

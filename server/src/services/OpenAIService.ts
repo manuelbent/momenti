@@ -188,7 +188,7 @@ ${this.momentFormat}`
      * Checks text for harmful or prohibited content and records successful moderation responses.
      * Logs API failures and fails open by returning false.
      * @param {string} text - The text to moderate.
-     * @param {LLMRequestContext} context - Correlation and optional Moment IDs, plus an optional operation label.
+     * @param {LLMRequestContext} context - User, optional generation and Moment IDs, plus an optional operation label.
      * @returns {Promise<boolean>} True if flagged; false if unflagged or moderation is unavailable.
      */
     public async moderateText(text: string, context: LLMRequestContext): Promise<boolean> {
@@ -214,7 +214,7 @@ ${this.momentFormat}`
      * Checks whether a brief describes a valid event, recording usage before parsing the response.
      * Malformed JSON is logged and returned as a failed classification.
      * @param {string} prompt - The user's event brief.
-     * @param {LLMRequestContext} context - Correlation and optional Moment IDs for cost recording.
+     * @param {LLMRequestContext} context - User and optional generation and Moment IDs for cost recording.
      * @returns {Promise<{ valid: boolean; reason?: string }>} Classification and an optional rejection reason.
      * @throws {Error} If the OpenAI request fails.
      */
@@ -228,8 +228,7 @@ ${this.momentFormat}`
                 { role: 'system', content: this.classifierPrompt },
                 { role: 'user', content: prompt },
             ],
-            response_format: { type: 'json_object' },
-            temperature: 0,
+            response_format: { type: 'json_object' }
         })
 
         await this.recordCost(context, 'prompt-classification', {
@@ -251,7 +250,7 @@ ${this.momentFormat}`
      * Creates a visual-only prompt for the hero image model.
      * Records usage before checking whether the response contains a usable prompt.
      * @param {string} prompt - The user's event brief, not an image-generation prompt.
-     * @param {LLMRequestContext} context - Correlation and optional Moment IDs for cost recording.
+     * @param {LLMRequestContext} context - User and optional generation and Moment IDs for cost recording.
      * @returns {Promise<string>} The trimmed hero image prompt.
      * @throws {Error} If the OpenAI request fails or returns no image prompt.
      */
@@ -262,7 +261,6 @@ ${this.momentFormat}`
                 { role: 'system', content: this.imagePrompt },
                 { role: 'user', content: prompt.trim() },
             ],
-            temperature: 0.7,
         })
         await this.recordCost(context, 'hero-image-prompt', {
             model: 'gpt-6-luna',
@@ -283,7 +281,7 @@ ${this.momentFormat}`
      * Generates a landscape PNG and records its total input and output token usage.
      * Returns image bytes without uploading or persisting an image record.
      * @param {string} prompt - A visual-only image prompt prepared from the event brief.
-     * @param {LLMRequestContext} context - Correlation and optional Moment IDs for cost recording.
+     * @param {LLMRequestContext} context - User and optional generation and Moment IDs for cost recording.
      * @returns {Promise<Buffer>} The decoded PNG image.
      * @throws {Error} If the OpenAI request fails or returns no encoded image data.
      */
@@ -316,7 +314,7 @@ ${this.momentFormat}`
      * Records usage when received, or unknown usage if iteration ends before usage arrives.
      * @param {string} prompt - The user's event brief.
      * @param {GenerateMomentOptions} options - The public hero image URL to include in the generated page.
-     * @param {LLMRequestContext} context - Correlation and optional Moment IDs for cost recording.
+     * @param {LLMRequestContext} context - User and optional generation and Moment IDs for cost recording.
      * @yields {LLMStreamPayload} Text chunks followed by a completed Moment or a content-validation error.
      * @throws {Error} If the OpenAI request or stream iteration fails.
      */
@@ -395,7 +393,7 @@ ${this.momentFormat}`
      * Streams edits to an existing Moment, returning its complete updated content rather than a diff.
      * Records usage when received, or unknown usage if iteration ends before usage arrives.
      * @param {PatchMomentParams} params - The instruction, current content, optional target node, and prompt history.
-     * @param {LLMRequestContext} context - Correlation and existing Moment IDs for cost recording.
+     * @param {LLMRequestContext} context - User, optional generation, and existing Moment IDs for cost recording.
      * @yields {LLMStreamPayload} Text chunks followed by the updated Moment or a content-validation error.
      * @throws {Error} If the OpenAI request or stream iteration fails.
      */
@@ -477,7 +475,7 @@ ${this.momentFormat}`
     /**
      * Persists response usage with request identifiers and calculates its cost.
      * Logs unknown costs and persistence failures without interrupting the calling operation.
-     * @param {LLMRequestContext} context - Correlation and optional Moment IDs to attach to the record.
+     * @param {LLMRequestContext} context - User, optional generation, and optional Moment IDs to attach to the record.
      * @param {string} operation - The operation that produced the response.
      * @param {Partial<AiCost>} data - The model, response ID, and available total token counts.
      * @returns {Promise<void>}
@@ -487,14 +485,15 @@ ${this.momentFormat}`
             const cost = await this.aiCostService.record({
                 ...data,
                 moment_id: context.momentId ?? null,
-                correlation_id: context.correlationId,
+                user_id: context.userId,
+                generation_id: context.generationId ?? null,
                 operation,
             })
             if (cost.cost_usd === null) {
-                logger.warn({ operation, correlationId: context.correlationId }, '[OpenAIService] Incomplete usage; cost is unknown')
+                logger.warn({ operation, generationId: context.generationId }, '[OpenAIService] Incomplete usage; cost is unknown')
             }
         } catch (err) {
-            logger.warn({ err, operation, correlationId: context.correlationId }, '[OpenAIService] Failed to store AI cost')
+            logger.warn({ err, operation, generationId: context.generationId }, '[OpenAIService] Failed to store AI cost')
         }
     }
 }

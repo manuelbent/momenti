@@ -26,13 +26,16 @@ describe('AiCostService', () => {
             const queryInterface = db.getQueryInterface()
 
             try {
+                await queryInterface.createTable('users', { id: { type: DataTypes.INTEGER, primaryKey: true } })
                 await queryInterface.createTable('moments', { id: { type: DataTypes.INTEGER, primaryKey: true } })
+                await queryInterface.bulkInsert('users', [{ id: 7 }])
                 await queryInterface.bulkInsert('moments', [{ id: 1 }])
                 const createTable = vi.spyOn(queryInterface, 'createTable')
                 await create.up(queryInterface, Sequelize)
                 await queryInterface.bulkInsert('ai_costs', [{
                     moment_id: 1,
-                    correlation_id: 'existing',
+                    user_id: 7,
+                    generation_id: 'existing',
                     operation: 'moment-patch',
                     model: 'gpt-6.1-terra',
                     input_tokens: 100,
@@ -42,7 +45,7 @@ describe('AiCostService', () => {
                 }])
                 const columns = await queryInterface.describeTable('ai_costs')
                 expect(Object.keys(columns).sort()).toEqual([
-                    'id', 'moment_id', 'correlation_id', 'operation', 'model',
+                    'id', 'moment_id', 'user_id', 'generation_id', 'operation', 'model',
                     'response_id', 'input_tokens', 'output_tokens', 'cost_usd', 'created_at',
                 ].sort())
                 const definitions = createTable.mock.calls[0][1]
@@ -54,7 +57,8 @@ describe('AiCostService', () => {
                 const indexes = await queryInterface.showIndex('ai_costs')
                 expect(indexes).toEqual(expect.arrayContaining([
                     expect.objectContaining({ name: 'ai_costs_moment_id' }),
-                    expect.objectContaining({ name: 'ai_costs_correlation_id' }),
+                    expect.objectContaining({ name: 'ai_costs_user_id' }),
+                    expect.objectContaining({ name: 'ai_costs_generation_id' }),
                 ]))
                 const [existing] = await db.query('SELECT * FROM ai_costs')
                 expect(existing).toEqual([expect.objectContaining({
@@ -63,15 +67,17 @@ describe('AiCostService', () => {
                 const references = await queryInterface.getForeignKeyReferencesForTable('ai_costs')
                 expect(references).toEqual(expect.arrayContaining([
                     expect.objectContaining({ columnName: 'moment_id', referencedTableName: 'moments' }),
+                    expect.objectContaining({ columnName: 'user_id', referencedTableName: 'users' }),
                 ]))
 
                 await queryInterface.bulkInsert('ai_costs', [{
-                    correlation_id: 'unknown',
+                    user_id: 7,
+                    generation_id: null,
                     operation: 'hero-image-generation',
                     model: 'gpt-image-2.5-flare',
                     created_at: new Date(),
                 }])
-                const [unknown] = await db.query("SELECT * FROM ai_costs WHERE correlation_id = 'unknown'")
+                const [unknown] = await db.query('SELECT * FROM ai_costs WHERE generation_id IS NULL')
                 expect(unknown).toEqual([expect.objectContaining({
                     input_tokens: null,
                     output_tokens: null,
@@ -90,7 +96,8 @@ describe('AiCostService', () => {
 
         await service.record({
             moment_id: null,
-            correlation_id: 'b98d7e8d-4c12-4a2f-95bb-94d324076d0b',
+            user_id: 7,
+            generation_id: 'b98d7e8d-4c12-4a2f-95bb-94d324076d0b',
             operation: 'prompt-classification',
             model: 'gpt-6-luna',
             response_id: 'chatcmpl_123',
@@ -106,7 +113,8 @@ describe('AiCostService', () => {
     it('rejects models without configured rates', async () => {
         await expect(service.record({
             moment_id: null,
-            correlation_id: 'b98d7e8d-4c12-4a2f-95bb-94d324076d0b',
+            user_id: 7,
+            generation_id: 'b98d7e8d-4c12-4a2f-95bb-94d324076d0b',
             operation: 'unknown',
             model: 'unknown-model',
             response_id: null,
