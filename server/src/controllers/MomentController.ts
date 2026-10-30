@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import logger from '../config/logger'
+import { RESERVED_SUBDOMAINS } from '../config/constants'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 import ChangeServiceInterface from '../interfaces/ChangeServiceInterface'
 import User from '../models/User'
@@ -91,6 +92,11 @@ export default class MomentController {
     public async checkSlug(req: Request, res: Response) {
         try {
             const { slug, excludedId } = req.query
+            if (RESERVED_SUBDOMAINS.has(String(slug))) {
+                res.json({ isAvailable: false })
+                return
+            }
+
             const exists = await this.momentService.slugExists(String(slug), Number(excludedId))
             res.json({ isAvailable: !exists })
         } catch (err) {

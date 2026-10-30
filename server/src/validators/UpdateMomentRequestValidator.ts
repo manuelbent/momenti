@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { z } from 'zod'
+import { RESERVED_SUBDOMAINS } from '../config/constants'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
 
 /**
@@ -43,6 +44,11 @@ export default class UpdateMomentRequestValidator {
 
         if (!result.success) {
             res.status(400).json({ error: result.error.issues })
+            return
+        }
+
+        if (result.data.slug && RESERVED_SUBDOMAINS.has(result.data.slug)) {
+            res.status(400).json({ error: 'This subdomain is reserved.' })
             return
         }
 
