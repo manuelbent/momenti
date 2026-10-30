@@ -33,11 +33,13 @@ interface MomentNode {
     variant?: 'hero'|'section'|'grid'|'card'|'overlay';
     layout?: 'row'|'column'|'grid';
     columns?: number;
+    aspectRatio?: string;
     css?: string;
     tag?: string;
     html?: string;
     src?: string;
     alt?: string;
+    caption?: string;
     generationPrompt?: string;
     address?: string;
     targetDate?: string;

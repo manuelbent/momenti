@@ -15,6 +15,7 @@
 
     $: slides = node.children ?? []
     $: count = slides.length
+    $: isGallery = node.layout === 'grid'
     $: isPaginated = count > PAGE_SIZE
     $: pages = isPaginated
         ? Array.from({ length: Math.ceil(count / PAGE_SIZE) }, (_, i) =>
@@ -48,7 +49,30 @@
     }
 </script>
 
-{#if isPaginated}
+{#if isGallery}
+    <div id={node.id} data-nid={node.id} class="gallery-grid grid w-full gap-2"
+         style={node.css ?? ''}
+         style:--gallery-columns={Math.max(1, node.columns ?? Math.min(count, 3))}>
+        {#each slides as slide (slide.id)}
+            <figure class="min-w-0">
+                <button type="button"
+                        class="container relative w-full overflow-hidden rounded focus:outline-none cursor-pointer hover:outline-2 hover:outline-dashed hover:outline-white/60"
+                        style:aspect-ratio={node.aspectRatio}
+                        onclick={(e) => handleSlideClick(e, slide)}>
+                    <img id={slide.id} data-nid={slide.id} style={slide.css} src={slide.src ?? ''}
+                         alt={slide.alt ?? ''}
+                         class="h-full w-full object-cover"
+                         loading="lazy"/>
+                </button>
+                <input bind:this={fileInputs[slide.id]} type="file" accept="image/*"
+                       onchange={(e) => handleFileSelected(e, slide.id)} hidden/>
+                {#if slide.caption}
+                    <figcaption>{slide.caption}</figcaption>
+                {/if}
+            </figure>
+        {/each}
+    </div>
+{:else if isPaginated}
     <div id={node.id} data-nid={node.id} class="relative w-full" style={node.css ?? ''}>
         <div bind:this={trackEl}
              class="flex w-full snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth">
@@ -105,6 +129,22 @@
 {/if}
 
 <style>
+    .gallery-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    @container moment (min-width: 28rem) {
+        .gallery-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @container moment (min-width: 48rem) {
+        .gallery-grid {
+            grid-template-columns: repeat(var(--gallery-columns), minmax(0, 1fr));
+        }
+    }
+
     .container:hover::after {
         content: "UPLOAD NEW IMAGE";
         position: absolute;
@@ -120,6 +160,3 @@
         z-index: 9;
     }
 </style>
-
-
-

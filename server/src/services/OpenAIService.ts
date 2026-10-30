@@ -75,11 +75,13 @@ interface MomentNode {
   variant?: 'hero' | 'section' | 'grid' | 'card' | 'overlay';
   layout?: 'row' | 'column' | 'grid';
   columns?: number;
+  aspectRatio?: string;
   css?: string;
   tag?: string;
   html?: string;
   src?: string;
   alt?: string;
+  caption?: string;
   generationPrompt?: string;
   address?: string;
   targetDate?: string;
@@ -116,14 +118,14 @@ DOCUMENT AND STYLING
 COMPONENT BEHAVIOR
 - box: children form the editable layout tree. Mark major selectable regions variant: 'hero' or 'section'.
 - text: html contains text with optional inline semantic markup; tag selects its element, such as h1, h2, p, or span. Do not hide an entire layout inside html.
-- image: src and alt are required. The node ID identifies a wrapper containing img. Style the wrapper's dimensions and #image-id img for object-fit or object-position. Choose an intentional crop and proportions.
+- image: src and alt are required. caption is optional visible text used when an image appears in a gallery. The node ID identifies a wrapper containing img. Style the wrapper's dimensions and #image-id img for object-fit or object-position. Choose an intentional crop and proportions.
 - form: fields and buttonLabel define a working RSVP form. Use labels for accessible names; placeholders are optional hints. Name fields uniquely within the form. Style #form-id input, button, label, and fieldset, or use inputCss and buttonCss for inline overrides.
 - map: address is required; use only when useful to the requested page and a location is supplied. Its node wraps the map iframe; size it through CSS.
 - countdown: targetDate must be an unambiguous ISO 8601 date supplied by the user. It renders a numeric countdown. Include only when requested.
 - link: href is required; html is its plain visible label. An optional platform (instagram, tiktok, facebook, twitter, linkedin, youtube, pinterest, snapchat, github, website) renders the social icon instead. Links open in a new tab. Use actual provided destinations, not guessed profiles or platform homepages.
 - navbar: links are { label, anchor }, with anchor matching a section ID. It provides in-page navigation and a mobile menu. Include only if it helps the requested page.
 - footer: optional compact closing content in html with momenti attribution. Omit links; use separate link nodes for external destinations.
-- carousel: children are image nodes with real supplied URLs and alt text. It provides gallery paging and the published viewer's lightbox. Slide IDs identify the img itself rather than an image wrapper.
+- carousel: children are image nodes with URLs and alt text. It provides gallery paging and the published viewer's lightbox. Use layout: 'grid' for a non-paginated gallery, columns for its requested or contextually appropriate desktop column count, and aspectRatio (for example '4 / 3' or '3 / 4') when the brief or design calls for a consistent crop. Derive the number of children and whether they have captions from the user's request; do not impose a fixed gallery size or shape. When no gallery assets are supplied, use plain https://placehold.co/{width}x{height} URLs with dimensions matching the intended aspect ratio and resolution. Do not add placeholder text or query parameters. Slide IDs identify the img itself rather than an image wrapper.
 - effects: optional animation on the actual node, with duration and delay in milliseconds. Use at most one effect per node; prefer entrance motion to perpetual movement. Effects respect reduced-motion preferences.
 `
 
@@ -136,7 +138,7 @@ Find a coherent visual idea in the user's brief, then let it guide the typograph
 
 Use the full expressive range of CSS: editorial grids, asymmetric arrangements, deliberate whitespace, layered imagery, expressive type, and quiet utility content when they serve the concept. Beauty comes from hierarchy and coherence, not from adding more sections, decorations, or animation.
 
-Include only useful event content. There is no mandatory hero arrangement, section sequence, card grid, map, footer, or animation count. Make the supplied essentials easy to find. Never invent dates, addresses, URLs, schedules, or personal facts. Do not add empty galleries or invent placeholder image URLs.
+Include only useful event content. There is no mandatory hero arrangement, section sequence, card grid, map, footer, or animation count. Make the supplied essentials easy to find. Never invent dates, addresses, URLs, schedules, or personal facts. When a requested gallery has no supplied images, create suitable placehold.co slots as described in the component contract.
 
 The HERO_IMAGE_URL is a supplied asset, either a generated image or a fallback placeholder. Include it as an image node where it best supports the composition, not necessarily in the opening. Preserve its URL exactly; do not add generationPrompt. Other images may use URLs supplied by the user.
 
