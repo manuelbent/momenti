@@ -10,26 +10,22 @@ import { updateNode } from '$lib/stores/momentContent'
  * Returns a deep copy of the content with all blob URLs replaced so it is
  * safe to pass directly to updateMoment().
  */
-export const resolvePendingImages = async (content: MomentContent): Promise<MomentContent> => {
+export const resolvePendingImages = async (content: MomentContent, momentId: number): Promise<MomentContent> => {
     const resolveNode = async (node: MomentNode): Promise<MomentNode> => {
         let resolved = { ...node }
 
         if (node.type === 'image' && node.src?.startsWith('blob:')) {
             const file = pendingImages.get(node.src)
-            if (file) {
-                try {
-                    const url = await uploadImage(file)
-                    // update the live store so the preview stays in sync
-                    updateNode(node.id, { src: url })
-                    URL.revokeObjectURL(node.src)
-                    pendingImages.remove(node.src)
-                    resolved = { ...resolved, src: url }
-                } catch (err) {
-                    console.error('[resolvePendingImages] Failed to upload image:', err)
-                    // leave the blob URL in place so the save can still proceed
-                    // (the server will reject it, making the failure visible)
-                }
+            if (!file) {
+                throw new Error('The selected image is no longer available. Please select it again.')
             }
+
+            const url = await uploadImage({ momentId, nodeId: node.id, file })
+            // update the live store so the preview stays in sync
+            updateNode(node.id, { src: url })
+            URL.revokeObjectURL(node.src)
+            pendingImages.remove(node.src)
+            resolved = { ...resolved, src: url }
         }
 
         if (node.children?.length) {

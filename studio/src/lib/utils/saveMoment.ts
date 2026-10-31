@@ -17,7 +17,7 @@ export async function saveMoment(): Promise<Moment | null> {
     }
 
     try {
-        const content = await resolvePendingImages(current.content)
+        const content = await resolvePendingImages(current.content, current.id)
         const updated: Moment = await updateMoment(current.id, {
             slug: current.slug,
             content,

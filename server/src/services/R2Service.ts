@@ -14,14 +14,14 @@ export default class R2Service {
     private readonly client: S3Client
 
     /**
-     * @private {string}
+     * @private {string|undefined}
      */
-    private readonly bucket: string
+    private readonly bucket: string|undefined
 
     /**
-     * @private {string}
+     * @private {string|undefined}
      */
-    private readonly publicUrl: string
+    private readonly publicUrl: string|undefined
 
     /**
      * @constructor
@@ -30,8 +30,8 @@ export default class R2Service {
         const accountId  = process.env.R2_ACCOUNT_ID
         const accessKeyId = process.env.R2_ACCESS_KEY_ID
         const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY
-        this.bucket = process.env.R2_BUCKET_NAME ?? ''
-        this.publicUrl = (process.env.R2_PUBLIC_URL ?? '').replace(/\/$/, '')
+        this.bucket = process.env.R2_BUCKET_NAME
+        this.publicUrl = process.env.R2_PUBLIC_URL
 
         if (!accountId || !accessKeyId || !secretAccessKey || !this.bucket || !this.publicUrl) {
             throw new Error('R2 environment variables are not fully configured.')
@@ -92,6 +92,7 @@ export default class R2Service {
             uploadId,
             key,
             uploadUrl,
+            url: `${this.publicUrl}/${key}`,
             headers: { 'Content-Type': contentType },
             expiresAt: new Date(signingDate.getTime() + expiresIn * 1000).toISOString(),
         }

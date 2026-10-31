@@ -1,29 +1,35 @@
 import { API_URL, authHeaders } from './client'
+import { isRecord } from './stream'
 
 /**
- * Upload an image file to R2 via the server.
- * @param file The image File object from an <input type="file">
+ * Upload an image file directly to R2 using a server-issued presigned URL.
+ * @param options The target Moment, image node, and selected file
  * @returns The permanent public URL of the uploaded image
  */
-export const uploadImage = async (file: File): Promise<string> => {
-    const headers = new Headers(authHeaders())
-    // Remove Content-Type so the browser sets the correct multipart boundary
-    headers.delete('Content-Type')
-
-    const body = new FormData()
-    body.append('file', file)
-
-    const res = await fetch(`${API_URL}/images`, {
-        method: 'PUT',
-        headers,
-        body,
+export const uploadImage = async ({ momentId, nodeId, file }: UploadImageOptions): Promise<string> => {
+    const res = await fetch(`${API_URL}/moments/${momentId}/images`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ nodeId, contentType: file.type, size: file.size }),
     })
 
     if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.error ?? `Upload failed: ${res.status}`)
+        const err: unknown = await res.json()
+        throw new Error(isRecord(err) && typeof err.error === 'string'
+            ? err.error
+            : `Failed to authorize image upload: ${res.status}`)
     }
 
-    const { url } = await res.json()
+    const { uploadUrl, headers, url }: PresignedUploadResponse = await res.json()
+    const upload = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers,
+        body: file,
+    })
+
+    if (!upload.ok) {
+        throw new Error(`Failed to upload image: ${upload.status}`)
+    }
+
     return url
 }

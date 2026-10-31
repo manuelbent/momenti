@@ -64,16 +64,20 @@ Disconnecting only stops replay; it does not cancel the generation or release it
 `POST /moments/:id/images` requires `x-invite-key` and Moment ownership. Its JSON body
 contains `nodeId`, `contentType` (JPEG, PNG, WebP, GIF, or AVIF MIME type), and `size`
 (an integer byte count from 1 to 5 MiB). A dedicated IP rate limit allows ten requests
-per minute. The response is `201` with `{ uploadId, uploadUrl, headers, expiresAt }`.
+per minute. The response is `201` with `{ uploadId, uploadUrl, url, headers, expiresAt }`.
 The URL authorizes an R2 `PUT` for five minutes with the specified content type and
 exact content length; send the raw file with the returned headers, without application
 authentication headers. Browsers set content length automatically.
 
 URL issuance is stateless and does not store pending upload metadata. Redis is used
 only for rate limiting in this upload flow. Issuance does not create an image database
-record or verify image bytes. Completion, cleanup, bucket CORS configuration, and Studio integration are not
-implemented yet. The legacy multipart `PUT /images` endpoint has been removed;
-Studio custom-image saves will not work until its upload flow is migrated.
+record or verify image bytes. Completion, cleanup, and bucket CORS configuration are
+not implemented yet. The legacy multipart `PUT /images` endpoint has been removed.
+Studio keeps local blob previews until save, then requests a presigned URL for each
+pending image and uploads the raw file directly to R2 using only the returned headers.
+After a successful upload, it saves the permanent public `url`, never `uploadUrl`.
+Upload failures stop the save and keep the failed file's preview available for retry.
+The R2 bucket must allow `PUT` and `Content-Type` from the Studio origin through CORS.
 Server-generated hero images continue to upload through `R2Service`.
 
 ### studio

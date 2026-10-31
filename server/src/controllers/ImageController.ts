@@ -22,14 +22,14 @@ export default class ImageController {
         const { contentType, size } = req.body
 
         try {
-            const { uploadId, uploadUrl, headers, expiresAt } = await this.r2Service.getPresignedUploadUrl({
+            const { uploadId, uploadUrl, url, headers, expiresAt } = await this.r2Service.getPresignedUploadUrl({
                 momentId,
                 contentType,
                 size,
             })
 
             res.setHeader('Cache-Control', 'no-store')
-            res.status(201).json({ uploadId, uploadUrl, headers, expiresAt })
+            res.status(201).json({ uploadId, uploadUrl, url, headers, expiresAt })
         } catch (err) {
             logger.error({ err, momentId }, '[ImageController] getPresignedUploadUrl error')
             res.status(500).json({ error: 'Failed to authorize image upload.' })

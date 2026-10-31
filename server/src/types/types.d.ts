@@ -11,6 +11,7 @@ interface ImageUpload {
     uploadId: string
     key: string
     uploadUrl: string
+    url: string
     headers: { 'Content-Type': string }
     expiresAt: string
 }

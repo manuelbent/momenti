@@ -1,3 +1,17 @@
+interface UploadImageOptions {
+    momentId: number
+    nodeId: string
+    file: File
+}
+
+interface PresignedUploadResponse {
+    uploadId: string
+    uploadUrl: string
+    url: string
+    headers: { 'Content-Type': string }
+    expiresAt: string
+}
+
 interface Change {
     id: number
     moment_id: number
