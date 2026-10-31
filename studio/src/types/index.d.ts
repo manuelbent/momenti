@@ -1,6 +1,5 @@
 interface UploadImageOptions {
     momentId: number
-    nodeId: string
     file: File
 }
 

@@ -9,7 +9,6 @@ export default class CreateImageRequestValidator {
      * @private {ZodObject}
      */
     schema = z.object({
-        nodeId: z.string().trim().min(1).max(255),
         contentType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']),
         size: z.number().int().positive().max(5 * 1024 * 1024),
     }).strict()

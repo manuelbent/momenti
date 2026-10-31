@@ -20,7 +20,7 @@ export const resolvePendingImages = async (content: MomentContent, momentId: num
                 throw new Error('The selected image is no longer available. Please select it again.')
             }
 
-            const url = await uploadImage({ momentId, nodeId: node.id, file })
+            const url = await uploadImage({ momentId, file })
             // update the live store so the preview stays in sync
             updateNode(node.id, { src: url })
             URL.revokeObjectURL(node.src)

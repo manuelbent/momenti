@@ -31,7 +31,7 @@ export default class ImageController {
             res.setHeader('Cache-Control', 'no-store')
             res.status(201).json({ uploadId, uploadUrl, url, headers, expiresAt })
         } catch (err) {
-            logger.error({ err, momentId }, '[ImageController] getPresignedUploadUrl error')
+            logger.error({ err, momentId }, '[ImageController] getPresignedUrl error')
             res.status(500).json({ error: 'Failed to authorize image upload.' })
         }
     }

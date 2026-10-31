@@ -16,8 +16,6 @@ import FeedbackServiceInterface from '../interfaces/FeedbackServiceInterface'
 import FeedbackRepositoryInterface from '../interfaces/FeedbackRepositoryInterface'
 import FormSubmissionRepositoryInterface from '../interfaces/FormSubmissionRepositoryInterface'
 import FormSubmissionServiceInterface from '../interfaces/FormSubmissionServiceInterface'
-import ImageRepositoryInterface from '../interfaces/ImageRepositoryInterface'
-import ImageServiceInterface from '../interfaces/ImageServiceInterface'
 import InviteKeyRepositoryInterface from '../interfaces/InviteKeyRepositoryInterface'
 import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
@@ -46,7 +44,6 @@ import ChangeRepository from '../repositories/ChangeRepository'
 import AiCostRepository from '../repositories/AiCostRepository'
 import FeedbackRepository from '../repositories/FeedbackRepository'
 import FormSubmissionRepository from '../repositories/FormSubmissionRepository'
-import ImageRepository from '../repositories/ImageRepository'
 import InviteKeyRepository from '../repositories/InviteKeyRepository'
 import MomentRepository from '../repositories/MomentRepository'
 import UserRepository from '../repositories/UserRepository'
@@ -55,7 +52,6 @@ import ChangeService from '../services/ChangeService'
 import AiCostService from '../services/AiCostService'
 import FeedbackService from '../services/FeedbackService'
 import FormSubmissionService from '../services/FormSubmissionService'
-import ImageService from '../services/ImageService'
 import InviteKeyService from '../services/InviteKeyService'
 import OpenAIService from '../services/OpenAIService'
 import MomentService from '../services/MomentService'
@@ -100,7 +96,6 @@ class Container {
     private _formSubmissionRepository?: FormSubmissionRepositoryInterface
     private _feedbackRepository?: FeedbackRepositoryInterface
     private _changeRepository?: ChangeRepositoryInterface
-    private _imageRepository?: ImageRepositoryInterface
     private _aiCostRepository?: AiCostRepositoryInterface
     // services
     private _momentService?: MomentServiceInterface
@@ -110,7 +105,6 @@ class Container {
     private _feedbackService?: FeedbackServiceInterface
     private _redisService?: RedisService
     private _changeService?: ChangeServiceInterface
-    private _imageService?: ImageServiceInterface
     private _aiCostService?: AiCostServiceInterface
     // services (non-orm)
     private _r2Service?: R2Service
@@ -226,10 +220,6 @@ class Container {
         return this._feedbackRepository ??= new FeedbackRepository()
     }
 
-    public get imageRepository(): ImageRepositoryInterface {
-        return this._imageRepository ??= new ImageRepository()
-    }
-
     public get aiCostRepository(): AiCostRepositoryInterface {
         return this._aiCostRepository ??= new AiCostRepository()
     }
@@ -256,10 +246,6 @@ class Container {
 
     public get feedbackService(): FeedbackServiceInterface {
         return this._feedbackService ??= new FeedbackService(this.feedbackRepository)
-    }
-
-    public get imageService(): ImageServiceInterface {
-        return this._imageService ??= new ImageService(this.imageRepository)
     }
 
     public get aiCostService(): AiCostServiceInterface {
