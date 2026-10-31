@@ -61,6 +61,21 @@ It replays the user's active generation from the beginning with the original eve
 then streams new events until `done` or `error`. If no generation is active, the connection closes.
 Disconnecting only stops replay; it does not cancel the generation or release its lock.
 
+`POST /moments/:id/images` requires `x-invite-key` and Moment ownership. Its JSON body
+contains `nodeId`, `contentType` (JPEG, PNG, WebP, GIF, or AVIF MIME type), and `size`
+(an integer byte count from 1 to 5 MiB). A dedicated IP rate limit allows ten requests
+per minute. The response is `201` with `{ uploadId, uploadUrl, headers, expiresAt }`.
+The URL authorizes an R2 `PUT` for five minutes with the specified content type and
+exact content length; send the raw file with the returned headers, without application
+authentication headers. Browsers set content length automatically.
+
+URL issuance is stateless and does not store pending upload metadata. Redis is used
+only for rate limiting in this upload flow. Issuance does not create an image database
+record or verify image bytes. Completion, cleanup, bucket CORS configuration, and Studio integration are not
+implemented yet. The legacy multipart `PUT /images` endpoint has been removed;
+Studio custom-image saves will not work until its upload flow is migrated.
+Server-generated hero images continue to upload through `R2Service`.
+
 ### studio
 
 Svelte 5 single-page application.  

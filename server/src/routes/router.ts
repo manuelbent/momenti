@@ -69,6 +69,14 @@ router.get('/moments/:id/changes',
     (req, res) => ioc.momentController.loadChanges(req, res)
 )
 
+router.post('/moments/:id/images',
+    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.imageUploadRateLimiterMiddleware.handle(req, res, next),
+    (req, res, next) => ioc.createImageRequestValidator.validate(req, res, next),
+    (req, res, next) => ioc.momentOwnerShipMiddleware.handle(req, res, next),
+    (req, res) => ioc.imageController.getPresignedUrl(req, res)
+)
+
 router.post('/moments/:slug/submissions',
     (req, res, next) => ioc.submitFormDataRequestValidator.validate(req, res, next),
     (req, res) => ioc.formSubmissionController.store(req, res)
@@ -91,13 +99,6 @@ router.post('/invite-keys/validate',
     (req, res, next) => ioc.rateLimiterMiddleware.handle(req, res, next),
     (req, res, next) => ioc.validateInviteKeyRequestValidator.validate(req, res, next),
     (req, res) => ioc.inviteKeyController.validate(req, res)
-)
-
-// image upload route
-router.put('/images',
-    (req, res, next) => ioc.inviteKeyMiddleware.handle(req, res, next),
-    (req, res, next) => ioc.uploadMiddleware.handle(req, res, next),
-    (req, res) => ioc.imageController.upload(req, res)
 )
 
 // feedbacks routes

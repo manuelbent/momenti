@@ -1,6 +1,20 @@
 // Shared types (FormField, MomentNode, Content, Moment, CssComputedVals)
 // are defined in shared/types.d.ts and included via tsconfig.
 
+interface PresignedUploadOptions {
+    momentId: number
+    contentType: string
+    size: number
+}
+
+interface ImageUpload {
+    uploadId: string
+    key: string
+    uploadUrl: string
+    headers: { 'Content-Type': string }
+    expiresAt: string
+}
+
 interface LLMRequestContext {
     userId: number
     generationId?: string|null

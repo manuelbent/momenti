@@ -23,13 +23,13 @@ import InviteKeyServiceInterface from '../interfaces/InviteKeyServiceInterface'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
 import MomentRepositoryInterface from '../interfaces/MomentRepositoryInterface'
 import MomentServiceInterface from '../interfaces/MomentServiceInterface'
-import R2ServiceInterface from '../interfaces/R2ServiceInterface'
 import UserRepositoryInterface from '../interfaces/UserRepositoryInterface'
 import UserServiceInterface from '../interfaces/UserServiceInterface'
 
 import ChangeLimitMiddleware from '../middlewares/ChangeLimitMiddleware'
 import DownloadFormSubmissionsMiddleware from '../middlewares/DownloadFormSubmissionsMiddleware'
 import GenerationGuardMiddleware from '../middlewares/GenerationGuardMiddleware'
+import ImageUploadRateLimiterMiddleware from '../middlewares/ImageUploadRateLimiterMiddleware'
 import InviteKeyMiddleware from '../middlewares/InviteKeyMiddleware'
 import MalformedDataMiddleware from '../middlewares/MalformedDataMiddleware'
 import MomentContentModerationMiddleware from '../middlewares/MomentContentModerationMiddleware'
@@ -40,7 +40,6 @@ import PromptModerationMiddleware from '../middlewares/PromptModerationMiddlewar
 import PromptSanitizeMiddleware from '../middlewares/PromptSanitizeMiddleware'
 import RateLimiterMiddleware from '../middlewares/RateLimiterMiddleware'
 import SseMiddleware from '../middlewares/SseMiddleware'
-import UploadMiddleware from '../middlewares/UploadMiddleware'
 import ValidationErrorMiddleware from '../middlewares/ValidationErrorMiddleware'
 
 import ChangeRepository from '../repositories/ChangeRepository'
@@ -65,6 +64,7 @@ import RedisService from '../services/RedisService'
 import UserService from '../services/UserService'
 
 import CheckSlugRequestValidator from '../validators/CheckSlugRequestValidator'
+import CreateImageRequestValidator from '../validators/CreateImageRequestValidator'
 import PatchMomentRequestValidator from '../validators/PatchMomentRequestValidator'
 import SubmitFeedbackRequestValidator from '../validators/SubmitFeedbackRequestValidator'
 import SubmitFormDataRequestValidator from '../validators/SubmitFormDataRequestValidator'
@@ -84,12 +84,12 @@ class Container {
     private _inviteKeyMiddleware?: InviteKeyMiddleware
     private _momentLimitMiddleware?: MomentLimitMiddleware
     private _downloadFormSubmissionsMiddleware?: DownloadFormSubmissionsMiddleware
-    private _uploadMiddleware?: UploadMiddleware
     private _promptSanitizeMiddleware?: PromptSanitizeMiddleware
     private _promptModerationMiddleware?: PromptModerationMiddleware
     private _promptClassifierMiddleware?: PromptClassifierMiddleware
     private _generationGuardMiddleware?: GenerationGuardMiddleware
     private _rateLimiterMiddleware?: RateLimiterMiddleware
+    private _imageUploadRateLimiterMiddleware?: ImageUploadRateLimiterMiddleware
     private _changeLimitMiddleware?: ChangeLimitMiddleware
     private _momentOwnershipMiddleware?: MomentOwnershipMiddleware
     private _momentContentModerationMiddleware?: MomentContentModerationMiddleware
@@ -113,7 +113,7 @@ class Container {
     private _imageService?: ImageServiceInterface
     private _aiCostService?: AiCostServiceInterface
     // services (non-orm)
-    private _r2Service?: R2ServiceInterface
+    private _r2Service?: R2Service
     private _llmService?: LLMServiceInterface
     // controllers
     private _userController?: UserController
@@ -132,6 +132,7 @@ class Container {
     private _submitFeedbackRequestValidator?: SubmitFeedbackRequestValidator
     private _checkSlugRequestValidator?: CheckSlugRequestValidator
     private _patchMomentRequestValidator?: PatchMomentRequestValidator
+    private _createImageRequestValidator?: CreateImageRequestValidator
 
     public get malformedDataMiddleware(): MalformedDataMiddleware {
         return this._malformedDataMiddleware ??= new MalformedDataMiddleware()
@@ -165,10 +166,6 @@ class Container {
         return this._downloadFormSubmissionsMiddleware ??= new DownloadFormSubmissionsMiddleware()
     }
 
-    public get uploadMiddleware(): UploadMiddleware {
-        return this._uploadMiddleware ??= new UploadMiddleware()
-    }
-
     public get promptSanitizeMiddleware(): PromptSanitizeMiddleware {
         return this._promptSanitizeMiddleware ??= new PromptSanitizeMiddleware()
     }
@@ -199,6 +196,10 @@ class Container {
 
     public get rateLimiterMiddleware(): RateLimiterMiddleware {
         return this._rateLimiterMiddleware ??= new RateLimiterMiddleware()
+    }
+
+    public get imageUploadRateLimiterMiddleware(): ImageUploadRateLimiterMiddleware {
+        return this._imageUploadRateLimiterMiddleware ??= new ImageUploadRateLimiterMiddleware()
     }
 
     public get userRepository(): UserRepositoryInterface {
@@ -265,7 +266,7 @@ class Container {
         return this._aiCostService ??= new AiCostService(this.aiCostRepository)
     }
 
-    public get r2Service(): R2ServiceInterface {
+    public get r2Service(): R2Service {
         return this._r2Service ??= new R2Service()
     }
 
@@ -343,7 +344,11 @@ class Container {
     }
 
     public get imageController(): ImageController {
-        return this._imageController ??= new ImageController(this.imageService, this.r2Service)
+        return this._imageController ??= new ImageController(this.r2Service)
+    }
+
+    public get createImageRequestValidator(): CreateImageRequestValidator {
+        return this._createImageRequestValidator ??= new CreateImageRequestValidator()
     }
 }
 

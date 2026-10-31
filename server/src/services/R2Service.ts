@@ -1,17 +1,17 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import { randomUUID } from 'crypto'
 import path from 'path'
-import R2ServiceInterface from '../interfaces/R2ServiceInterface'
+import { randomUUID } from 'crypto'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 /**
  * Thin wrapper around the Cloudflare R2 bucket.
  * @class R2Service
  */
-export default class R2Service implements R2ServiceInterface {
+export default class R2Service {
     /**
      * @private {S3Client}
      */
-    private client: S3Client
+    private readonly client: S3Client
 
     /**
      * @private {string}
@@ -41,6 +41,7 @@ export default class R2Service implements R2ServiceInterface {
             region: 'auto',
             endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
             credentials: { accessKeyId, secretAccessKey },
+            requestChecksumCalculation: 'WHEN_REQUIRED',
         })
     }
 
@@ -63,5 +64,36 @@ export default class R2Service implements R2ServiceInterface {
         }))
 
         return `${this.publicUrl}/${key}`
+    }
+
+    /**
+     * Signs a dedicated R2 PUT request, valid for five minutes.
+     * @param {PresignedUploadOptions} options
+     * @returns {Promise<ImageUpload>}
+     */
+    public async getPresignedUploadUrl(options: PresignedUploadOptions): Promise<ImageUpload> {
+        const { momentId, contentType, size } = options
+        const uploadId = randomUUID()
+        const key = `images/${momentId}/${uploadId}`
+        const expiresIn = 5 * 60
+        const signingDate = new Date()
+        const uploadUrl = await getSignedUrl(this.client, new PutObjectCommand({
+            Bucket: this.bucket,
+            Key: key,
+            ContentType: contentType,
+            ContentLength: size,
+        }), {
+            expiresIn,
+            signingDate,
+            signableHeaders: new Set(['content-type', 'content-length']),
+        })
+
+        return {
+            uploadId,
+            key,
+            uploadUrl,
+            headers: { 'Content-Type': contentType },
+            expiresAt: new Date(signingDate.getTime() + expiresIn * 1000).toISOString(),
+        }
     }
 }

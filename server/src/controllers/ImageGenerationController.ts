@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
 import { emit } from '../utils/sse'
 import logger from '../config/logger'
+import R2Service from '../services/R2Service'
 import RedisService from '../services/RedisService'
 import LLMServiceInterface from '../interfaces/LLMServiceInterface'
-import R2ServiceInterface from '../interfaces/R2ServiceInterface'
 
 /**
  * @class ImageGenerationController
@@ -11,12 +11,12 @@ import R2ServiceInterface from '../interfaces/R2ServiceInterface'
 export default class ImageGenerationController {
     /**
      * @constructor
-     * @param {R2ServiceInterface} r2Service
+     * @param {R2Service} r2Service
      * @param {LLMServiceInterface} llmService
      * @param {RedisService} redisService
      */
     constructor(
-        private r2Service: R2ServiceInterface,
+        private r2Service: R2Service,
         private llmService: LLMServiceInterface,
         private redisService: RedisService,
     ) {}

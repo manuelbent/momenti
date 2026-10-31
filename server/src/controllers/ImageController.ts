@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
-import ImageServiceInterface from '../interfaces/ImageServiceInterface'
-import R2ServiceInterface from '../interfaces/R2ServiceInterface'
 import logger from '../config/logger'
+import R2Service from '../services/R2Service'
 
 /**
  * @class ImageController
@@ -9,38 +8,31 @@ import logger from '../config/logger'
 export default class ImageController {
     /**
      * @constructor
-     * @param {ImageServiceInterface} imageService
-     * @param {R2ServiceInterface} r2Service
+     * @param {R2Service} r2Service
      */
-    constructor(
-        private imageService: ImageServiceInterface,
-        private r2Service: R2ServiceInterface
-    ) {}
+    constructor(private r2Service: R2Service) {}
 
     /**
-     * Upload an image to R2 and return its permanent public URL.
-     * Expects a multipart/form-data request with a field named "file".
+     * Authorize a direct image upload to R2 without receiving file bytes.
      * @param {Request} req
      * @param {Response} res
      */
-    public async upload(req: Request, res: Response): Promise<void> {
+    public async getPresignedUrl(req: Request, res: Response): Promise<void> {
+        const momentId = Number(req.params.id)
+        const { contentType, size } = req.body
+
         try {
-            const file = req.file
-            if (!file) {
-                res.status(400).json({ error: 'No file provided.' })
-                return
-            }
+            const { uploadId, uploadUrl, headers, expiresAt } = await this.r2Service.getPresignedUploadUrl({
+                momentId,
+                contentType,
+                size,
+            })
 
-            // upload to R2
-            const url = await this.r2Service.upload(file.buffer, file.mimetype, file.originalname)
-
-            // store in DB
-            await this.imageService.store({ url, type: 'uploaded' })
-
-            res.status(201).json({ url })
+            res.setHeader('Cache-Control', 'no-store')
+            res.status(201).json({ uploadId, uploadUrl, headers, expiresAt })
         } catch (err) {
-            logger.error({ err }, '[ImageController] upload error')
-            res.status(500).json({ error: 'Failed to upload image.' })
+            logger.error({ err, momentId }, '[ImageController] getPresignedUploadUrl error')
+            res.status(500).json({ error: 'Failed to authorize image upload.' })
         }
     }
 }
